@@ -1,0 +1,67 @@
+.form-container {
+    max-width: 36rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.form-field {
+    background-color: #3f3f46;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    display: block;
+    width: 100%;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    color: #c4d0d8;
+}
+
+.form-date-field {
+    background-color: #3f3f46;
+    color: #c4d0d8;
+    border: 1px solid #4b5563;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    width: 100%;
+    font-size: 1rem;
+    transition: border-color 0.3s, background-color 0.3s;
+    margin-bottom: 0.75rem;
+}
+
+.form-date-field:focus {
+    background-color: #474c57;
+    border-color: #6366f1;
+    color: #ffffff;
+}
+
+.form-date-field::-webkit-calendar-picker-indicator {
+    background-color: #6366f1;
+    border-radius: 0.25rem;
+}
+
+.form-date-field::placeholder {
+    color: #a1a1aa;
+}
+
+.form-button {
+    background-color: #6366f1;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    display: block;
+    width: 100%;
+    margin-top: 0.75rem;
+    cursor: pointer;
+}
+
+.btn-borrar-form {
+    background-color: #ef4444;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    width: 12rem;
+    margin-top: 0.75rem;
+    cursor: pointer;
+}
+
+.btn-borrar {
+    display: flex;
+    justify-content: end;
+}

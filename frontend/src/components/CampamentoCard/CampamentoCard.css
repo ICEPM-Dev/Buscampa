@@ -1,0 +1,18 @@
+.my-element {
+    background-color: #27272a;
+    padding: 0.75rem;
+    cursor: pointer;
+}
+
+.my-element:hover {
+    background-color: #3f3f46;
+}
+
+.titulo {
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.info {
+    color: #c4d0d8;
+}
