@@ -1,0 +1,171 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
+import { Menu, X, Church, LogOut, User, LayoutDashboard } from "lucide-react";
+import UserMenu from "./UserMenu";
+
+export default function Header() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAuthenticated, user, logout, isUser, isChurch } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+    setIsMenuOpen(false);
+  };
+
+  return (
+    <header className="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-50">
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          <Link to="/" className="flex items-center gap-2">
+            <Church className="h-8 w-8 text-blue-600" />
+            <span className="text-xl font-bold text-slate-900">Buscampa</span>
+          </Link>
+
+          <div className="hidden md:flex items-center space-x-8">
+            <Link
+              to="/"
+              className="text-slate-700 hover:text-blue-600 transition-colors font-medium"
+            >
+              Inicio
+            </Link>
+
+            {isAuthenticated && (
+              <>
+                {isUser && (
+                  <Link
+                    to="/campamentos"
+                    className="text-slate-700 hover:text-blue-600 transition-colors font-medium"
+                  >
+                    Campamentos
+                  </Link>
+                )}
+
+                {isChurch && (
+                  <Link
+                    to="/dashboard"
+                    className="text-slate-700 hover:text-blue-600 transition-colors font-medium"
+                  >
+                    <span className="flex items-center gap-1">
+                      <LayoutDashboard className="h-4 w-4" />
+                      Dashboard
+                    </span>
+                  </Link>
+                )}
+
+                 <div className="flex items-center gap-4 ml-4 pl-4 border-l border-slate-300">
+                   <UserMenu />
+
+                   <button
+                     onClick={handleLogout}
+                     className="text-slate-600 hover:text-red-600 transition-colors"
+                     title="Cerrar sesión"
+                   >
+                     <LogOut className="h-5 w-5" />
+                   </button>
+                 </div>
+              </>
+            )}
+
+            {!isAuthenticated && (
+              <>
+                <Link
+                  to="/login"
+                  className="text-slate-700 hover:text-blue-600 transition-colors font-medium"
+                >
+                  Iniciar Sesión
+                </Link>
+                <Link
+                  to="/register"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                >
+                  Registrarse
+                </Link>
+              </>
+            )}
+          </div>
+
+          <button
+            className="md:hidden text-slate-700"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
+          </button>
+        </div>
+
+        {isMenuOpen && (
+          <div className="md:hidden py-4 space-y-2 border-t border-slate-200">
+            <Link
+              to="/"
+              className="block px-4 py-2 text-slate-700 hover:bg-slate-50 rounded-lg"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Inicio
+            </Link>
+
+            {isAuthenticated && (
+              <>
+                {isUser && (
+                  <Link
+                    to="/campamentos"
+                    className="block px-4 py-2 text-slate-700 hover:bg-slate-50 rounded-lg"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Campamentos
+                  </Link>
+                )}
+
+                {isChurch && (
+                  <Link
+                    to="/dashboard"
+                    className="block px-4 py-2 text-slate-700 hover:bg-slate-50 rounded-lg"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Dashboard
+                  </Link>
+                )}
+
+                 <div className="px-4 py-2 border-t border-slate-200">
+                   <UserMenu />
+
+                   <button
+                     onClick={handleLogout}
+                     className="w-full flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg"
+                   >
+                     <LogOut className="h-4 w-4" />
+                     Cerrar Sesión
+                   </button>
+                 </div>
+              </>
+            )}
+
+            {!isAuthenticated && (
+              <>
+                <Link
+                  to="/login"
+                  className="block px-4 py-2 text-slate-700 hover:bg-slate-50 rounded-lg"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Iniciar Sesión
+                </Link>
+                <Link
+                  to="/register"
+                  className="block px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-medium"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Registrarse
+                </Link>
+              </>
+            )}
+          </div>
+        )}
+      </nav>
+    </header>
+  );
+}

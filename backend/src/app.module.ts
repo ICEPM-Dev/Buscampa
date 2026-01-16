@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
-import { TaskModule } from './task/task.module';
+import { AuthModule } from './auth/auth.module';
+import { CampamentoModule } from './campamento/campamento.module';
+import { InscriptionModule } from './inscription/inscription.module';
 
 @Module({
-  imports: [TaskModule],
+  imports: [AuthModule, CampamentoModule, InscriptionModule],
   controllers: [],
   providers: [],
 })
