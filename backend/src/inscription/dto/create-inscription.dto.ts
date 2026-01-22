@@ -1,3 +1,7 @@
+/**
+ * DTO para la creación de inscripciones a campamentos.
+ * Incluye validaciones para los datos personales del participante.
+ */
 import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 
 export class CreateInscriptionDto {

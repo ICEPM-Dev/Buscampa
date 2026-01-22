@@ -209,10 +209,10 @@ export default function CampamentoDetail({
                 className="w-full bg-blue-600 text-white py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-slate-300 disabled:cursor-not-allowed"
               >
                 {isPast
-                  ? 'Campamento finalizado'
+                  ? "Campamento finalizado"
                   : isOngoing
-                  ? 'Campamento en curso'
-                  : 'Inscribirse ahora'}
+                  ? "Campamento en curso"
+                  : "Inscribirse ahora"}
               </button>
             )}
           </div>

@@ -1,5 +1,9 @@
-import { UserPlus } from 'lucide-react';
-import RegisterForm from '../components/auth/RegisterForm';
+/**
+ * Página de registro de usuario normal.
+ * Muestra formulario de registro en diseño centrado.
+ */
+import { UserPlus } from "lucide-react";
+import RegisterForm from "../components/auth/RegisterForm";
 
 export default function Register() {
   return (

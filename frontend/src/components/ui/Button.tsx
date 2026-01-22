@@ -1,3 +1,7 @@
+/**
+ * Componente Button flexible con variantes y estados.
+ * Soporta loading, tamaños y estilos personalizables.
+ */
 import { forwardRef, type ButtonHTMLAttributes } from "react";
 import { Loader2 } from "lucide-react";
 

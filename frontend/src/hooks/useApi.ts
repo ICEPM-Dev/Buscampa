@@ -1,3 +1,7 @@
+/**
+ * Hook personalizado para manejar llamadas a la API.
+ * Proporciona estado de loading, error y data, además de ejecutar llamadas.
+ */
 import { useState, useCallback } from "react";
 import { showToast } from "../components/ui/Toast";
 

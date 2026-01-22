@@ -1,5 +1,9 @@
-import { Link } from 'react-router-dom';
-import { User, Church, ArrowRight } from 'lucide-react';
+/**
+ * Página de selección de tipo de registro.
+ * Permite elegir entre registro como usuario o iglesia.
+ */
+import { Link } from "react-router-dom";
+import { User, Church, ArrowRight } from "lucide-react";
 
 export default function RegisterChoice() {
   return (
@@ -46,7 +50,9 @@ export default function RegisterChoice() {
                       clipRule="evenodd"
                     />
                   </svg>
-                  <span className="text-slate-700">Ver todos los campamentos</span>
+                  <span className="text-slate-700">
+                    Ver todos los campamentos
+                  </span>
                 </li>
                 <li className="flex items-start gap-3">
                   <svg
@@ -60,9 +66,7 @@ export default function RegisterChoice() {
                       clipRule="evenodd"
                     />
                   </svg>
-                  <span className="text-slate-700">
-                    Inscribirte en eventos
-                  </span>
+                  <span className="text-slate-700">Inscribirte en eventos</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <svg
@@ -150,9 +154,7 @@ export default function RegisterChoice() {
                       clipRule="evenodd"
                     />
                   </svg>
-                  <span className="text-slate-700">
-                    Dashboard completo
-                  </span>
+                  <span className="text-slate-700">Dashboard completo</span>
                 </li>
               </ul>
 

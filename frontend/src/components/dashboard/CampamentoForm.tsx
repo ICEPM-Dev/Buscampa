@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Save } from "lucide-react";
+import { Save } from "lucide-react";
 import { useApi } from "../../hooks/useApi";
 import { campamentoService } from "../../services/campamento.service";
 import type {
@@ -135,7 +135,6 @@ export default function CampamentoForm() {
 
   return (
     <div className="max-w-3xl mx-auto">
-
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-slate-900 mb-2">
@@ -203,7 +202,7 @@ export default function CampamentoForm() {
               onChange={handleChange}
               error={errors.endDate}
               disabled={loading}
-              min={formData.startDate}  
+              min={formData.startDate}
               required
             />
           </div>

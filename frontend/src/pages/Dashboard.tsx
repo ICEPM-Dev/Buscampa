@@ -1,3 +1,8 @@
+/**
+ * Dashboard principal para iglesias.
+ * Muestra estadísticas de campamentos, navegación lateral y vistas detalladas.
+ * Incluye resumen, gestión de campamentos e inscripciones.
+ */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
@@ -5,7 +10,13 @@ import { useApi } from "../hooks/useApi";
 import { campamentoService } from "../services/campamento.service";
 import { inscriptionService } from "../services/inscription.service";
 import type { Campamento, Registration } from "../types";
-import { format, parseISO, isAfter, isWithinInterval, isBefore } from "date-fns";
+import {
+  format,
+  parseISO,
+  isAfter,
+  isWithinInterval,
+  isBefore,
+} from "date-fns";
 import { es } from "date-fns/locale";
 import {
   Calendar,
@@ -24,8 +35,11 @@ export default function Dashboard() {
   const [, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
 
-  const { data: campamentos, isLoading: isLoadingCampamentos, execute: loadCampamentos } =
-    useApi<Campamento[]>();
+  const {
+    data: campamentos,
+    isLoading: isLoadingCampamentos,
+    execute: loadCampamentos,
+  } = useApi<Campamento[]>();
 
   const [, setInscripciones] = useState<Registration[]>([]);
 
@@ -164,23 +178,31 @@ export default function Dashboard() {
                       <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between mb-2">
                           <Plus className="h-5 w-5 text-green-600" />
-                          <span className="text-sm text-slate-500">Próximos</span>
+                          <span className="text-sm text-slate-500">
+                            Próximos
+                          </span>
                         </div>
                         <p className="text-3xl font-bold text-slate-900">
                           {stats.upcoming}
                         </p>
-                        <p className="text-sm text-slate-600 mt-1">Por comenzar</p>
+                        <p className="text-sm text-slate-600 mt-1">
+                          Por comenzar
+                        </p>
                       </div>
 
                       <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between mb-2">
                           <Users className="h-5 w-5 text-amber-600" />
-                          <span className="text-sm text-slate-500">En curso</span>
+                          <span className="text-sm text-slate-500">
+                            En curso
+                          </span>
                         </div>
                         <p className="text-3xl font-bold text-slate-900">
                           {stats.ongoing}
                         </p>
-                        <p className="text-sm text-slate-600 mt-1">Activos ahora</p>
+                        <p className="text-sm text-slate-600 mt-1">
+                          Activos ahora
+                        </p>
                       </div>
 
                       <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
@@ -193,7 +215,9 @@ export default function Dashboard() {
                         <p className="text-3xl font-bold text-slate-900">
                           {stats.past}
                         </p>
-                        <p className="text-sm text-slate-600 mt-1">Completados</p>
+                        <p className="text-sm text-slate-600 mt-1">
+                          Completados
+                        </p>
                       </div>
                     </div>
 
@@ -211,8 +235,8 @@ export default function Dashboard() {
 
                           <div className="grid md:grid-cols-2 gap-6">
                             {campamentos.slice(0, 4).map((campamento) => {
-                      const startDate = parseISO(campamento.startDate);
-                      const endDate = parseISO(campamento.endDate);
+                              const startDate = parseISO(campamento.startDate);
+                              const endDate = parseISO(campamento.endDate);
                               const isUpcoming = isAfter(startDate, new Date());
                               const isOngoing = isWithinInterval(new Date(), {
                                 start: startDate,
@@ -265,7 +289,9 @@ export default function Dashboard() {
                                       <div className="flex items-center gap-2 text-sm text-slate-600">
                                         <Calendar className="h-4 w-4 text-blue-600 shrink-0" />
                                         <span>
-                                          {format(startDate, "dd MMM", { locale: es })}{" "}
+                                          {format(startDate, "dd MMM", {
+                                            locale: es,
+                                          })}{" "}
                                           -{" "}
                                           {format(endDate, "dd MMM yyyy", {
                                             locale: es,
@@ -283,7 +309,10 @@ export default function Dashboard() {
                                       <div className="flex items-center gap-2 text-sm text-slate-600">
                                         <DollarSign className="h-4 w-4 text-blue-600 shrink-0" />
                                         <span className="font-semibold text-slate-900">
-                                          ${campamento.price.toLocaleString("es-AR")}
+                                          $
+                                          {campamento.price.toLocaleString(
+                                            "es-AR"
+                                          )}
                                         </span>
                                       </div>
                                     </div>
@@ -328,7 +357,9 @@ export default function Dashboard() {
                           inscripciones
                         </p>
                         <button
-                          onClick={() => navigate("/dashboard/campamentos/nuevo")}
+                          onClick={() =>
+                            navigate("/dashboard/campamentos/nuevo")
+                          }
                           className="inline-flex items-center gap-2 bg-linear-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all hover:scale-105"
                         >
                           <Plus className="h-5 w-5" />
