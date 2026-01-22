@@ -1,12 +1,16 @@
-import { useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useApi } from '../hooks/useApi';
-import { useAuth } from '../hooks/useAuth';
-import { List } from 'lucide-react';
-import { campamentoService } from '../services/campamento.service';
-import CampamentoList from '../components/campamentos/CampamentoList';
-import Button from '../components/ui/Button';
-import { parseISO } from 'date-fns';
+/**
+ * Página de listado de campamentos disponibles.
+ * Muestra campamentos que no están en curso, con opción de ver inscripciones.
+ */
+import { useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import { useApi } from "../hooks/useApi";
+import { useAuth } from "../hooks/useAuth";
+import { List } from "lucide-react";
+import { campamentoService } from "../services/campamento.service";
+import CampamentoList from "../components/campamentos/CampamentoList";
+import Button from "../components/ui/Button";
+import { parseISO } from "date-fns";
 
 export default function Campamentos() {
   const navigate = useNavigate();
@@ -19,9 +23,9 @@ export default function Campamentos() {
 
   const availableCampamentos = useMemo(() => {
     if (!campamentos) return [];
-    
+
     const now = new Date();
-    
+
     return campamentos.filter((campamento: any) => {
       const startDate = parseISO(campamento.startDate);
       const endDate = parseISO(campamento.endDate);
@@ -35,14 +39,16 @@ export default function Campamentos() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-start justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">Campamentos Cristianos</h1>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">
+              Campamentos Cristianos
+            </h1>
             <p className="text-slate-600">
               Descubre campamentos de iglesias de toda Argentina
             </p>
           </div>
           {!isChurch && (
             <Button
-              onClick={() => navigate('/inscripciones')}
+              onClick={() => navigate("/inscripciones")}
               variant="outline"
               className="inline-flex items-center gap-2"
             >

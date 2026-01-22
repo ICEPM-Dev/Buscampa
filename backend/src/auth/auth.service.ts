@@ -1,3 +1,8 @@
+/**
+ * Servicio de autenticación que maneja todas las operaciones relacionadas con usuarios e iglesias.
+ * Incluye registro, login, actualización de perfil, cambio de contraseña y eliminación de cuenta.
+ * Utiliza Prisma para la base de datos y bcrypt para hashing de contraseñas.
+ */
 import {
   ConflictException,
   Injectable,
@@ -7,12 +12,18 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
+/**
+ * DTO para registro de usuario normal
+ */
 export interface RegisterUserDto {
   email: string;
   name: string;
   password: string;
 }
 
+/**
+ * DTO para registro de iglesia
+ */
 export interface RegisterChurchDto {
   email: string;
   name: string;
@@ -20,6 +31,9 @@ export interface RegisterChurchDto {
   denomination: string;
 }
 
+/**
+ * DTO para login
+ */
 export interface LoginDto {
   email: string;
   password: string;
@@ -27,20 +41,34 @@ export interface LoginDto {
 
 @Injectable()
 export class AuthService {
+  /**
+   * Constructor que inyecta las dependencias necesarias
+   * @param prisma Servicio de Prisma para acceso a BD
+   * @param jwtService Servicio de JWT para generación de tokens
+   */
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
   ) {}
 
+  /**
+   * Registra un nuevo usuario normal en el sistema.
+   * Verifica que el email no esté registrado, hashea la contraseña y crea el usuario.
+   * @param dto Datos del usuario a registrar
+   * @returns Token de acceso y datos del usuario
+   */
   async registerUser(dto: RegisterUserDto) {
+    // Verificar si el email ya existe
     const exists = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
 
     if (exists) throw new ConflictException('Email ya registrado');
 
+    // Hashear la contraseña con bcrypt
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
+    // Crear el usuario en la base de datos
     const user = await this.prisma.user.create({
       data: {
         email: dto.email,
@@ -50,18 +78,28 @@ export class AuthService {
       },
     });
 
+    // Generar y retornar token de acceso
     return this.generateToken(user);
   }
 
+  /**
+   * Registra una nueva iglesia en el sistema.
+   * Crea primero la iglesia y luego el usuario administrador asociado.
+   * @param dto Datos de la iglesia y usuario administrador
+   * @returns Token de acceso y datos del usuario
+   */
   async registerChurch(dto: RegisterChurchDto) {
+    // Verificar si el email ya existe
     const exists = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
 
     if (exists) throw new ConflictException('Email ya registrado');
 
+    // Hashear la contraseña
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
+    // Crear la iglesia primero
     const church = await this.prisma.iglesia.create({
       data: {
         name: dto.name,
@@ -69,6 +107,7 @@ export class AuthService {
       },
     });
 
+    // Crear el usuario administrador de la iglesia
     const user = await this.prisma.user.create({
       data: {
         email: dto.email,
@@ -80,29 +119,50 @@ export class AuthService {
       include: { church: true },
     });
 
+    // Generar token
     return this.generateToken(user);
   }
 
+  /**
+   * Autentica un usuario con email y contraseña.
+   * Verifica las credenciales y retorna un token JWT si son válidas.
+   * @param dto Credenciales de login
+   * @returns Token de acceso y datos del usuario
+   */
   async login(dto: LoginDto) {
+    // Buscar el usuario por email
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
 
     if (!user) throw new UnauthorizedException('Credenciales Invalidas');
 
+    // Verificar la contraseña
     const isPasswordValid = await bcrypt.compare(dto.password, user.password);
 
     if (!isPasswordValid)
       throw new UnauthorizedException('Credenciales Invalidas');
 
+    // Generar token
     return this.generateToken(user);
   }
 
+  /**
+   * Genera un token JWT y retorna la respuesta completa de autenticación.
+   * @param user Usuario autenticado
+   * @returns Objeto con token y datos del usuario
+   */
   private generateToken(user: any) {
-    const payload = { sub: user.id, email: user.email, type: user.type, churchId: user.churchId };
+    // Crear payload del JWT con información esencial del usuario
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      type: user.type,
+      churchId: user.churchId,
+    };
 
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(payload), // Firmar el token
       user: {
         id: user.id,
         email: user.email,
@@ -113,6 +173,12 @@ export class AuthService {
     };
   }
 
+  /**
+   * Actualiza el perfil del usuario autenticado.
+   * @param dto Datos a actualizar (name, email, phone)
+   * @param user Usuario actual de la sesión
+   * @returns Usuario actualizado
+   */
   async updateProfile(dto: any, user: any) {
     return this.prisma.user.update({
       where: { id: user.id },
@@ -124,43 +190,68 @@ export class AuthService {
     });
   }
 
+  /**
+   * Cambia la contraseña del usuario autenticado.
+   * Verifica la contraseña actual antes de actualizar.
+   * @param dto Datos del cambio (currentPassword, newPassword)
+   * @param user Usuario actual
+   */
   async changePassword(dto: any, user: any) {
+    // Obtener el usuario actual
     const currentUser = await this.prisma.user.findUnique({
       where: { id: user.id },
     });
 
     if (!currentUser) throw new UnauthorizedException('Usuario no encontrado');
 
-    const isPasswordValid = await bcrypt.compare(dto.currentPassword, currentUser.password);
+    // Verificar la contraseña actual
+    const isPasswordValid = await bcrypt.compare(
+      dto.currentPassword,
+      currentUser.password,
+    );
 
     if (!isPasswordValid)
       throw new UnauthorizedException('Contraseña actual incorrecta');
 
-    const hashedNewPassword = dto.newPassword 
+    // Hashear la nueva contraseña si se proporciona
+    const hashedNewPassword = dto.newPassword
       ? await bcrypt.hash(dto.newPassword, 10)
       : currentUser.password;
 
+    // Actualizar la contraseña
     await this.prisma.user.update({
       where: { id: user.id },
       data: { password: hashedNewPassword },
     });
   }
 
+  /**
+   * Elimina la cuenta del usuario autenticado.
+   * Para iglesias, elimina también todos los campamentos asociados.
+   * Elimina todas las inscripciones antes de eliminar el usuario.
+   * @param password Contraseña para confirmar la eliminación
+   * @param user Usuario actual
+   */
   async deleteAccount(password: string, user: any) {
+    // Verificar el usuario existe
     const currentUser = await this.prisma.user.findUnique({
       where: { id: user.id },
     });
 
     if (!currentUser) throw new UnauthorizedException('Usuario no encontrado');
 
-    const isPasswordValid = await bcrypt.compare(password, currentUser.password);
+    // Verificar la contraseña
+    const isPasswordValid = await bcrypt.compare(
+      password,
+      currentUser.password,
+    );
 
     if (!isPasswordValid)
       throw new UnauthorizedException('Contraseña incorrecta');
 
-    // Si es una iglesia, necesitamos eliminar campamentos primero
+    // Si es una iglesia, eliminar campamentos primero
     if (currentUser.type === 'IGLESIA' && currentUser.churchId) {
-      // Eliminar todos los campamentos asociados
+      // Eliminar todos los campamentos asociados a la iglesia
       await this.prisma.campamento.deleteMany({
         where: { churchId: currentUser.churchId },
       });

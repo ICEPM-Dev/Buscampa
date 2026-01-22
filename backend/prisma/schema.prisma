@@ -1,65 +1,88 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+/**
+ * Esquema de base de datos Prisma para la aplicación Buscampa.
+ * Define los modelos de datos y sus relaciones.
+ */
 
+// Generador del cliente Prisma
 generator client {
   provider = "prisma-client-js"
 }
 
+// Configuración de la fuente de datos PostgreSQL
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
- model User {
-  id            Int            @id @default(autoincrement())
-  email         String         @unique
-  name          String
-  password      String
-  phone         String?
-  type          UserType       @default(USER)
-  createdAt     DateTime       @default(now())
-  churchId      Int?           @unique
-  church        Iglesia?       @relation("UserChurch", fields: [churchId], references: [id])
-  registrations Registration[] @relation("UserRegistrations")
+/**
+ * Modelo de Usuario.
+ * Representa tanto usuarios normales como administradores de iglesias.
+ */
+model User {
+  id            Int            @id @default(autoincrement()) // ID único autoincremental
+  email         String         @unique // Email único
+  name          String // Nombre del usuario
+  password      String // Contraseña hasheada
+  phone         String? // Teléfono opcional
+  type          UserType       @default(USER) // Tipo: USER o IGLESIA
+  createdAt     DateTime       @default(now()) // Fecha de creación
+  churchId      Int?           @unique // ID de iglesia si es admin
+  church        Iglesia?       @relation("UserChurch", fields: [churchId], references: [id]) // Relación con iglesia
+  registrations Registration[] @relation("UserRegistrations") // Inscripciones del usuario
 }
 
+/**
+ * Modelo de Iglesia.
+ * Representa las iglesias que organizan campamentos.
+ */
 model Iglesia {
-  id           Int          @id @default(autoincrement())
-  name         String
-  denomination String
-  phone        String?
-  userId       Int?         @unique
-  user         User?        @relation("UserChurch")
-  campamentos  Campamento[] @relation("CampamentoChurch")
+  id           Int          @id @default(autoincrement()) // ID único
+  name         String // Nombre de la iglesia
+  denomination String // Denominación religiosa
+  phone        String? // Teléfono de contacto opcional
+  userId       Int?         @unique // ID del usuario administrador
+  user         User?        @relation("UserChurch") // Usuario administrador
+  campamentos  Campamento[] @relation("CampamentoChurch") // Campamentos organizados
 }
 
+/**
+ * Modelo de Campamento.
+ * Representa los campamentos organizados por iglesias.
+ */
 model Campamento {
-  id            Int            @id @default(autoincrement())
-  name          String
-  description   String?
-  location      String
-  startDate     DateTime
-  endDate       DateTime
-  price         Float
-  churchId      Int
-  church        Iglesia        @relation("CampamentoChurch", fields: [churchId], references: [id])
-  createdAt     DateTime       @default(now())
-  registrations Registration[] @relation("CampamentoRegistrations")
+  id            Int            @id @default(autoincrement()) // ID único
+  name          String // Nombre del campamento
+  description   String? // Descripción opcional
+  location      String // Ubicación del campamento
+  startDate     DateTime // Fecha de inicio
+  endDate       DateTime // Fecha de fin
+  price         Float // Precio de inscripción
+  churchId      Int // ID de la iglesia organizadora
+  church        Iglesia        @relation("CampamentoChurch", fields: [churchId], references: [id]) // Iglesia organizadora
+  createdAt     DateTime       @default(now()) // Fecha de creación
+  registrations Registration[] @relation("CampamentoRegistrations") // Inscripciones al campamento
 }
 
+/**
+ * Modelo de Inscripción (Registration).
+ * Representa las inscripciones de usuarios a campamentos.
+ */
 model Registration {
-  id           Int        @id @default(autoincrement())
-  userId       Int
-  user         User       @relation("UserRegistrations", fields: [userId], references: [id])
-  campamentoId Int
-  campamento   Campamento @relation("CampamentoRegistrations", fields: [campamentoId], references: [id])
-  fullName     String
-  email        String
-  phone        String
-  createdAt    DateTime   @default(now())
+  id           Int        @id @default(autoincrement()) // ID único
+  userId       Int // ID del usuario que se inscribe
+  user         User       @relation("UserRegistrations", fields: [userId], references: [id]) // Usuario inscrito
+  campamentoId Int // ID del campamento
+  campamento   Campamento @relation("CampamentoRegistrations", fields: [campamentoId], references: [id]) // Campamento inscrito
+  fullName     String // Nombre completo del participante
+  email        String // Email de contacto
+  phone        String // Teléfono de contacto
+  createdAt    DateTime   @default(now()) // Fecha de inscripción
 }
 
+/**
+ * Enumeración para los tipos de usuario.
+ */
 enum UserType {
-  USER
-  IGLESIA
+  USER // Usuario normal
+  IGLESIA // Administrador de iglesia
 }

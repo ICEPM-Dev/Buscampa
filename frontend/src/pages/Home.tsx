@@ -1,3 +1,8 @@
+/**
+ * Página de inicio de la aplicación.
+ * Muestra contenido diferente para usuarios autenticados vs no autenticados.
+ * Incluye secciones de hero, características y footer.
+ */
 import { useAuth } from "../hooks/useAuth";
 import {
   ArrowRight,

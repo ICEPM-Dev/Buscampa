@@ -1,3 +1,7 @@
+/**
+ * Componente Input personalizado.
+ * Incluye label, estados de error y texto de ayuda.
+ */
 import type { InputHTMLAttributes } from "react";
 import { AlertCircle } from "lucide-react";
 

@@ -1,4 +1,8 @@
-import { IsEmail, IsNotEmpty, MinLength } from "class-validator";
+/**
+ * DTO para el registro de usuarios normales.
+ * Incluye validaciones para email, nombre y contraseña.
+ */
+import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 
 export class RegisterUserDto {
   @IsEmail()

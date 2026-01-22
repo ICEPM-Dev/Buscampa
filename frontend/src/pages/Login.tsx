@@ -1,5 +1,9 @@
-import { Church } from 'lucide-react';
-import LoginForm from '../components/auth/LoginForm';
+/**
+ * Página de inicio de sesión.
+ * Muestra el formulario de login en un diseño centrado con logo.
+ */
+import { Church } from "lucide-react";
+import LoginForm from "../components/auth/LoginForm";
 
 export default function Login() {
   return (

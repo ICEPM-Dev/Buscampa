@@ -1,3 +1,7 @@
+/**
+ * Componente que muestra lista de campamentos con filtros.
+ * Incluye búsqueda, filtrado por ubicación y precio.
+ */
 import { useState, useMemo } from "react";
 import CampamentoCard from "./CampamentoCard";
 import CampamentoFilters from "./CampamentoFilters";
