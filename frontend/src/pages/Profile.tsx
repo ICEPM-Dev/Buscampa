@@ -1,59 +1,59 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { User, Lock, Trash2, ChevronRight } from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
-import { authService } from '../services/auth.service';
-import type { UpdateProfileDto } from '../types';
-import Input from '../components/ui/Input';
-import Button from '../components/ui/Button';
-import { showToast } from '../components/ui/Toast';
-import DeleteAccount from './DeleteAccount';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { User, Lock, Trash2, ChevronRight } from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
+import { authService } from "../services/auth.service";
+import type { UpdateProfileDto } from "../types";
+import Input from "../components/ui/Input";
+import Button from "../components/ui/Button";
+import { showToast } from "../components/ui/Toast";
+import DeleteAccount from "./DeleteAccount";
 
-type TabType = 'info' | 'security' | 'settings' | 'danger';
+type TabType = "info" | "security" | "settings" | "danger";
 
 export default function Profile() {
   const navigate = useNavigate();
   const { user, updateUser } = useAuth();
-  const [activeTab, setActiveTab] = useState<TabType>('info');
-  
+  const [activeTab, setActiveTab] = useState<TabType>("info");
+
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
+    name: "",
+    email: "",
+    phone: "",
   });
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (user) {
       setFormData({
-        name: user.name || '',
-        email: user.email || '',
-        phone: user.phone || '',
+        name: user.name || "",
+        email: user.email || "",
+        phone: user.phone || "",
       });
     }
   }, [user]);
 
   const tabs = [
     {
-      id: 'info' as TabType,
-      label: 'Información Personal',
+      id: "info" as TabType,
+      label: "Información Personal",
       icon: User,
-      description: 'Nombre, email y teléfono',
+      description: "Nombre, email y teléfono",
     },
     {
-      id: 'security' as TabType,
-      label: 'Seguridad',
+      id: "security" as TabType,
+      label: "Seguridad",
       icon: Lock,
-      description: 'Cambiar contraseña',
+      description: "Cambiar contraseña",
     },
     {
-      id: 'danger' as TabType,
-      label: 'Peligro',
+      id: "danger" as TabType,
+      label: "Peligro",
       icon: Trash2,
-      description: 'Eliminar cuenta',
+      description: "Eliminar cuenta",
     },
   ];
 
@@ -62,18 +62,18 @@ export default function Profile() {
     let isValid = true;
 
     if (!formData.name.trim()) {
-      newErrors.name = 'El nombre es requerido';
+      newErrors.name = "El nombre es requerido";
       isValid = false;
     } else if (formData.name.trim().length < 3) {
-      newErrors.name = 'El nombre debe tener al menos 3 caracteres';
+      newErrors.name = "El nombre debe tener al menos 3 caracteres";
       isValid = false;
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = 'El email es requerido';
+      newErrors.email = "El email es requerido";
       isValid = false;
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Email inválido';
+      newErrors.email = "Email inválido";
       isValid = false;
     }
 
@@ -86,12 +86,13 @@ export default function Profile() {
     let isValid = true;
 
     if (!currentPassword) {
-      newErrors.currentPassword = 'Debes ingresar tu contraseña actual';
+      newErrors.currentPassword = "Debes ingresar tu contraseña actual";
       isValid = false;
     }
 
     if (newPassword && newPassword.length < 6) {
-      newErrors.newPassword = 'La nueva contraseña debe tener al menos 6 caracteres';
+      newErrors.newPassword =
+        "La nueva contraseña debe tener al menos 6 caracteres";
       isValid = false;
     }
 
@@ -101,8 +102,8 @@ export default function Profile() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    setErrors(prev => ({ ...prev, [name]: '' }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
   const handleSaveProfile = async (e: React.FormEvent) => {
@@ -121,12 +122,13 @@ export default function Profile() {
 
       const updatedUser = await authService.updateProfile(updateData);
       updateUser(updatedUser);
-      showToast.success('Perfil actualizado exitosamente');
+      showToast.success("Perfil actualizado exitosamente");
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || 'Error al actualizar perfil';
+      const errorMessage =
+        error.response?.data?.message || "Error al actualizar perfil";
       showToast.error(errorMessage);
 
-      if (errorMessage.includes('ya registrado')) {
+      if (errorMessage.includes("ya registrado")) {
         setErrors({ email: errorMessage });
       }
     } finally {
@@ -146,14 +148,15 @@ export default function Profile() {
         currentPassword,
         newPassword,
       });
-      showToast.success('Contraseña actualizada exitosamente');
-      setCurrentPassword('');
-      setNewPassword('');
+      showToast.success("Contraseña actualizada exitosamente");
+      setCurrentPassword("");
+      setNewPassword("");
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || 'Error al cambiar contraseña';
+      const errorMessage =
+        error.response?.data?.message || "Error al cambiar contraseña";
       showToast.error(errorMessage);
 
-      if (errorMessage.includes('actual')) {
+      if (errorMessage.includes("actual")) {
         setErrors({ currentPassword: errorMessage });
       }
     } finally {
@@ -186,14 +189,16 @@ export default function Profile() {
                     onClick={() => setActiveTab(tab.id)}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                       activeTab === tab.id
-                        ? 'bg-blue-50 text-blue-700'
-                        : 'text-slate-700 hover:bg-slate-50'
+                        ? "bg-blue-50 text-blue-700"
+                        : "text-slate-700 hover:bg-slate-50"
                     }`}
                   >
                     <tab.icon className="h-5 w-5" />
                     <div className="text-left">
                       <div className="font-medium text-sm">{tab.label}</div>
-                      <div className="text-xs text-slate-500">{tab.description}</div>
+                      <div className="text-xs text-slate-500">
+                        {tab.description}
+                      </div>
                     </div>
                   </button>
                 ))}
@@ -203,7 +208,7 @@ export default function Profile() {
 
           <main className="flex-1">
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-              {activeTab === 'info' && (
+              {activeTab === "info" && (
                 <>
                   <h2 className="text-2xl font-bold text-slate-900 mb-2 flex items-center gap-2">
                     <User className="h-6 w-6 text-blue-600" />
@@ -272,11 +277,13 @@ export default function Profile() {
                       <Button
                         type="button"
                         variant="outline"
-                        onClick={() => setFormData({
-                          name: user?.name || '',
-                          email: user?.email || '',
-                          phone: user?.phone || '',
-                        })}
+                        onClick={() =>
+                          setFormData({
+                            name: user?.name || "",
+                            email: user?.email || "",
+                            phone: user?.phone || "",
+                          })
+                        }
                         disabled={loading}
                         className="flex-1"
                       >
@@ -287,7 +294,7 @@ export default function Profile() {
                 </>
               )}
 
-              {activeTab === 'security' && (
+              {activeTab === "security" && (
                 <>
                   <h2 className="text-2xl font-bold text-slate-900 mb-2 flex items-center gap-2">
                     <Lock className="h-6 w-6 text-blue-600" />
@@ -341,8 +348,8 @@ export default function Profile() {
                         type="button"
                         variant="outline"
                         onClick={() => {
-                          setCurrentPassword('');
-                          setNewPassword('');
+                          setCurrentPassword("");
+                          setNewPassword("");
                           setErrors({});
                         }}
                         disabled={loading}
@@ -355,9 +362,7 @@ export default function Profile() {
                 </>
               )}
 
-              {activeTab === 'danger' && (
-                <DeleteAccount />
-              )}
+              {activeTab === "danger" && <DeleteAccount />}
             </div>
           </main>
         </div>

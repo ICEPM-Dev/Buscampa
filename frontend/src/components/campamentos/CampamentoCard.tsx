@@ -13,7 +13,11 @@ export default function CampamentoCard({ campamento }: CampamentoCardProps) {
   const endDate = parseISO(campamento.endDate);
 
   const formatDateRange = (start: Date, end: Date) => {
-    return `${format(start, "dd MMM", { locale: es })} - ${format(end, "dd MMM yyyy", { locale: es })}`;
+    return `${format(start, "dd MMM", { locale: es })} - ${format(
+      end,
+      "dd MMM yyyy",
+      { locale: es }
+    )}`;
   };
 
   return (

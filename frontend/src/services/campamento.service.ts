@@ -1,13 +1,17 @@
-import { api } from './api';
+/**
+ * Servicio para operaciones con campamentos.
+ * Maneja llamadas API para CRUD de campamentos.
+ */
+import { api } from "./api";
 import type {
   Campamento,
   CreateCampamentoDto,
   UpdateCampamentoDto,
-} from '../types';
+} from "../types";
 
 export const campamentoService = {
   async getAll(): Promise<Campamento[]> {
-    return api.get<Campamento[]>('/campamentos');
+    return api.get<Campamento[]>("/campamentos");
   },
 
   async getById(id: number): Promise<Campamento> {
@@ -15,7 +19,7 @@ export const campamentoService = {
   },
 
   async create(dto: CreateCampamentoDto): Promise<Campamento> {
-    return api.post<Campamento>('/campamentos', dto);
+    return api.post<Campamento>("/campamentos", dto);
   },
 
   async update(id: number, dto: UpdateCampamentoDto): Promise<Campamento> {

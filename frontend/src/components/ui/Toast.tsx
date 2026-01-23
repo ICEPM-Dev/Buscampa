@@ -1,3 +1,7 @@
+/**
+ * Componente y utilidad para notificaciones toast.
+ * Usa react-hot-toast para mostrar mensajes de éxito, error, info y promesas.
+ */
 import toast, { Toaster, ToastBar } from "react-hot-toast";
 import { X } from "lucide-react";
 

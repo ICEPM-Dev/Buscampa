@@ -1,3 +1,8 @@
+/**
+ * Utilidades de validación y manejo de errores.
+ * Incluye validadores para campos comunes y formateo de errores.
+ */
+
 export const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const validateEmail = (email: string): boolean => {
@@ -23,5 +28,5 @@ export const getErrorMessage = (error: any): string => {
   if (error?.message) {
     return error.message;
   }
-  return 'Ocurrió un error inesperado';
+  return "Ocurrió un error inesperado";
 };

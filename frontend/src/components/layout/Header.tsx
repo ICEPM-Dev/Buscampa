@@ -1,12 +1,17 @@
+/**
+ * Componente de header/barra de navegación.
+ * Muestra logo, enlaces de navegación y menú de usuario.
+ * Adaptable para móvil con menú hamburguesa.
+ */
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
-import { Menu, X, Church, LogOut, User, LayoutDashboard } from "lucide-react";
+import { Menu, X, Church, LogOut, LayoutDashboard } from "lucide-react";
 import UserMenu from "./UserMenu";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isAuthenticated, user, logout, isUser, isChurch } = useAuth();
+  const { isAuthenticated, logout, isUser, isChurch } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -55,17 +60,17 @@ export default function Header() {
                   </Link>
                 )}
 
-                 <div className="flex items-center gap-4 ml-4 pl-4 border-l border-slate-300">
-                   <UserMenu />
+                <div className="flex items-center gap-4 ml-4 pl-4 border-l border-slate-300">
+                  <UserMenu />
 
-                   <button
-                     onClick={handleLogout}
-                     className="text-slate-600 hover:text-red-600 transition-colors"
-                     title="Cerrar sesión"
-                   >
-                     <LogOut className="h-5 w-5" />
-                   </button>
-                 </div>
+                  <button
+                    onClick={handleLogout}
+                    className="text-slate-600 hover:text-red-600 transition-colors"
+                    title="Cerrar sesión"
+                  >
+                    <LogOut className="h-5 w-5" />
+                  </button>
+                </div>
               </>
             )}
 
@@ -131,17 +136,17 @@ export default function Header() {
                   </Link>
                 )}
 
-                 <div className="px-4 py-2 border-t border-slate-200">
-                   <UserMenu />
+                <div className="px-4 py-2 border-t border-slate-200">
+                  <UserMenu />
 
-                   <button
-                     onClick={handleLogout}
-                     className="w-full flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg"
-                   >
-                     <LogOut className="h-4 w-4" />
-                     Cerrar Sesión
-                   </button>
-                 </div>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Cerrar Sesión
+                  </button>
+                </div>
               </>
             )}
 

@@ -1,3 +1,7 @@
+/**
+ * Formulario de inicio de sesión.
+ * Maneja validación y autenticación de usuarios.
+ */
 import { useState, type FormEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";

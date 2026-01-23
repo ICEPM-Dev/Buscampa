@@ -1,20 +1,47 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Calendar, MapPin, DollarSign, Edit2, Trash2, Plus, Search, Filter } from 'lucide-react';
-import { useApi } from '../../hooks/useApi';
-import { campamentoService } from '../../services/campamento.service';
-import type { Campamento } from '../../types';
-import { format, parseISO, isAfter, isBefore, isWithinInterval } from 'date-fns';
-import { es } from 'date-fns/locale';
-import { showToast } from '../ui/Toast';
-import Button from '../ui/Button';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Calendar,
+  MapPin,
+  DollarSign,
+  Edit2,
+  Trash2,
+  Plus,
+  Search,
+  Filter,
+} from "lucide-react";
+import { useApi } from "../../hooks/useApi";
+import { campamentoService } from "../../services/campamento.service";
+import type { Campamento } from "../../types";
+import {
+  format,
+  parseISO,
+  isAfter,
+  isBefore,
+  isWithinInterval,
+} from "date-fns";
+import { es } from "date-fns/locale";
+import { showToast } from "../ui/Toast";
+import Button from "../ui/Button";
 
-export default function CampamentosList({ onCreateNew }: { onCreateNew: () => void }) {
+export default function CampamentosList({
+  onCreateNew,
+}: {
+  onCreateNew: () => void;
+}) {
   const navigate = useNavigate();
-  const { data: campamentos, isLoading, error, execute, reset } = useApi<Campamento[]>();
+  const {
+    data: campamentos,
+    isLoading,
+    error,
+    execute,
+    reset,
+  } = useApi<Campamento[]>();
   const [deletingId, setDeletingId] = useState<number | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filterStatus, setFilterStatus] = useState<'all' | 'upcoming' | 'ongoing' | 'past'>('all');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState<
+    "all" | "upcoming" | "ongoing" | "past"
+  >("all");
 
   useEffect(() => {
     execute(() => campamentoService.getAll());
@@ -22,39 +49,50 @@ export default function CampamentosList({ onCreateNew }: { onCreateNew: () => vo
 
   const now = new Date();
 
-  const filteredCampamentos = campamentos?.filter(campamento => {
-    const matchesSearch = campamento.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          campamento.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          (campamento.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
+  const filteredCampamentos =
+    campamentos?.filter((campamento) => {
+      const matchesSearch =
+        campamento.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        campamento.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (campamento.description
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase()) ??
+          false);
 
-    const startDate = parseISO(campamento.startDate);
-    const endDate = parseISO(campamento.endDate);
+      const startDate = parseISO(campamento.startDate);
+      const endDate = parseISO(campamento.endDate);
 
-    const isUpcoming = isAfter(startDate, now);
-    const isOngoing = isWithinInterval(now, { start: startDate, end: endDate });
-    const isPast = isBefore(endDate, now);
+      const isUpcoming = isAfter(startDate, now);
+      const isOngoing = isWithinInterval(now, {
+        start: startDate,
+        end: endDate,
+      });
+      const isPast = isBefore(endDate, now);
 
-    const matchesStatus = filterStatus === 'all' ||
-                          (filterStatus === 'upcoming' && isUpcoming) ||
-                          (filterStatus === 'ongoing' && isOngoing) ||
-                          (filterStatus === 'past' && isPast);
+      const matchesStatus =
+        filterStatus === "all" ||
+        (filterStatus === "upcoming" && isUpcoming) ||
+        (filterStatus === "ongoing" && isOngoing) ||
+        (filterStatus === "past" && isPast);
 
-    return matchesSearch && matchesStatus;
-  }) || [];
+      return matchesSearch && matchesStatus;
+    }) || [];
 
   const handleDelete = async (id: number) => {
-    if (!confirm('¿Estás seguro de que deseas eliminar este campamento?')) {
+    if (!confirm("¿Estás seguro de que deseas eliminar este campamento?")) {
       return;
     }
 
     setDeletingId(id);
     try {
       await campamentoService.delete(id);
-      showToast.success('Campamento eliminado exitosamente');
+      showToast.success("Campamento eliminado exitosamente");
       reset();
       execute(() => campamentoService.getAll());
     } catch (error: any) {
-      showToast.error(error.response?.data?.message || 'Error al eliminar campamento');
+      showToast.error(
+        error.response?.data?.message || "Error al eliminar campamento"
+      );
     } finally {
       setDeletingId(null);
     }
@@ -86,15 +124,18 @@ export default function CampamentosList({ onCreateNew }: { onCreateNew: () => vo
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="flex-1">
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">Mis Campamentos</h2>
+          <h2 className="text-2xl font-bold text-slate-900 mb-2">
+            Mis Campamentos
+          </h2>
           <p className="text-slate-600">
-            {campamentos?.length || 0} {campamentos?.length === 1 ? 'campamento' : 'campamentos'}
+            {campamentos?.length || 0}{" "}
+            {campamentos?.length === 1 ? "campamento" : "campamentos"}
           </p>
         </div>
 
         <Button
           onClick={onCreateNew}
-          className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:shadow-lg transition-all"
+          className="inline-flex items-center gap-2 bg-linear-to-r from-blue-600 to-blue-700 hover:shadow-lg transition-all"
         >
           <Plus className="h-5 w-5" />
           Nuevo Campamento
@@ -139,13 +180,15 @@ export default function CampamentosList({ onCreateNew }: { onCreateNew: () => vo
             No se encontraron campamentos
           </h3>
           <p className="text-slate-600 mb-6">
-            {searchQuery || filterStatus !== 'all'
-              ? 'Intenta ajustar los filtros de búsqueda'
-              : 'Crea tu primer campamento para empezar a recibir inscripciones'
-            }
+            {searchQuery || filterStatus !== "all"
+              ? "Intenta ajustar los filtros de búsqueda"
+              : "Crea tu primer campamento para empezar a recibir inscripciones"}
           </p>
-          {!searchQuery && filterStatus === 'all' && (
-            <Button onClick={onCreateNew} className="inline-flex items-center gap-2">
+          {!searchQuery && filterStatus === "all" && (
+            <Button
+              onClick={onCreateNew}
+              className="inline-flex items-center gap-2"
+            >
               <Plus className="h-5 w-5" />
               Crear Campamento
             </Button>
@@ -157,7 +200,10 @@ export default function CampamentosList({ onCreateNew }: { onCreateNew: () => vo
             const startDate = parseISO(campamento.startDate);
             const endDate = parseISO(campamento.endDate);
             const isUpcoming = isAfter(startDate, now);
-            const isOngoing = isWithinInterval(now, { start: startDate, end: endDate });
+            const isOngoing = isWithinInterval(now, {
+              start: startDate,
+              end: endDate,
+            });
             const isPast = isBefore(endDate, now);
 
             return (
@@ -181,22 +227,22 @@ export default function CampamentosList({ onCreateNew }: { onCreateNew: () => vo
 
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center gap-2 text-sm text-slate-600">
-                      <Calendar className="h-4 w-4 text-blue-600 flex-shrink-0" />
+                      <Calendar className="h-4 w-4 text-blue-600 shrink-0" />
                       <span>
-                        {format(startDate, 'dd MMM', { locale: es })} -{' '}
-                        {format(endDate, 'dd MMM yyyy', { locale: es })}
+                        {format(startDate, "dd MMM", { locale: es })} -{" "}
+                        {format(endDate, "dd MMM yyyy", { locale: es })}
                       </span>
                     </div>
 
                     <div className="flex items-center gap-2 text-sm text-slate-600">
-                      <MapPin className="h-4 w-4 text-blue-600 flex-shrink-0" />
+                      <MapPin className="h-4 w-4 text-blue-600 shrink-0" />
                       <span className="truncate">{campamento.location}</span>
                     </div>
 
                     <div className="flex items-center gap-2 text-sm text-slate-600">
-                      <DollarSign className="h-4 w-4 text-blue-600 flex-shrink-0" />
+                      <DollarSign className="h-4 w-4 text-blue-600 shrink-0" />
                       <span className="font-semibold text-slate-900">
-                        ${campamento.price.toLocaleString('es-AR')}
+                        ${campamento.price.toLocaleString("es-AR")}
                       </span>
                     </div>
                   </div>
@@ -224,7 +270,9 @@ export default function CampamentosList({ onCreateNew }: { onCreateNew: () => vo
                   <Button
                     variant="secondary"
                     size="sm"
-                    onClick={() => navigate(`/dashboard/campamentos/${campamento.id}/editar`)}
+                    onClick={() =>
+                      navigate(`/dashboard/campamentos/${campamento.id}/editar`)
+                    }
                     className="flex-1 inline-flex items-center justify-center gap-2"
                   >
                     <Edit2 className="h-4 w-4" />

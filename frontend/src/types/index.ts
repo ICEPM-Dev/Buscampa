@@ -1,5 +1,11 @@
-export type UserType = 'USER' | 'IGLESIA';
+/**
+ * Definiciones de tipos TypeScript para la aplicación Buscampa.
+ * Incluye interfaces para usuarios, autenticación, campamentos e inscripciones.
+ */
 
+export type UserType = "USER" | "IGLESIA";
+
+/** Usuario del sistema */
 export interface User {
   id: number;
   email: string;
@@ -8,6 +14,7 @@ export interface User {
   phone?: string;
 }
 
+/** Respuesta de autenticación */
 export interface AuthResponse {
   access_token: string;
   user: User;
