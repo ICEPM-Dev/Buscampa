@@ -6,14 +6,17 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { ConfigModule } from '@nestjs/config';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { PrismaModule } from '../prisma/prisma.module';
 import { JwtAuthGuard } from './guards/auth.guard';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { GoogleStrategy } from './strategies/google.strategy';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(), // Para variables de entorno
     PrismaModule, // Para acceso a la base de datos
     PassportModule, // Para estrategias de autenticación
     JwtModule.register({
@@ -22,7 +25,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     }),
   ],
   controllers: [AuthController], // Controlador para endpoints de auth
-  providers: [AuthService, JwtAuthGuard, JwtStrategy], // Servicios y estrategias
+  providers: [AuthService, JwtAuthGuard, JwtStrategy, GoogleStrategy], // Servicios y estrategias
   exports: [AuthService], // Exporta el servicio para uso en otros módulos
 })
 export class AuthModule {}

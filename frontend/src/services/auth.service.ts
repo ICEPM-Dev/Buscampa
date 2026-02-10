@@ -73,6 +73,15 @@ export const authService = {
   },
 
   /**
+   * Inicia el flujo de autenticación con Google OAuth.
+   * Redirige al backend para iniciar el proceso con Google.
+   */
+  async loginWithGoogle(): Promise<void> {
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+    window.location.href = `${apiUrl}/auth/google`;
+  },
+
+  /**
    * Cierra sesión limpiando el token.
    */
   logout() {

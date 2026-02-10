@@ -1,25 +1,20 @@
 /**
- * Formulario de inicio de sesión.
- * Maneja validación y autenticación de usuarios.
+ * Formulario de email/contraseña para login.
+ * Componente simple para login tradicional.
  */
 import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import type { LoginDto } from "../../types";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
-import GoogleButton from "./GoogleButton";
 
-export default function LoginForm() {
+export default function EmailLoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
-    {},
-  );
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [loading, setLoading] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const { login } = useAuth();
-  const navigate = useNavigate();
 
   const validate = (): boolean => {
     const newErrors: { email?: string; password?: string } = {};
@@ -65,7 +60,7 @@ export default function LoginForm() {
     try {
       const dto: LoginDto = { email, password };
       await login(dto);
-      navigate("/");
+      window.location.href = "/";
     } catch (error: any) {
       console.error("Login error:", error);
       const errorMessage =
@@ -78,7 +73,6 @@ export default function LoginForm() {
     }
   };
 
-  // Modo completo (ambas opciones)
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {submitError && (
@@ -97,19 +91,6 @@ export default function LoginForm() {
           <p className="text-sm font-medium">{submitError}</p>
         </div>
       )}
-
-      {/* Botón de Google */}
-      <GoogleButton text="Google" fullWidth disabled={loading} />
-
-      {/* Separador */}
-      <div className="relative my-6">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-slate-200"></div>
-        </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="px-4 bg-white text-slate-500">O continúa con</span>
-        </div>
-      </div>
 
       <Input
         label="Email"
