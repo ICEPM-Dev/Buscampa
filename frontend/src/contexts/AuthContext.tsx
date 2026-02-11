@@ -30,6 +30,7 @@ interface AuthContextType {
   isAuthenticated: boolean; // Si está autenticado
   isLoading: boolean; // Si está cargando
   login: (dto: LoginDto) => Promise<void>; // Función de login
+  loginWithGoogle: (token: string) => Promise<void>; // Login con Google OAuth
   registerUser: (dto: RegisterUserDto) => Promise<void>; // Registro de usuario
   registerChurch: (dto: RegisterChurchDto) => Promise<void>; // Registro de iglesia
   logout: () => void; // Logout
@@ -105,6 +106,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   /**
+   * Función para iniciar sesión con Google OAuth.
+   * Recibe el token del callback de Google y establece la sesión.
+   */
+  const loginWithGoogle = async (token: string) => {
+    try {
+      const { api } = await import("../services/api");
+      api.setToken(token); // Establecer token para requests futuras
+      const currentUser = await authService.getMe();
+      setToken(token);
+      setUser(currentUser);
+      showToast.success("¡Inicio de sesión con Google exitoso!");
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "Error en autenticación con Google";
+      showToast.error(errorMessage);
+      
+      // Limpiar token si hay error
+      try {
+        const { api } = await import("../services/api");
+        api.clearToken();
+      } catch (clearError) {
+        console.error("Error clearing token:", clearError);
+      }
+      
+      throw error;
+    }
+  };
+
+  /**
    * Función para registrar un usuario normal.
    * Crea la cuenta y automáticamente inicia sesión.
    */
@@ -164,6 +194,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated,
         isLoading,
         login,
+        loginWithGoogle,
         registerUser,
         registerChurch,
         logout,

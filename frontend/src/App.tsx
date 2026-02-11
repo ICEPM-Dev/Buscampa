@@ -10,8 +10,7 @@ import Header from "./components/layout/Header";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import RegisterChurch from "./pages/RegisterChurch";
-import RegisterChoice from "./pages/RegisterChoice";
+
 import Campamentos from "./pages/Campamentos";
 import CampamentoDetail from "./pages/CampamentoDetail";
 import Dashboard from "./pages/Dashboard";
@@ -21,6 +20,7 @@ import ProtectedRoute from "./components/ui/ProtectedRoute";
 import CampamentoForm from "./components/dashboard/CampamentoForm";
 import Profile from "./pages/Profile";
 import DeleteAccount from "./pages/DeleteAccount";
+import OAuthCallback from "./pages/OAuthCallback";
 
 function App() {
   return (
@@ -37,11 +37,11 @@ function App() {
             {/* Rutas públicas */}
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<RegisterChoice />} />
-            <Route path="/register/user" element={<Register />} />
-            <Route path="/register/church" element={<RegisterChurch />} />
+            <Route path="/register" element={<Register />} />
+
             <Route path="/campamentos" element={<Campamentos />} />
             <Route path="/campamentos/:id" element={<CampamentoDetail />} />
+            <Route path="/auth/google/callback" element={<OAuthCallback />} />
 
             {/* Rutas protegidas (requieren autenticación) */}
             <Route element={<ProtectedRoute />}>

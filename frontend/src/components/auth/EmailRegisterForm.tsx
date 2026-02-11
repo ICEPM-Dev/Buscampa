@@ -1,15 +1,14 @@
+/**
+ * Formulario de email/contraseña para registro.
+ * Componente simple para registro tradicional.
+ */
 import { useState, type FormEvent } from "react";
-import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import type { RegisterUserDto } from "../../types";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
 
-interface RegisterFormProps {
-  showEmailOnly?: boolean;
-}
-
-export default function RegisterForm({ showEmailOnly = false }: RegisterFormProps) {
+export default function EmailRegisterForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,17 +22,21 @@ export default function RegisterForm({ showEmailOnly = false }: RegisterFormProp
   const [loading, setLoading] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const { registerUser } = useAuth();
-  const navigate = useNavigate();
 
   const validate = (): boolean => {
-    const newErrors: any = {};
+    const newErrors: {
+      name?: string;
+      email?: string;
+      password?: string;
+      confirmPassword?: string;
+    } = {};
     let isValid = true;
 
     if (!name) {
       newErrors.name = "El nombre es requerido";
       isValid = false;
-    } else if (name.length < 3) {
-      newErrors.name = "El nombre debe tener al menos 3 caracteres";
+    } else if (name.length < 2) {
+      newErrors.name = "El nombre debe tener al menos 2 caracteres";
       isValid = false;
     }
 
@@ -78,7 +81,7 @@ export default function RegisterForm({ showEmailOnly = false }: RegisterFormProp
     try {
       const dto: RegisterUserDto = { name, email, password };
       await registerUser(dto);
-      navigate("/");
+      window.location.href = "/";
     } catch (error: any) {
       console.error("Register error:", error);
       const errorMessage =
@@ -166,20 +169,6 @@ export default function RegisterForm({ showEmailOnly = false }: RegisterFormProp
       <Button type="submit" fullWidth loading={loading}>
         {loading ? "Creando cuenta..." : "Crear Cuenta"}
       </Button>
-
-      {!showEmailOnly && (
-        <div className="text-center pt-4">
-          <p className="text-sm text-slate-600">
-            ¿Ya tienes cuenta?{" "}
-            <Link
-              to="/login"
-              className="text-blue-600 hover:text-blue-700 font-medium"
-            >
-              Inicia Sesión
-            </Link>
-          </p>
-        </div>
-      )}
     </form>
   );
 }

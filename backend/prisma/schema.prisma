@@ -29,6 +29,14 @@ model User {
   churchId      Int?           @unique // ID de iglesia si es admin
   church        Iglesia?       @relation("UserChurch", fields: [churchId], references: [id]) // Relación con iglesia
   registrations Registration[] @relation("UserRegistrations") // Inscripciones del usuario
+
+  // Campos para OAuth
+  googleId    String? @unique // ID de Google OAuth
+  provider    String? // Proveedor: 'email', 'google', 'both'
+  isOAuthUser Boolean @default(false) // Indica si es usuario OAuth
+
+  @@index([provider]) // Para consultas por proveedor
+  @@index([isOAuthUser]) // Para filtrar usuarios OAuth
 }
 
 /**
