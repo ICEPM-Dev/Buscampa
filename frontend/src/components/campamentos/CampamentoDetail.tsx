@@ -6,11 +6,13 @@ import {
   ArrowLeft,
   Check,
   UserCheck,
+  Share2,
 } from "lucide-react";
 import type { Campamento } from "../../types";
 import { Link } from "react-router-dom";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
+import { useState } from "react";
 
 interface CampamentoDetailProps {
   campamento: Campamento;
@@ -26,8 +28,16 @@ export default function CampamentoDetail({
   const startDate = parseISO(campamento.startDate);
   const endDate = parseISO(campamento.endDate);
   const now = new Date();
+  const [copied, setCopied] = useState(false);
 
   const isUpcoming = startDate > now;
+
+  const handleCopyLink = () => {
+    const url = `${window.location.origin}/c/${campamento.id}`;
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
   const isPast = endDate < now;
   const isOngoing = startDate <= now && endDate >= now;
 
@@ -56,13 +66,21 @@ export default function CampamentoDetail({
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
       <div className="bg-linear-to-r from-blue-600 to-blue-800 text-white p-8">
-        <Link
-          to="/campamentos"
-          className="inline-flex items-center gap-2 text-blue-100 hover:text-white mb-6 transition-colors"
-        >
-          <ArrowLeft className="h-5 w-5" />
-          Volver a campamentos
-        </Link>
+<Link
+            to="/campamentos"
+            className="inline-flex items-center gap-2 text-white"
+          >
+            <ArrowLeft className="h-5 w-5" />
+            Volver
+          </Link>
+
+          <button
+            onClick={handleCopyLink}
+            className="inline-flex items-center gap-2 text-white transition-colors ml-4"
+          >
+            <Share2 className="h-5 w-5" />
+            {copied ? "¡Copiado!" : "Compartir"}
+          </button>
 
         <div className="flex items-start justify-between mb-4">
           <div>

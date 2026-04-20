@@ -10,6 +10,10 @@ import type {
 } from "../types";
 
 export const campamentoService = {
+  async getAllPublic(): Promise<Campamento[]> {
+    return api.get<Campamento[]>("/campamentos/public");
+  },
+
   async getAll(): Promise<Campamento[]> {
     return api.get<Campamento[]>("/campamentos");
   },

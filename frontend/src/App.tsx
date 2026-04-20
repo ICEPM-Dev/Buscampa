@@ -38,6 +38,7 @@ function App() {
 
             <Route path="/campamentos" element={<Campamentos />} />
             <Route path="/campamentos/:id" element={<CampamentoDetail />} />
+            <Route path="/c/:id" element={<CampamentoDetail />} />
             <Route path="/auth/google/callback" element={<OAuthCallback />} />
 
             {/* Rutas protegidas (requieren autenticación) */}
