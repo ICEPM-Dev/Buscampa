@@ -58,6 +58,17 @@ export class CampamentoService {
   }
 
   /**
+   * Obtiene todos los campamentos públicos (sin filtro por iglesia).
+   * @returns Lista de todos los campamentos con información de iglesia
+   */
+  async findAllPublic() {
+    return this.prisma.campamento.findMany({
+      include: { church: true },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  /**
    * Obtiene todos los campamentos, opcionalmente filtrados por iglesia.
    * @param churchId ID de la iglesia para filtrar (opcional)
    * @returns Lista de campamentos con información de iglesia

@@ -36,6 +36,7 @@ model User {
   xId         String? @unique // ID de X (Twitter) OAuth
   provider    String? // Proveedor: 'google', 'facebook', 'x', 'multiple'
   isOAuthUser Boolean @default(false) // Indica si es usuario OAuth
+  photoUrl   String? // URL de foto de perfil
 
   @@index([provider]) // Para consultas por proveedor
   @@index([isOAuthUser]) // Para filtrar usuarios OAuth

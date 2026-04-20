@@ -10,7 +10,7 @@ import type { Registration } from "../types";
 export default function CampamentoDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const {
     data: campamento,
     isLoading: isLoadingCampamento,
@@ -48,6 +48,9 @@ export default function CampamentoDetailPage() {
 
     navigate(`/campamentos/${id}/inscribirse`);
   };
+
+  const isOrganizer = isAuthenticated && user?.churchId && 
+    campamento?.churchId === user.churchId;
 
   const isAlreadyInscribed = inscripciones.some(
     (insc) => insc.campamentoId === parseInt(id || "0")
@@ -87,7 +90,7 @@ export default function CampamentoDetailPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <CampamentoDetail
           campamento={campamento}
-          onInscribirse={handleInscribirse}
+          onInscribirse={isOrganizer ? undefined : handleInscribirse}
           isAlreadyInscribed={isAlreadyInscribed}
         />
       </div>
