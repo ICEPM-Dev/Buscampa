@@ -3,16 +3,23 @@
  * Configura y inicia el servidor NestJS con CORS habilitado.
  * Escucha en el puerto definido en la variable de entorno PORT o 3000 por defecto.
  */
+import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import session from 'express-session';
 
 async function bootstrap() {
   // Crea la instancia de la aplicación NestJS usando el módulo raíz
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ['error', 'warn', 'log'],
+  });
   
   // Habilita CORS para permitir solicitudes desde el frontend
-  app.enableCors();
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
   
   // Configuración de sesiones para OAuth (Twitter requiere sesiones)
   app.use(session({
@@ -26,7 +33,7 @@ async function bootstrap() {
     }
   }));
   
-  // Inicia el servidor en el puerto especificado
-  await app.listen(process.env.PORT ?? 3000);
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
 }
 bootstrap();
