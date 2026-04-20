@@ -18,7 +18,7 @@ export default function Campamentos() {
   const { data: campamentos, isLoading, execute } = useApi<any>();
 
   useEffect(() => {
-    execute(() => campamentoService.getAll());
+    execute(() => campamentoService.getAllPublic());
   }, [execute]);
 
   const availableCampamentos = useMemo(() => {

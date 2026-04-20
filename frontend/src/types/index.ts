@@ -12,6 +12,8 @@ export interface User {
   name: string;
   type: UserType;
   phone?: string;
+  churchId?: number;
+  photoUrl?: string;
   
   // 🆕 Campos OAuth
   googleId?: string;

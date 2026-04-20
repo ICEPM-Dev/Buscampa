@@ -3,7 +3,7 @@
  * Extiende AuthGuard de Passport para validar tokens JWT en las solicitudes.
  */
 import { Injectable } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import * as passport from '@nestjs/passport';
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard('jwt') {}
+export class JwtAuthGuard extends passport.AuthGuard('jwt') {}
