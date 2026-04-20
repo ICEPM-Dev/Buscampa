@@ -17,7 +17,7 @@
       "dest": "backend/api/index.ts"
     },
     {
-      "src": "/((?!api/).*)",
+      "src": "/(.*)",
       "dest": "/index.html"
     }
   ]
