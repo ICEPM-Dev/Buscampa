@@ -63,7 +63,7 @@ export default function Home() {
                 </p>
                 <div className="flex flex-wrap gap-4">
                   <Link
-                    to="/register"
+                    to="/auth"
                     className="inline-flex items-center gap-2 bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
                   >
                     Registrarse
@@ -209,7 +209,7 @@ export default function Home() {
           {!isAuthenticated && (
             <div className="flex flex-wrap justify-center gap-4">
               <Link
-                to="/register"
+                to="/auth"
                 className="inline-flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
               >
                 Crear Cuenta

@@ -5,7 +5,6 @@ import { useAuth } from "../hooks/useAuth";
 import { campamentoService } from "../services/campamento.service";
 import { inscriptionService } from "../services/inscription.service";
 import CampamentoDetail from "../components/campamentos/CampamentoDetail";
-import { showToast } from "../components/ui/Toast";
 import type { Registration } from "../types";
 
 export default function CampamentoDetailPage() {
@@ -34,8 +33,7 @@ export default function CampamentoDetailPage() {
 
   const handleInscribirse = () => {
     if (!isAuthenticated) {
-      showToast.info("Debes iniciar sesión para inscribirte");
-      navigate("/login");
+      navigate("/auth");
       return;
     }
 
@@ -44,7 +42,6 @@ export default function CampamentoDetailPage() {
     );
 
     if (alreadyInscribed) {
-      showToast.info("Ya estás inscripto en este campamento");
       navigate("/inscripciones");
       return;
     }

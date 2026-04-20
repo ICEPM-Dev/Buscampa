@@ -62,8 +62,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     }
 
     // Validar o crear usuario a través del servicio de autenticación
-    const user = await this.authService.validateGoogleUser({
-      googleId: id,
+    const user = await this.authService.validateOAuthUser({
+      oauthId: id,
       email: email,
       name: fullName,
       photoUrl: photoUrl,

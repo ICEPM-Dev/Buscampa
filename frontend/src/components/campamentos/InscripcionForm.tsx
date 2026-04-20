@@ -6,7 +6,6 @@ import { inscriptionService } from "../../services/inscription.service";
 import type { CreateInscriptionDto } from "../../types";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
-import { showToast } from "../ui/Toast";
 
 export default function InscripcionForm() {
   const { id } = useParams<{ id: string }>();
@@ -82,7 +81,6 @@ export default function InscripcionForm() {
     try {
       await inscriptionService.create(parseInt(id), formData);
       setSuccess(true);
-      showToast.success("¡Inscripción completada exitosamente!");
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Error al inscribirse";
@@ -91,10 +89,7 @@ export default function InscripcionForm() {
         error.response?.status === 409 ||
         errorMessage.includes("inscripto")
       ) {
-        showToast.error("Ya estás inscripto en este campamento");
         setTimeout(() => navigate(`/campamentos/${id}`), 2000);
-      } else {
-        showToast.error(errorMessage);
       }
     } finally {
       setLoading(false);

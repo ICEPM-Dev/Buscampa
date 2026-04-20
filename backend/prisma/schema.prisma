@@ -32,7 +32,9 @@ model User {
 
   // Campos para OAuth
   googleId    String? @unique // ID de Google OAuth
-  provider    String? // Proveedor: 'email', 'google', 'both'
+  facebookId  String? @unique // ID de Facebook OAuth
+  xId         String? @unique // ID de X (Twitter) OAuth
+  provider    String? // Proveedor: 'google', 'facebook', 'x', 'multiple'
   isOAuthUser Boolean @default(false) // Indica si es usuario OAuth
 
   @@index([provider]) // Para consultas por proveedor

@@ -16,7 +16,7 @@ export default function Header() {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate("/auth");
     setIsMenuOpen(false);
   };
 
@@ -75,20 +75,12 @@ export default function Header() {
             )}
 
             {!isAuthenticated && (
-              <>
-                <Link
-                  to="/login"
-                  className="text-slate-700 hover:text-blue-600 transition-colors font-medium"
-                >
-                  Iniciar Sesión
-                </Link>
-                <Link
-                  to="/register"
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                >
-                  Registrarse
-                </Link>
-              </>
+              <Link
+                to="/auth"
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              >
+                Iniciar Sesión
+              </Link>
             )}
           </div>
 
@@ -151,22 +143,13 @@ export default function Header() {
             )}
 
             {!isAuthenticated && (
-              <>
-                <Link
-                  to="/login"
-                  className="block px-4 py-2 text-slate-700 hover:bg-slate-50 rounded-lg"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Iniciar Sesión
-                </Link>
-                <Link
-                  to="/register"
-                  className="block px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-medium"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Registrarse
-                </Link>
-              </>
+              <Link
+                to="/auth"
+                className="block px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Iniciar Sesión
+              </Link>
             )}
           </div>
         )}
