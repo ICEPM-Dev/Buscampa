@@ -8,7 +8,6 @@ import { AuthProvider } from "./contexts/AuthContext";
 import Header from "./components/layout/Header";
 import Home from "./pages/Home";
 import Auth from "./pages/Auth";
-
 import Campamentos from "./pages/Campamentos";
 import CampamentoDetail from "./pages/CampamentoDetail";
 import Dashboard from "./pages/Dashboard";
@@ -20,12 +19,12 @@ import Profile from "./pages/Profile";
 import DeleteAccount from "./pages/DeleteAccount";
 import VerifyChurch from "./pages/VerifyChurch";
 import OAuthCallback from "./pages/OAuthCallback";
+import { Analytics } from "@vercel/analytics/react";
 
 function App() {
   return (
     <BrowserRouter>
-      {" "}
-      {/* Proveedor de enrutamiento */}
+      <Analytics /> {/* Proveedor de enrutamiento */}
       <AuthProvider>
         {" "}
         {/* Proveedor de contexto de autenticación */}
