@@ -13,6 +13,8 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { JwtAuthGuard } from './guards/auth.guard';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
+import { FacebookStrategy } from './strategies/facebook.strategy';
+import { XStrategy } from './strategies/x.strategy';
 
 @Module({
   imports: [
@@ -20,12 +22,12 @@ import { GoogleStrategy } from './strategies/google.strategy';
     PrismaModule, // Para acceso a la base de datos
     PassportModule, // Para estrategias de autenticación
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'tu-secret-aqui', // Clave secreta para JWT
+      secret: process.env.JWT_SECRET, // Clave secreta para JWT
       signOptions: { expiresIn: '7d' }, // Tokens expiran en 7 días
     }),
   ],
   controllers: [AuthController], // Controlador para endpoints de auth
-  providers: [AuthService, JwtAuthGuard, JwtStrategy, GoogleStrategy], // Servicios y estrategias
+  providers: [AuthService, JwtAuthGuard, JwtStrategy, GoogleStrategy, FacebookStrategy, XStrategy], // Servicios y estrategias
   exports: [AuthService], // Exporta el servicio para uso en otros módulos
 })
 export class AuthModule {}

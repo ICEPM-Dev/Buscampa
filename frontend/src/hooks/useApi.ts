@@ -3,7 +3,6 @@
  * Proporciona estado de loading, error y data, además de ejecutar llamadas.
  */
 import { useState, useCallback } from "react";
-import { showToast } from "../components/ui/Toast";
 
 export function useApi<T>() {
   const [data, setData] = useState<T | null>(null);
@@ -11,7 +10,7 @@ export function useApi<T>() {
   const [error, setError] = useState<string | null>(null);
 
   const execute = useCallback(
-    async (apiCall: () => Promise<T>, showToastError = true) => {
+    async (apiCall: () => Promise<T>) => {
       setIsLoading(true);
       setError(null);
       try {
@@ -22,9 +21,6 @@ export function useApi<T>() {
         const errorMessage =
           err.response?.data?.message || err.message || "Error en la petición";
         setError(errorMessage);
-        if (showToastError) {
-          showToast.error(errorMessage);
-        }
         throw err;
       } finally {
         setIsLoading(false);

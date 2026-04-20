@@ -6,7 +6,6 @@ import { authService } from "../services/auth.service";
 import type { UpdateProfileDto } from "../types";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
-import { showToast } from "../components/ui/Toast";
 import DeleteAccount from "./DeleteAccount";
 
 type TabType = "info" | "security" | "settings" | "danger";
@@ -122,11 +121,9 @@ export default function Profile() {
 
       const updatedUser = await authService.updateProfile(updateData);
       updateUser(updatedUser);
-      showToast.success("Perfil actualizado exitosamente");
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Error al actualizar perfil";
-      showToast.error(errorMessage);
 
       if (errorMessage.includes("ya registrado")) {
         setErrors({ email: errorMessage });
@@ -148,13 +145,11 @@ export default function Profile() {
         currentPassword,
         newPassword,
       });
-      showToast.success("Contraseña actualizada exitosamente");
       setCurrentPassword("");
       setNewPassword("");
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Error al cambiar contraseña";
-      showToast.error(errorMessage);
 
       if (errorMessage.includes("actual")) {
         setErrors({ currentPassword: errorMessage });

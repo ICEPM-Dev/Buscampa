@@ -5,7 +5,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { showToast } from "../components/ui/Toast";
+
 
 export default function OAuthCallback() {
   const [searchParams] = useSearchParams();
@@ -42,12 +42,9 @@ export default function OAuthCallback() {
         console.error("Error en OAuth callback:", error);
         setError(error.message || "Error en la autenticación con Google");
         
-        // Mostrar mensaje de error
-        showToast.error(error.message || "Error en la autenticación con Google");
-        
         // Redirigir al login después de un delay
         setTimeout(() => {
-          navigate("/login", { replace: true });
+          navigate("/auth", { replace: true });
         }, 3000);
       } finally {
         setLoading(false);
