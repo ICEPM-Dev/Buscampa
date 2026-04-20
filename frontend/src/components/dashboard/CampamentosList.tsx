@@ -21,7 +21,6 @@ import {
   isWithinInterval,
 } from "date-fns";
 import { es } from "date-fns/locale";
-import { showToast } from "../ui/Toast";
 import Button from "../ui/Button";
 
 export default function CampamentosList({
@@ -86,13 +85,9 @@ export default function CampamentosList({
     setDeletingId(id);
     try {
       await campamentoService.delete(id);
-      showToast.success("Campamento eliminado exitosamente");
       reset();
       execute(() => campamentoService.getAll());
     } catch (error: any) {
-      showToast.error(
-        error.response?.data?.message || "Error al eliminar campamento"
-      );
     } finally {
       setDeletingId(null);
     }

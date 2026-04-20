@@ -12,6 +12,11 @@ export interface User {
   name: string;
   type: UserType;
   phone?: string;
+  
+  // 🆕 Campos OAuth
+  googleId?: string;
+  provider?: 'email' | 'google' | 'both';
+  isOAuthUser?: boolean;
 }
 
 /** Respuesta de autenticación */

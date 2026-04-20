@@ -26,7 +26,7 @@ export default function ProtectedRoute({ requiredType }: ProtectedRouteProps) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/auth" replace />;
   }
 
   if (requiredType && user?.type !== requiredType) {

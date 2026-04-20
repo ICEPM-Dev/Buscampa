@@ -7,6 +7,7 @@ import {
   ConflictException,
   Injectable,
   UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
@@ -37,6 +38,31 @@ export interface RegisterChurchDto {
 export interface LoginDto {
   email: string;
   password: string;
+}
+
+/**
+ * DTO para validación de usuario OAuth (Google, Facebook, X)
+ */
+export interface OAuthUserDto {
+  oauthId: string;
+  email: string;
+  name: string;
+  photoUrl?: string;
+  provider: 'google' | 'facebook' | 'x';
+  phone?: string;
+}
+
+/**
+ * DTO para validación de usuario Google OAuth
+ * @deprecated Usar OAuthUserDto
+ */
+export interface GoogleUserDto {
+  googleId: string;
+  email: string;
+  name: string;
+  photoUrl?: string;
+  provider: 'google';
+  phone?: string;
 }
 
 @Injectable()
@@ -240,7 +266,14 @@ export class AuthService {
 
     if (!currentUser) throw new UnauthorizedException('Usuario no encontrado');
 
-    // Verificar la contraseña
+    // Si es usuario OAuth, verificar que sea eliminación sin contraseña
+    if (currentUser.provider === 'google') {
+      // Para usuarios OAuth, eliminamos directamente
+      await this._deleteUserData(currentUser, user);
+      return { message: 'Cuenta eliminada exitosamente' };
+    }
+
+    // Verificar la contraseña para usuarios tradicionales
     const isPasswordValid = await bcrypt.compare(
       password,
       currentUser.password,
@@ -249,25 +282,239 @@ export class AuthService {
     if (!isPasswordValid)
       throw new UnauthorizedException('Contraseña incorrecta');
 
+    await this._deleteUserData(currentUser, user);
+    return { message: 'Cuenta eliminada exitosamente' };
+  }
+
+/**
+    * Valida o crea un usuario autenticado vía OAuth (Google, Facebook, X).
+    * Maneja usuarios nuevos y existentes, actualizando información si es necesario.
+    * @param oauthUser Datos del usuario OAuth
+    * @returns Token JWT y datos del usuario
+    */
+  async validateOAuthUser(oauthUser: OAuthUserDto) {
+    const { oauthId, email, name, phone, provider } = oauthUser;
+
+    // Buscar si existe un usuario con ese email
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email },
+      include: { church: true },
+    });
+
+    if (existingUser) {
+      // Determinar el campo de ID según el proveedor
+      const idField = provider === 'google' ? 'googleId' 
+        : provider === 'facebook' ? 'facebookId' 
+        : 'xId';
+      const existingId = existingUser[idField as keyof typeof existingUser];
+
+      // Si el usuario ya tiene LinkedIn de otro proveedor, actualizar
+      if (existingId === oauthId) {
+        if (existingUser.name !== name) {
+          await this.prisma.user.update({
+            where: { id: existingUser.id },
+            data: { name },
+          });
+        }
+        return this.generateToken(existingUser);
+      }
+
+      // Si ya tiene otro proveedor vinculado, agregar este
+      if (!existingId && existingUser.provider !== 'email') {
+        const updateData: any = {
+          name,
+          provider: 'multiple',
+          isOAuthUser: true,
+        };
+        updateData[idField] = oauthId;
+
+        await this.prisma.user.update({
+          where: { id: existingUser.id },
+          data: updateData,
+        });
+
+        return this.generateToken(existingUser);
+      }
+    }
+
+    // Crear nuevo usuario OAuth
+    const createData: any = {
+      email,
+      name,
+      provider,
+      type: 'USER',
+      password: '',
+      isOAuthUser: true,
+    };
+    createData[provider === 'google' ? 'googleId' 
+      : provider === 'facebook' ? 'facebookId' 
+      : 'xId'] = oauthId;
+
+    const newUser = await this.prisma.user.create({
+      data: createData,
+      include: { church: true },
+    });
+
+    return this.generateToken(newUser);
+  }
+
+  /**
+    * Valida o crea un usuario autenticado vía Google OAuth.
+    * @deprecated Usar validateOAuthUser en su lugar
+    */
+  async validateGoogleUser(googleUser: GoogleUserDto) {
+    const { googleId, email, name, phone } = googleUser;
+
+    // Buscar si existe un usuario con ese email
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email },
+      include: { church: true },
+    });
+
+    if (existingUser) {
+      // Si el usuario existe pero no es de Google, verificar si quiere vincular cuentas
+      if (existingUser.provider === 'email' && !existingUser.googleId) {
+        // Opción 1: Vincular cuenta Google existente
+        await this.prisma.user.update({
+          where: { id: existingUser.id },
+          data: {
+            googleId,
+            provider: 'both',
+            isOAuthUser: true,
+          },
+        });
+
+        return this.generateToken(existingUser);
+      }
+
+      // Si el usuario ya está vinculado con Google, actualizar datos si es necesario
+      if (existingUser.googleId === googleId) {
+        // Actualizar nombre si ha cambiado en Google
+        if (existingUser.name !== name) {
+          await this.prisma.user.update({
+            where: { id: existingUser.id },
+            data: { name },
+          });
+        }
+        
+        return this.generateToken(existingUser);
+      }
+
+      // Si existe con email pero con googleId diferente, error de seguridad
+      if (existingUser.googleId && existingUser.googleId !== googleId) {
+        throw new ConflictException('Email ya registrado con otra cuenta de Google');
+      }
+    }
+
+    // Crear nuevo usuario de Google OAuth
+    const newUser = await this.prisma.user.create({
+      data: {
+        email,
+        name,
+        googleId,
+        provider: 'google',
+        type: 'USER',
+        password: '', // Sin contraseña para usuarios OAuth
+        isOAuthUser: true,
+      },
+      include: { church: true },
+    });
+
+    return this.generateToken(newUser);
+  }
+
+  /**
+   * Vincula una cuenta de Google a un usuario existente.
+   * @param userId ID del usuario existente
+   * @param googleId ID de Google a vincular
+   * @returns Usuario actualizado
+   */
+  async linkGoogleAccount(userId: number, googleId: string) {
+    // Verificar que el usuario exista
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('Usuario no encontrado');
+    }
+
+    // Verificar que el googleId no esté ya en uso por otro usuario
+    const existingGoogleUser = await this.prisma.user.findFirst({
+      where: { googleId },
+    });
+
+    if (existingGoogleUser && existingGoogleUser.id !== userId) {
+      throw new ConflictException('Cuenta de Google ya está vinculada a otro usuario');
+    }
+
+    // Actualizar usuario con Google ID
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        googleId,
+        provider: user.provider === 'email' ? 'both' : 'google',
+        isOAuthUser: true,
+      },
+      include: { church: true },
+    });
+
+    return updatedUser;
+  }
+
+/**
+    * Método auxiliar para eliminar datos de usuario (iglesias, campamentos, inscripciones)
+    * @param user Usuario a eliminar
+    * @param currentUser Usuario de la sesión
+    */
+  private async _deleteUserData(user: any, currentUser: any) {
     // Si es una iglesia, eliminar campamentos primero
-    if (currentUser.type === 'IGLESIA' && currentUser.churchId) {
+    if (user.type === 'IGLESIA' && user.churchId) {
       // Eliminar todos los campamentos asociados a la iglesia
       await this.prisma.campamento.deleteMany({
-        where: { churchId: currentUser.churchId },
+        where: { churchId: user.churchId },
       });
 
       // Eliminar la iglesia
       await this.prisma.iglesia.delete({
-        where: { id: currentUser.churchId },
+        where: { id: user.churchId },
       });
     }
 
     // Eliminar todas las inscripciones del usuario
     await this.prisma.registration.deleteMany({
-      where: { userId: user.id },
+      where: { userId: currentUser.id },
     });
 
     // Finalmente eliminar el usuario
-    await this.prisma.user.delete({ where: { id: user.id } });
+    await this.prisma.user.delete({ where: { id: currentUser.id } });
+  }
+
+  /**
+   * Verifica un usuario como iglesia.
+   * Crea la iglesia y actualiza el tipo de usuario.
+   * @param denomination Denominación de la iglesia
+   * @param user Usuario a verificar
+   */
+  async verifyChurchAsUser(denomination: string, user: any) {
+    // Crear la iglesia
+    const church = await this.prisma.iglesia.create({
+      data: {
+        name: user.name,
+        denomination,
+      },
+    });
+
+    // Actualizar el usuario a tipo IGLESIA
+    const updatedUser = await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        type: 'IGLESIA',
+        churchId: church.id,
+      },
+      include: { church: true },
+    });
+
+    return { user: updatedUser, church };
   }
 }

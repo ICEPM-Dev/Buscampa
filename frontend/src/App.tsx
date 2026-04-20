@@ -5,13 +5,10 @@
  */
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
-import { ToastProvider } from "./components/ui/Toast";
 import Header from "./components/layout/Header";
 import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import RegisterChurch from "./pages/RegisterChurch";
-import RegisterChoice from "./pages/RegisterChoice";
+import Auth from "./pages/Auth";
+
 import Campamentos from "./pages/Campamentos";
 import CampamentoDetail from "./pages/CampamentoDetail";
 import Dashboard from "./pages/Dashboard";
@@ -21,6 +18,8 @@ import ProtectedRoute from "./components/ui/ProtectedRoute";
 import CampamentoForm from "./components/dashboard/CampamentoForm";
 import Profile from "./pages/Profile";
 import DeleteAccount from "./pages/DeleteAccount";
+import VerifyChurch from "./pages/VerifyChurch";
+import OAuthCallback from "./pages/OAuthCallback";
 
 function App() {
   return (
@@ -30,18 +29,16 @@ function App() {
       <AuthProvider>
         {" "}
         {/* Proveedor de contexto de autenticación */}
-        <ToastProvider /> {/* Proveedor de notificaciones toast */}
         <div className="min-h-screen bg-slate-50">
           <Header /> {/* Barra de navegación */}
           <Routes>
             {/* Rutas públicas */}
             <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<RegisterChoice />} />
-            <Route path="/register/user" element={<Register />} />
-            <Route path="/register/church" element={<RegisterChurch />} />
+            <Route path="/auth" element={<Auth />} />
+
             <Route path="/campamentos" element={<Campamentos />} />
             <Route path="/campamentos/:id" element={<CampamentoDetail />} />
+            <Route path="/auth/google/callback" element={<OAuthCallback />} />
 
             {/* Rutas protegidas (requieren autenticación) */}
             <Route element={<ProtectedRoute />}>
@@ -51,6 +48,7 @@ function App() {
               />
               <Route path="/inscripciones" element={<MisInscripciones />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/profile/verify-church" element={<VerifyChurch />} />
               <Route path="/profile/delete" element={<DeleteAccount />} />
             </Route>
 

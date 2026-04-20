@@ -10,7 +10,6 @@ import type {
 } from "../../types";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
-import { showToast } from "../ui/Toast";
 
 export default function CampamentoForm() {
   const { id } = useParams<{ id: string }>();
@@ -118,16 +117,11 @@ export default function CampamentoForm() {
       if (isEditing && id) {
         const updateDto: UpdateCampamentoDto = formData;
         await campamentoService.update(parseInt(id), updateDto);
-        showToast.success("Campamento actualizado exitosamente");
       } else {
         await campamentoService.create(formData);
-        showToast.success("Campamento creado exitosamente");
       }
       navigate("/dashboard");
     } catch (error: any) {
-      showToast.error(
-        error.response?.data?.message || "Error al guardar campamento"
-      );
     } finally {
       setLoading(false);
     }
