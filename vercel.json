@@ -18,6 +18,14 @@
       "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
     },
     {
+      "src": "/assets/(.*)",
+      "dest": "frontend/assets/$1"
+    },
+    {
+      "src": "/vite.svg",
+      "dest": "frontend/vite.svg"
+    },
+    {
       "src": "/((?!api/).*)",
       "dest": "frontend/$1",
       "continue": true
