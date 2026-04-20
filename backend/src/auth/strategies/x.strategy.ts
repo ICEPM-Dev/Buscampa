@@ -19,12 +19,12 @@ export class XStrategy extends PassportStrategy(Strategy, 'x') {
       clientSecret: configService.get('X_CLIENT_SECRET'),
       callbackURL: `${configService.get('BACKEND_URL')}/api/auth/x/callback`,
       clientType: 'confidential',
+      state: false,
     });
   }
 
-  async validate(token: string, tokenSecret: string, profile: any) {
+  async validate(accessToken: string, refreshToken: string, profile: any) {
     const { id, displayName, photos } = profile;
-
     const email = `${displayName || id}@x.com`;
     const name = displayName || 'Usuario';
     const photoUrl = photos?.[0]?.value;
@@ -40,7 +40,6 @@ export class XStrategy extends PassportStrategy(Strategy, 'x') {
       photoUrl: photoUrl,
       provider: 'x',
     });
-
     return user;
   }
 }
