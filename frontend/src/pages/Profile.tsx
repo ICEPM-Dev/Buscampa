@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, Lock, Trash2, ChevronRight } from "lucide-react";
+import { User, Lock, Trash2, ChevronRight, Church, Building2 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { authService } from "../services/auth.service";
 import type { UpdateProfileDto } from "../types";
@@ -8,7 +8,7 @@ import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import DeleteAccount from "./DeleteAccount";
 
-type TabType = "info" | "security" | "settings" | "danger";
+type TabType = "info" | "church" | "security" | "settings" | "danger";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -41,6 +41,12 @@ export default function Profile() {
       label: "Información Personal",
       icon: User,
       description: "Nombre, email y teléfono",
+    },
+    {
+      id: "church" as TabType,
+      label: "Iglesia",
+      icon: Building2,
+      description: "Verificar como iglesia",
     },
     {
       id: "security" as TabType,
@@ -286,6 +292,61 @@ export default function Profile() {
                       </Button>
                     </div>
                   </form>
+                </>
+              )}
+
+              {activeTab === "church" && (
+                <>
+                  <h2 className="text-2xl font-bold text-slate-900 mb-2 flex items-center gap-2">
+                    <Building2 className="h-6 w-6 text-blue-600" />
+                    Iglesia
+                  </h2>
+                  <p className="text-slate-600 mb-8">
+                    Gestiona tu cuenta de iglesia
+                  </p>
+
+                  {user?.type === "IGLESIA" ? (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <Church className="h-8 w-8 text-green-600" />
+                        <div>
+                          <h3 className="font-semibold text-green-900">
+                            Cuenta de iglesia verificada
+                          </h3>
+                          <p className="text-sm text-green-700">
+                            Tu cuenta está verificada como iglesia
+                          </p>
+                        </div>
+                      </div>
+                      <p className="text-green-800">
+                        Ahora puedes crear y gestionar campamentos.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                        <div className="flex items-start gap-3">
+                          <Building2 className="h-6 w-6 text-blue-600 shrink-0 mt-0.5" />
+                          <div>
+                            <h3 className="font-semibold text-blue-900 mb-1">
+                              Convierte tu cuenta en iglesia
+                            </h3>
+                            <p className="text-sm text-blue-700">
+                              Al verificarte como iglesia podrás crear campamentos, gestionar inscripciones y más.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <Button
+                        onClick={() => navigate("/profile/verify-church")}
+                        className="w-full"
+                      >
+                        <Church className="h-5 w-5 mr-2" />
+                        Verificar como iglesia
+                      </Button>
+                    </div>
+                  )}
                 </>
               )}
 

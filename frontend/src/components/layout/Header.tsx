@@ -11,7 +11,7 @@ import UserMenu from "./UserMenu";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isAuthenticated, logout, isUser, isChurch } = useAuth();
+  const { isAuthenticated, logout, isChurch } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -37,41 +37,36 @@ export default function Header() {
               Inicio
             </Link>
 
+            <Link
+              to="/campamentos"
+              className="text-slate-700 hover:text-blue-600 transition-colors font-medium"
+            >
+              Campamentos
+            </Link>
+
+            {isAuthenticated && isChurch && (
+              <Link
+                to="/dashboard"
+                className="text-slate-700 hover:text-blue-600 transition-colors font-medium"
+              >
+                <span className="flex items-center gap-1">
+                  <LayoutDashboard className="h-4 w-4" />
+                  Dashboard
+                </span>
+              </Link>
+            )}
+
             {isAuthenticated && (
-              <>
-                {isUser && (
-                  <Link
-                    to="/campamentos"
-                    className="text-slate-700 hover:text-blue-600 transition-colors font-medium"
-                  >
-                    Campamentos
-                  </Link>
-                )}
-
-                {isChurch && (
-                  <Link
-                    to="/dashboard"
-                    className="text-slate-700 hover:text-blue-600 transition-colors font-medium"
-                  >
-                    <span className="flex items-center gap-1">
-                      <LayoutDashboard className="h-4 w-4" />
-                      Dashboard
-                    </span>
-                  </Link>
-                )}
-
-                <div className="flex items-center gap-4 ml-4 pl-4 border-l border-slate-300">
-                  <UserMenu />
-
-                  <button
-                    onClick={handleLogout}
-                    className="text-slate-600 hover:text-red-600 transition-colors"
-                    title="Cerrar sesión"
-                  >
-                    <LogOut className="h-5 w-5" />
-                  </button>
-                </div>
-              </>
+              <div className="flex items-center gap-4 ml-4 pl-4 border-l border-slate-300">
+                <UserMenu />
+                <button
+                  onClick={handleLogout}
+                  className="text-slate-600 hover:text-red-600 transition-colors"
+                  title="Cerrar sesión"
+                >
+                  <LogOut className="h-5 w-5" />
+                </button>
+              </div>
             )}
 
             {!isAuthenticated && (
@@ -106,40 +101,35 @@ export default function Header() {
               Inicio
             </Link>
 
+            <Link
+              to="/campamentos"
+              className="block px-4 py-2 text-slate-700 hover:bg-slate-50 rounded-lg"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Campamentos
+            </Link>
+
+            {isAuthenticated && isChurch && (
+              <Link
+                to="/dashboard"
+                className="block px-4 py-2 text-slate-700 hover:bg-slate-50 rounded-lg"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Dashboard
+              </Link>
+            )}
+
             {isAuthenticated && (
-              <>
-                {isUser && (
-                  <Link
-                    to="/campamentos"
-                    className="block px-4 py-2 text-slate-700 hover:bg-slate-50 rounded-lg"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Campamentos
-                  </Link>
-                )}
-
-                {isChurch && (
-                  <Link
-                    to="/dashboard"
-                    className="block px-4 py-2 text-slate-700 hover:bg-slate-50 rounded-lg"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Dashboard
-                  </Link>
-                )}
-
-                <div className="px-4 py-2 border-t border-slate-200">
-                  <UserMenu />
-
-                  <button
-                    onClick={handleLogout}
-                    className="w-full flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    Cerrar Sesión
-                  </button>
-                </div>
-              </>
+              <div className="px-4 py-2 border-t border-slate-200">
+                <UserMenu />
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Cerrar Sesión
+                </button>
+              </div>
             )}
 
             {!isAuthenticated && (
