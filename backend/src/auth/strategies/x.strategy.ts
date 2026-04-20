@@ -4,7 +4,7 @@
  */
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy } from 'passport-twitter';
+import { Strategy } from '@superfaceai/passport-twitter-oauth2';
 import { AuthService } from '../auth.service';
 import { ConfigService } from '@nestjs/config';
 
@@ -15,11 +15,11 @@ export class XStrategy extends PassportStrategy(Strategy, 'x') {
     private configService: ConfigService,
   ) {
     super({
-      consumerKey: configService.get('X_CLIENT_ID'),
-      consumerSecret: configService.get('X_CLIENT_SECRET'),
+      clientID: configService.get('X_CLIENT_ID'),
+      clientSecret: configService.get('X_CLIENT_SECRET'),
       callbackURL: `${configService.get('BACKEND_URL')}/api/auth/x/callback`,
-      passReqToCallback: false,
-    } as any);
+      clientType: 'confidential',
+    });
   }
 
   async validate(token: string, tokenSecret: string, profile: any) {
