@@ -17,7 +17,7 @@ export class XStrategy extends PassportStrategy(Strategy, 'x') {
     super({
       consumerKey: configService.get('X_CLIENT_ID'),
       consumerSecret: configService.get('X_CLIENT_SECRET'),
-      callbackURL: `${configService.get('BACKEND_URL')}/auth/x/callback`,
+      callbackURL: `${configService.get('BACKEND_URL')}/api/auth/x/callback`,
       passReqToCallback: false,
     } as any);
   }
