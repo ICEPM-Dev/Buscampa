@@ -40,20 +40,20 @@ export default function Campamentos() {
         <div className="flex items-start justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-slate-900 mb-2">
-              Campamentos Cristianos
+              Campamentos
             </h1>
             <p className="text-slate-600">
-              Descubre campamentos de iglesias de toda Argentina
+              Descubre todos los eventos disponibles
             </p>
           </div>
           {!isChurch && (
             <Button
               onClick={() => navigate("/inscripciones")}
               variant="outline"
-              className="inline-flex items-center gap-2"
+              className="inline-flex items-center gap-2 cursor-pointer"
             >
               <List className="h-5 w-5" />
-              Ver Mis Inscripciones
+              Ver mis inscripciones
             </Button>
           )}
         </div>

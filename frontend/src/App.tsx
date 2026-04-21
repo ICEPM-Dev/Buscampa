@@ -6,6 +6,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import Header from "./components/layout/Header";
+import Footer from "./components/layout/Footer";
 import Home from "./pages/Home";
 import Auth from "./pages/Auth";
 import Campamentos from "./pages/Campamentos";
@@ -19,6 +20,8 @@ import Profile from "./pages/Profile";
 import DeleteAccount from "./pages/DeleteAccount";
 import VerifyChurch from "./pages/VerifyChurch";
 import OAuthCallback from "./pages/OAuthCallback";
+import TermsConditions from "./pages/TermsConditions";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import { Analytics } from "@vercel/analytics/react";
 
 function App() {
@@ -28,8 +31,9 @@ function App() {
       <AuthProvider>
         {" "}
         {/* Proveedor de contexto de autenticación */}
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-slate-50 flex flex-col">
           <Header /> {/* Barra de navegación */}
+          <main className="flex-1">
           <Routes>
             {/* Rutas públicas */}
             <Route path="/" element={<Home />} />
@@ -39,6 +43,8 @@ function App() {
             <Route path="/campamentos/:id" element={<CampamentoDetail />} />
             <Route path="/c/:id" element={<CampamentoDetail />} />
             <Route path="/auth/google/callback" element={<OAuthCallback />} />
+            <Route path="/terms-conditions" element={<TermsConditions />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
             {/* Rutas protegidas (requieren autenticación) */}
             <Route element={<ProtectedRoute />}>
@@ -68,6 +74,8 @@ function App() {
             {/* Ruta catch-all que redirige al home */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          </main>
+          <Footer />
         </div>
       </AuthProvider>
     </BrowserRouter>

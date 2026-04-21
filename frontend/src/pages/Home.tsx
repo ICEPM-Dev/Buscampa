@@ -56,17 +56,17 @@ export default function Home() {
             ) : (
               <>
                 <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                  Encuentra campamentos cristianos en Argentina
+                  ¡Encuentra campamentos en Argentina ahora!
                 </h1>
                 <p className="text-xl text-blue-100 mb-8">
                   Conecta con iglesias y participa en experiencias de fe
                 </p>
                 <div className="flex flex-wrap gap-4">
                   <Link
-                    to="/auth"
+                    to="/campamentos"
                     className="inline-flex items-center gap-2 bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
                   >
-                    Registrarse
+                    Ver Campamentos
                     <ArrowRight className="h-5 w-5" />
                   </Link>
                 </div>
@@ -219,20 +219,6 @@ export default function Home() {
           )}
         </div>
       </section>
-
-      <footer className="bg-slate-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center gap-2 mb-4 md:mb-0">
-              <Church className="h-6 w-6" />
-              <span className="text-xl font-bold">Buscampa</span>
-            </div>
-            <p className="text-slate-400">
-              © 2026 Buscampa. Todos los derechos reservados.
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
