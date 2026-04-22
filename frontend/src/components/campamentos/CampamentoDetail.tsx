@@ -4,7 +4,6 @@ import {
   DollarSign,
   Church,
   ArrowLeft,
-  Check,
   UserCheck,
   Share2,
 } from "lucide-react";
