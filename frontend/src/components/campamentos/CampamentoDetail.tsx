@@ -4,7 +4,6 @@ import {
   DollarSign,
   Church,
   ArrowLeft,
-  Check,
   UserCheck,
   Share2,
 } from "lucide-react";
@@ -183,31 +182,6 @@ export default function CampamentoDetail({
               </div>
             </div>
           </div>
-        </div>
-
-        <div className="bg-slate-50 rounded-lg p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <Check className="h-5 w-5 text-green-600" />
-            <span className="font-medium text-slate-900">
-              Detalles del evento
-            </span>
-          </div>
-          <ul className="space-y-2 text-slate-600">
-            <li className="flex items-start gap-2">
-              <Check className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
-              <span>Evento organizado por {campamento.church.name}</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <Check className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
-              <span>Ubicación: {campamento.location}</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <Check className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
-              <span>
-                {getDuration(startDate, endDate)} de actividad cristiana
-              </span>
-            </li>
-          </ul>
         </div>
 
         {onInscribirse && (

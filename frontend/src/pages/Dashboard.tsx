@@ -228,9 +228,6 @@ export default function Dashboard() {
                             <h2 className="text-2xl font-bold text-slate-900">
                               Campamentos Recientes
                             </h2>
-                            <p className="text-slate-600">
-                              Gestiona tus campamentos más recientes
-                            </p>
                           </div>
 
                           <div className="grid md:grid-cols-2 gap-6">
@@ -328,9 +325,6 @@ export default function Dashboard() {
                             <h2 className="text-2xl font-bold text-slate-900 mb-2">
                               Ver Todos los Campamentos
                             </h2>
-                            <p className="text-slate-600">
-                              Gestiona todos tus campamentos
-                            </p>
                           </div>
                           <button
                             onClick={() => {

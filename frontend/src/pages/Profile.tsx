@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, Lock, Trash2, ChevronRight, Church, Building2 } from "lucide-react";
+import { User, Lock, Trash2, ChevronRight, Building2 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { authService } from "../services/auth.service";
 import type { UpdateProfileDto } from "../types";
@@ -8,7 +8,7 @@ import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import DeleteAccount from "./DeleteAccount";
 
-type TabType = "info" | "church" | "security" | "settings" | "danger";
+type TabType = "info" | "church" | "security" | "danger";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -38,27 +38,23 @@ export default function Profile() {
   const tabs = [
     {
       id: "info" as TabType,
-      label: "Información Personal",
+      label: "Información",
       icon: User,
-      description: "Nombre, email y teléfono",
     },
     {
       id: "church" as TabType,
       label: "Iglesia",
       icon: Building2,
-      description: "Verificar como iglesia",
     },
     {
       id: "security" as TabType,
       label: "Seguridad",
       icon: Lock,
-      description: "Cambiar contraseña",
     },
     {
       id: "danger" as TabType,
-      label: "Peligro",
+      label: "Zona de peligro",
       icon: Trash2,
-      description: "Eliminar cuenta",
     },
   ];
 
@@ -96,8 +92,7 @@ export default function Profile() {
     }
 
     if (newPassword && newPassword.length < 6) {
-      newErrors.newPassword =
-        "La nueva contraseña debe tener al menos 6 caracteres";
+      newErrors.newPassword = "La nueva contraseña debe tener al menos 6 caracteres";
       isValid = false;
     }
 
@@ -128,8 +123,7 @@ export default function Profile() {
       const updatedUser = await authService.updateProfile(updateData);
       updateUser(updatedUser);
     } catch (error: any) {
-      const errorMessage =
-        error.response?.data?.message || "Error al actualizar perfil";
+      const errorMessage = error.response?.data?.message || "Error al actualizar perfil";
 
       if (errorMessage.includes("ya registrado")) {
         setErrors({ email: errorMessage });
@@ -154,8 +148,7 @@ export default function Profile() {
       setCurrentPassword("");
       setNewPassword("");
     } catch (error: any) {
-      const errorMessage =
-        error.response?.data?.message || "Error al cambiar contraseña";
+      const errorMessage = error.response?.data?.message || "Error al cambiar contraseña";
 
       if (errorMessage.includes("actual")) {
         setErrors({ currentPassword: errorMessage });
@@ -167,40 +160,31 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-6 transition-colors"
+          className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-4 sm:mb-6 transition-colors"
         >
           <ChevronRight className="h-5 w-5 rotate-180" />
           Volver
         </button>
 
-        <div className="flex gap-8">
-          <aside className="w-72 shrink-0">
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-              <h2 className="text-lg font-semibold text-slate-900 mb-4 px-2">
-                Mi Perfil
-              </h2>
-
-              <nav className="space-y-1">
+        <div className="flex flex-col md:flex-row gap-4 md:gap-8">
+          <aside className="w-full md:w-64 shrink-0">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-3 sm:p-4">
+              <nav className="flex md:block space-y-1">
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
                       activeTab === tab.id
-                        ? "bg-blue-50 text-blue-700"
+                        ? "bg-blue-50 text-blue-700 font-medium"
                         : "text-slate-700 hover:bg-slate-50"
                     }`}
                   >
                     <tab.icon className="h-5 w-5" />
-                    <div className="text-left">
-                      <div className="font-medium text-sm">{tab.label}</div>
-                      <div className="text-xs text-slate-500">
-                        {tab.description}
-                      </div>
-                    </div>
+                    <span className="text-sm">{tab.label}</span>
                   </button>
                 ))}
               </nav>
@@ -208,18 +192,17 @@ export default function Profile() {
           </aside>
 
           <main className="flex-1">
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-8">
               {activeTab === "info" && (
                 <>
-                  <h2 className="text-2xl font-bold text-slate-900 mb-2 flex items-center gap-2">
-                    <User className="h-6 w-6 text-blue-600" />
+                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-1 flex items-center gap-2">
                     Información Personal
                   </h2>
-                  <p className="text-slate-600 mb-8">
+                  <p className="text-slate-600 mb-6 text-sm sm:text-base">
                     Actualiza tu información de contacto y perfil
                   </p>
 
-                  <form onSubmit={handleSaveProfile} className="space-y-6">
+                  <form onSubmit={handleSaveProfile} className="space-y-4 sm:space-y-6">
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-2">
                         Nombre completo
@@ -267,7 +250,7 @@ export default function Profile() {
                       />
                     </div>
 
-                    <div className="flex gap-4 pt-4">
+                    <div className="flex flex-col sm:flex-row gap-3 pt-2">
                       <Button
                         type="submit"
                         loading={loading}
@@ -286,7 +269,7 @@ export default function Profile() {
                           })
                         }
                         disabled={loading}
-                        className="flex-1"
+                        className="flex-1 sm:flex-none"
                       >
                         Cancelar
                       </Button>
@@ -297,18 +280,17 @@ export default function Profile() {
 
               {activeTab === "church" && (
                 <>
-                  <h2 className="text-2xl font-bold text-slate-900 mb-2 flex items-center gap-2">
-                    <Building2 className="h-6 w-6 text-blue-600" />
+                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-1 flex items-center gap-2">
                     Iglesia
                   </h2>
-                  <p className="text-slate-600 mb-8">
+                  <p className="text-slate-600 mb-6 text-sm sm:text-base">
                     Gestiona tu cuenta de iglesia
                   </p>
 
                   {user?.type === "IGLESIA" ? (
                     <div className="bg-green-50 border border-green-200 rounded-lg p-6">
                       <div className="flex items-center gap-3 mb-4">
-                        <Church className="h-8 w-8 text-green-600" />
+                        <Building2 className="h-8 w-8 text-green-600" />
                         <div>
                           <h3 className="font-semibold text-green-900">
                             Cuenta de iglesia verificada
@@ -342,7 +324,7 @@ export default function Profile() {
                         onClick={() => navigate("/profile/verify-church")}
                         className="w-full"
                       >
-                        <Church className="h-5 w-5 mr-2" />
+                        <Building2 className="h-5 w-5 mr-2" />
                         Verificar como iglesia
                       </Button>
                     </div>
@@ -352,15 +334,14 @@ export default function Profile() {
 
               {activeTab === "security" && (
                 <>
-                  <h2 className="text-2xl font-bold text-slate-900 mb-2 flex items-center gap-2">
-                    <Lock className="h-6 w-6 text-blue-600" />
+                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-1 flex items-center gap-2">
                     Seguridad
                   </h2>
-                  <p className="text-slate-600 mb-8">
+                  <p className="text-slate-600 mb-6 text-sm sm:text-base">
                     Cambia tu contraseña para mantener tu cuenta segura
                   </p>
 
-                  <form onSubmit={handleChangePassword} className="space-y-6">
+                  <form onSubmit={handleChangePassword} className="space-y-4 sm:space-y-6">
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-2">
                         Contraseña actual
@@ -392,7 +373,7 @@ export default function Profile() {
                       </p>
                     </div>
 
-                    <div className="flex gap-4 pt-4">
+                    <div className="flex flex-col sm:flex-row gap-3 pt-2">
                       <Button
                         type="submit"
                         loading={loading}
@@ -409,7 +390,7 @@ export default function Profile() {
                           setErrors({});
                         }}
                         disabled={loading}
-                        className="flex-1"
+                        className="flex-1 sm:flex-none"
                       >
                         Cancelar
                       </Button>

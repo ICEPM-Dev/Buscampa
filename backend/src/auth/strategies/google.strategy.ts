@@ -10,11 +10,6 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
-  /**
-   * Constructor que configura la estrategia de Google OAuth
-   * @param authService Servicio de autenticación para manejar usuarios
-   * @param configService Servicio de configuración para variables de entorno
-   */
   constructor(
     private authService: AuthService,
     private configService: ConfigService,
@@ -28,17 +23,9 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     } as any);
   }
 
-  /**
-   * Valida el usuario de Google y lo integra con el sistema existente
-   * @param accessToken Token de acceso de Google
-   * @param refreshToken Token de refresco de Google
-   * @param profile Perfil del usuario de Google
-   * @returns Usuario validado con token del sistema
-   */
   async validate(accessToken: string, refreshToken: string, profile: Profile) {
     const { id, emails, name, photos } = profile;
     
-    // Extraer información del perfil de Google
     const email = emails?.[0]?.value;
     const fullName = name?.givenName && name?.familyName 
       ? `${name.givenName} ${name.familyName}` 
@@ -56,12 +43,13 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       });
 
       const data = await response.json();
-      phoneNumber = data.phoneNumbers?.[0]?.value;
+      
+      if (data.phoneNumbers && data.phoneNumbers.length > 0) {
+        phoneNumber = data.phoneNumbers[0].value;
+      }
     } catch (error) {
-      console.warn('No se pudo obtener teléfono de Google')
     }
 
-    // Validar o crear usuario a través del servicio de autenticación
     const user = await this.authService.validateOAuthUser({
       oauthId: id,
       email: email,

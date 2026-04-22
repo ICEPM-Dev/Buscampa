@@ -28,7 +28,11 @@ export default function Header() {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center gap-2">
-            <img src="/logo.svg" alt="Buscampa" className="h-8 w-8" />
+            <img
+              src="/src/assets/logo.svg"
+              alt="Buscampa"
+              className="h-8 w-8"
+            />
             <span className="text-xl font-bold text-slate-900">Buscampa</span>
           </Link>
 
@@ -47,7 +51,9 @@ export default function Header() {
             <Link
               to="/campamentos"
               className={`transition-colors font-medium ${
-                isActive("/campamentos") || isActive("/c/") || location.pathname.startsWith("/campamentos/")
+                isActive("/campamentos") ||
+                isActive("/c/") ||
+                location.pathname.startsWith("/campamentos/")
                   ? "text-blue-600 font-semibold"
                   : "text-slate-700 hover:text-blue-600"
               }`}
@@ -123,7 +129,9 @@ export default function Header() {
             <Link
               to="/campamentos"
               className={`block px-4 py-2 rounded-lg ${
-                isActive("/campamentos") || isActive("/c/") || location.pathname.startsWith("/campamentos/")
+                isActive("/campamentos") ||
+                isActive("/c/") ||
+                location.pathname.startsWith("/campamentos/")
                   ? "bg-blue-50 text-blue-600 font-medium"
                   : "text-slate-700 hover:bg-slate-50"
               }`}
