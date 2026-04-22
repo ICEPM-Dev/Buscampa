@@ -136,7 +136,7 @@ export default function CampamentoForm() {
           </h2>
           <p className="text-slate-600">
             {isEditing
-              ? "Actualiza la información de tu campamento"
+              ? "Actualiza la información"
               : "Completa los detalles para crear un nuevo campamento"}
           </p>
         </div>
@@ -144,7 +144,7 @@ export default function CampamentoForm() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid md:grid-cols-2 gap-6">
             <Input
-              label="Nombre del campamento"
+              label="Nombre"
               type="text"
               placeholder="Ej: Campamento de Verano 2026"
               name="name"

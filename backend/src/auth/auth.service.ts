@@ -185,6 +185,7 @@ export class AuthService {
       email: user.email,
       type: user.type,
       churchId: user.churchId,
+      photoUrl: user.photoUrl,
     };
 
     return {
@@ -294,7 +295,7 @@ export class AuthService {
     * @returns Token JWT y datos del usuario
     */
   async validateOAuthUser(oauthUser: OAuthUserDto) {
-    const { oauthId, email, name, phone, provider } = oauthUser;
+    const { oauthId, email, name, photoUrl, phone, provider } = oauthUser;
 
     // Buscar si existe un usuario con ese email
     const existingUser = await this.prisma.user.findUnique({
@@ -311,13 +312,21 @@ export class AuthService {
 
       // Si el usuario ya tiene LinkedIn de otro proveedor, actualizar
       if (existingId === oauthId) {
-        if (existingUser.name !== name) {
-          await this.prisma.user.update({
-            where: { id: existingUser.id },
-            data: { name },
-          });
-        }
-        return this.generateToken(existingUser);
+        const updateData: any = { name };
+        if (photoUrl) updateData.photoUrl = photoUrl;
+        if (phone) updateData.phone = phone;
+        
+        await this.prisma.user.update({
+          where: { id: existingUser.id },
+          data: updateData,
+        });
+        
+        // Obtener usuario actualizado
+        const updatedUser = await this.prisma.user.findUnique({
+          where: { id: existingUser.id },
+          include: { church: true },
+        });
+        return this.generateToken(updatedUser);
       }
 
       // Si ya tiene otro proveedor vinculado, agregar este
@@ -328,13 +337,19 @@ export class AuthService {
           isOAuthUser: true,
         };
         updateData[idField] = oauthId;
+        if (photoUrl) updateData.photoUrl = photoUrl;
+        if (phone) updateData.phone = phone;
 
         await this.prisma.user.update({
           where: { id: existingUser.id },
           data: updateData,
         });
 
-        return this.generateToken(existingUser);
+        const updatedUser = await this.prisma.user.findUnique({
+          where: { id: existingUser.id },
+          include: { church: true },
+        });
+        return this.generateToken(updatedUser);
       }
     }
 
@@ -346,6 +361,8 @@ export class AuthService {
       type: 'USER',
       password: '',
       isOAuthUser: true,
+      photoUrl: photoUrl || null,
+      phone: phone || null,
     };
     createData[provider === 'google' ? 'googleId' 
       : provider === 'facebook' ? 'facebookId' 
