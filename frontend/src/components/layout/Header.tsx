@@ -4,15 +4,18 @@
  * Adaptable para móvil con menú hamburguesa.
  */
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
-import { Menu, X, Church, LogOut, LayoutDashboard } from "lucide-react";
+import { Menu, X, LogOut, LayoutDashboard } from "lucide-react";
 import UserMenu from "./UserMenu";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isAuthenticated, logout, isChurch } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isActive = (path: string) => location.pathname === path;
 
   const handleLogout = () => {
     logout();
@@ -25,21 +28,29 @@ export default function Header() {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center gap-2">
-            <Church className="h-8 w-8 text-blue-600" />
+            <img src="/logo.svg" alt="Buscampa" className="h-8 w-8" />
             <span className="text-xl font-bold text-slate-900">Buscampa</span>
           </Link>
 
           <div className="hidden md:flex items-center space-x-8">
             <Link
               to="/"
-              className="text-slate-700 hover:text-blue-600 transition-colors font-medium"
+              className={`transition-colors font-medium ${
+                isActive("/")
+                  ? "text-blue-600 font-semibold"
+                  : "text-slate-700 hover:text-blue-600"
+              }`}
             >
               Inicio
             </Link>
 
             <Link
               to="/campamentos"
-              className="text-slate-700 hover:text-blue-600 transition-colors font-medium"
+              className={`transition-colors font-medium ${
+                isActive("/campamentos") || isActive("/c/") || location.pathname.startsWith("/campamentos/")
+                  ? "text-blue-600 font-semibold"
+                  : "text-slate-700 hover:text-blue-600"
+              }`}
             >
               Campamentos
             </Link>
@@ -47,7 +58,11 @@ export default function Header() {
             {isAuthenticated && isChurch && (
               <Link
                 to="/dashboard"
-                className="text-slate-700 hover:text-blue-600 transition-colors font-medium"
+                className={`transition-colors font-medium ${
+                  location.pathname.startsWith("/dashboard")
+                    ? "text-blue-600 font-semibold"
+                    : "text-slate-700 hover:text-blue-600"
+                }`}
               >
                 <span className="flex items-center gap-1">
                   <LayoutDashboard className="h-4 w-4" />
@@ -95,7 +110,11 @@ export default function Header() {
           <div className="md:hidden py-4 space-y-2 border-t border-slate-200">
             <Link
               to="/"
-              className="block px-4 py-2 text-slate-700 hover:bg-slate-50 rounded-lg"
+              className={`block px-4 py-2 rounded-lg ${
+                isActive("/")
+                  ? "bg-blue-50 text-blue-600 font-medium"
+                  : "text-slate-700 hover:bg-slate-50"
+              }`}
               onClick={() => setIsMenuOpen(false)}
             >
               Inicio
@@ -103,7 +122,11 @@ export default function Header() {
 
             <Link
               to="/campamentos"
-              className="block px-4 py-2 text-slate-700 hover:bg-slate-50 rounded-lg"
+              className={`block px-4 py-2 rounded-lg ${
+                isActive("/campamentos") || isActive("/c/") || location.pathname.startsWith("/campamentos/")
+                  ? "bg-blue-50 text-blue-600 font-medium"
+                  : "text-slate-700 hover:bg-slate-50"
+              }`}
               onClick={() => setIsMenuOpen(false)}
             >
               Campamentos
@@ -112,7 +135,11 @@ export default function Header() {
             {isAuthenticated && isChurch && (
               <Link
                 to="/dashboard"
-                className="block px-4 py-2 text-slate-700 hover:bg-slate-50 rounded-lg"
+                className={`block px-4 py-2 rounded-lg ${
+                  location.pathname.startsWith("/dashboard")
+                    ? "bg-blue-50 text-blue-600 font-medium"
+                    : "text-slate-700 hover:bg-slate-50"
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Dashboard

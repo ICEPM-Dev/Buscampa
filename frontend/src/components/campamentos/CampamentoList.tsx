@@ -71,7 +71,7 @@ export default function CampamentoList({
         />
         <div className="text-center py-12">
           <p className="text-slate-600 text-lg">
-            No se encontraron campamentos
+            No se encontró nada
           </p>
           <p className="text-slate-500 mt-2">
             Intenta ajustar los filtros de búsqueda
