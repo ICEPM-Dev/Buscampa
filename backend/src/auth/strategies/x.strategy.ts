@@ -4,7 +4,7 @@
  */
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy } from 'passport-twitter';
+import { Strategy } from 'passport-oauth2';
 import { AuthService } from '../auth.service';
 import { ConfigService } from '@nestjs/config';
 
@@ -15,32 +15,32 @@ export class XStrategy extends PassportStrategy(Strategy, 'x') {
     private configService: ConfigService,
   ) {
     super({
-      consumerKey: configService.get('X_CLIENT_ID'),
-      consumerSecret: configService.get('X_CLIENT_SECRET'),
-      callbackURL: `${configService.get('BACKEND_URL')}/auth/x/callback`,
-      passReqToCallback: false,
-    } as any);
+      authorizationURL: 'https://twitter.com/i/oauth2/authorize',
+      tokenURL: 'https://api.twitter.com/2/oauth2/token',
+      clientID: configService.get('X_CLIENT_ID'),
+      clientSecret: configService.get('X_CLIENT_SECRET'),
+      callbackURL: `${configService.get('BACKEND_URL')}/api/auth/x/callback`,
+      scope: ['tweet.read', 'users.read', 'offline.access'],
+      state: false,
+      pkce: false,
+    });
   }
 
-  async validate(token: string, tokenSecret: string, profile: any) {
-    const { id, displayName, photos } = profile;
-
-    const email = `${displayName || id}@x.com`;
-    const name = displayName || 'Usuario';
-    const photoUrl = photos?.[0]?.value;
-
-    if (!id) {
-      throw new Error('No se pudo obtener el ID de X');
-    }
+  async validate(accessToken: string, refreshToken: string, profile: any) {
+    // Obtener perfil de X manualmente con el accessToken
+    const response = await fetch('https://api.twitter.com/2/users/me?user.fields=profile_image_url,name,username', {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    const data = await response.json();
+    const xUser = data.data;
 
     const user = await this.authService.validateOAuthUser({
-      oauthId: id,
-      email: email,
-      name: name,
-      photoUrl: photoUrl,
+      oauthId: xUser.id,
+      email: `${xUser.username}@x.com`,
+      name: xUser.name || xUser.username,
+      photoUrl: xUser.profile_image_url,
       provider: 'x',
     });
-
     return user;
   }
 }
