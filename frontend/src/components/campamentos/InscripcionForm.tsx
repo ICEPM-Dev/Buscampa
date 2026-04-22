@@ -16,65 +16,29 @@ export default function InscripcionForm() {
     email: "",
     phone: "",
   });
-  const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     if (user) {
-      setFormData((prev) => ({
-        ...prev,
+      setFormData({
         fullName: user.name || "",
         email: user.email || "",
-        phone: "",
-      }));
+        phone: user.phone || "",
+      });
     }
   }, [user]);
-
-  const validate = (): boolean => {
-    const newErrors: Record<string, string> = {};
-    let isValid = true;
-
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = "El nombre completo es requerido";
-      isValid = false;
-    } else if (formData.fullName.trim().length < 3) {
-      newErrors.fullName = "El nombre debe tener al menos 3 caracteres";
-      isValid = false;
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = "El email es requerido";
-      isValid = false;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Email inválido";
-      isValid = false;
-    }
-
-    if (!formData.phone.trim()) {
-      newErrors.phone = "El teléfono es requerido";
-      isValid = false;
-    } else if (formData.phone.trim().length < 10) {
-      newErrors.phone = "El teléfono debe tener al menos 10 caracteres";
-      isValid = false;
-    }
-
-    setErrors(newErrors);
-    return isValid;
-  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validate()) return;
-
     if (!id) return;
+    if (!formData.fullName.trim() || !formData.email.trim()) return;
 
     setLoading(true);
 
@@ -82,13 +46,7 @@ export default function InscripcionForm() {
       await inscriptionService.create(parseInt(id), formData);
       setSuccess(true);
     } catch (error: any) {
-      const errorMessage =
-        error.response?.data?.message || "Error al inscribirse";
-
-      if (
-        error.response?.status === 409 ||
-        errorMessage.includes("inscripto")
-      ) {
+      if (error.response?.status === 409 || error.response?.data?.message?.includes("inscripto")) {
         setTimeout(() => navigate(`/campamentos/${id}`), 2000);
       }
     } finally {
@@ -150,7 +108,7 @@ export default function InscripcionForm() {
               Inscribirse en Campamento
             </h2>
             <p className="text-slate-600">
-              Completa el formulario para inscribirte
+              Tus datos de cuenta se usarán automáticamente
             </p>
           </div>
 
@@ -162,7 +120,6 @@ export default function InscripcionForm() {
               name="fullName"
               value={formData.fullName}
               onChange={handleChange}
-              error={errors.fullName}
               disabled
               required
             />
@@ -174,7 +131,6 @@ export default function InscripcionForm() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              error={errors.email}
               disabled
               required
             />
@@ -186,8 +142,6 @@ export default function InscripcionForm() {
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              error={errors.phone}
-              helperText="Mínimo 10 caracteres"
               disabled={loading}
               required
             />

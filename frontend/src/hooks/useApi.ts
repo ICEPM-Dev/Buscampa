@@ -35,11 +35,16 @@ export function useApi<T>() {
     setIsLoading(false);
   }, []);
 
+  const setDataState = useCallback((newData: T) => {
+    setData(newData);
+  }, []);
+
   return {
     data,
     isLoading,
     error,
     execute,
     reset,
+    setData: setDataState,
   };
 }

@@ -30,12 +30,22 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     // Buscar el usuario por ID del payload
     const user = await this.prisma.user.findUnique({
       where: { id: payload.sub },
-      include: { church: true }, // Incluir datos de la iglesia
+      include: { church: true },
     });
 
     if (!user) throw new UnauthorizedException();
 
-    return user;
+    // Retornar usuario con photoUrl
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      type: user.type,
+      phone: user.phone,
+      churchId: user.churchId,
+      photoUrl: user.photoUrl,
+      church: user.church,
+    };
   }
 }
 

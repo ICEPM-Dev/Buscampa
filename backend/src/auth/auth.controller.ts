@@ -30,7 +30,15 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   getMe(@GetUser() user: any) {
-    return user;
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      type: user.type,
+      phone: user.phone,
+      churchId: user.churchId,
+      photoUrl: user.photoUrl,
+    };
   }
 
   /**
@@ -39,8 +47,17 @@ export class AuthController {
    */
   @UseGuards(JwtAuthGuard)
   @Put('me')
-  updateProfile(@Body() dto: any, @GetUser() user: any) {
-    return this.authService.updateProfile(dto, user);
+  async updateProfile(@Body() dto: any, @GetUser() user: any) {
+    const updated = await this.authService.updateProfile(dto, user);
+    return {
+      id: updated.id,
+      email: updated.email,
+      name: updated.name,
+      type: updated.type,
+      phone: updated.phone,
+      churchId: updated.churchId,
+      photoUrl: updated.photoUrl,
+    };
   }
 
   /**

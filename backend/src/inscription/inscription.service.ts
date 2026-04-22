@@ -113,4 +113,25 @@ export class InscriptionService {
 
     return inscription;
   }
+
+  /**
+   * Cancela una inscripción.
+   * @param id ID de la inscripción
+   * @param userId ID del usuario que cancela
+   * @returns Inscripción cancelada
+   */
+  async cancel(id: number, userId: number) {
+    const inscription = await this.prisma.registration.findUnique({
+      where: { id },
+    });
+
+    if (!inscription) throw new NotFoundException('Inscripción no encontrada');
+    if (inscription.userId !== userId) {
+      throw new ConflictException('No puedes cancelar esta inscripción');
+    }
+
+    return this.prisma.registration.delete({
+      where: { id },
+    });
+  }
 }

@@ -1,18 +1,34 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useApi } from "../hooks/useApi";
 import { inscriptionService } from "../services/inscription.service";
 import type { Registration } from "../types";
-import { Calendar, MapPin, DollarSign, Church, ArrowRight } from "lucide-react";
+import { Calendar, MapPin, DollarSign, Church, ArrowRight, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 
 export default function MisInscripciones() {
-  const { data: inscripciones, isLoading, execute } = useApi<Registration[]>();
+  const { data: inscripciones, isLoading, execute, setData } = useApi<Registration[]>();
+  const [cancellingId, setCancellingId] = useState<number | null>(null);
+  const [showConfirm, setShowConfirm] = useState<number | null>(null);
 
   useEffect(() => {
     execute(() => inscriptionService.getMyInscriptions());
   }, [execute]);
+
+  const handleCancel = async (id: number) => {
+    setCancellingId(id);
+    try {
+      await inscriptionService.cancel(id);
+      setShowConfirm(null);
+      const updated = await inscriptionService.getMyInscriptions();
+      setData(updated);
+    } catch (error) {
+      console.error("Error al cancelar:", error);
+    } finally {
+      setCancellingId(null);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -33,7 +49,7 @@ export default function MisInscripciones() {
             Mis Inscripciones
           </h1>
           <p className="text-slate-600">
-            Revisa tus inscripciones a campamentos cristianos
+            Revisa tus inscripciones a eventos
           </p>
         </div>
 
@@ -129,7 +145,7 @@ export default function MisInscripciones() {
                   </div>
                 </div>
 
-                <div className="bg-slate-50 px-6 py-3 border-t border-slate-200">
+                <div className="bg-slate-50 px-6 py-3 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <p className="text-sm text-slate-600">
                     Inscripto el{" "}
                     {format(
@@ -138,7 +154,47 @@ export default function MisInscripciones() {
                       { locale: es }
                     )}
                   </p>
+                  
+                  <button
+                    onClick={() => setShowConfirm(inscripcion.id)}
+                    className="text-sm text-red-600 hover:text-red-700 cursor-pointer font-medium transition-colors"
+                  >
+                    Cancelar inscripción
+                  </button>
                 </div>
+
+                {showConfirm === inscripcion.id && (
+                  <div className="bg-red-50 px-6 py-4 border-t border-red-200">
+                    <div className="flex items-start gap-3">
+                      <AlertTriangle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <p className="font-medium text-red-900 mb-2">
+                          ¿Estás seguro que quieres cancelar esta inscripción?
+                        </p>
+                        <p className="text-sm text-red-700 mb-3">
+                          Perderás tu lugar en el campamento y tendrás que inscribirte de nuevo si deseas participar.
+                        </p>
+                        <div className="flex gap-3">
+                          <button
+                            onClick={() => handleCancel(inscripcion.id)}
+                            disabled={cancellingId === inscripcion.id}
+                            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium disabled:opacity-50"
+                          >
+                            {cancellingId === inscripcion.id
+                              ? "Cancelando..."
+                              : "Sí, cancelar"}
+                          </button>
+                          <button
+                            onClick={() => setShowConfirm(null)}
+                            className="px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors text-sm font-medium"
+                          >
+                            No, mantener
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>

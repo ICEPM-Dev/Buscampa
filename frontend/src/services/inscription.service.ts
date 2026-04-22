@@ -25,4 +25,8 @@ export const inscriptionService = {
       dto
     );
   },
+
+  async cancel(id: number): Promise<void> {
+    return api.delete<void>(`/inscription/${id}`);
+  },
 };
