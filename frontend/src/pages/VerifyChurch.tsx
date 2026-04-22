@@ -36,7 +36,7 @@ export default function VerifyChurch() {
               className="inline-flex items-center justify-center gap-2 py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
             >
               <Mail className="h-5 w-5" />
-              Contactar
+              contacto@buscampa.com.ar
             </a>
           </div>
         </div>
