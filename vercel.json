@@ -13,6 +13,14 @@
   ],
   "routes": [
     {
+      "src": "/robots.txt",
+      "dest": "backend/api/index.ts"
+    },
+    {
+      "src": "/sitemap.xml",
+      "dest": "backend/api/index.ts"
+    },
+    {
       "src": "/api/(.*)",
       "dest": "backend/api/index.ts",
       "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
