@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { FileText, Shield, Mail } from "lucide-react";
+import logo from "../../assets/logo.svg";
 
 export default function Footer() {
   return (
@@ -8,11 +9,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-4">
-              <img
-                src="/src/assets/logo.svg"
-                alt="Buscampa"
-                className="h-8 w-8"
-              />
+              <img src={logo} alt="Buscampa" className="h-8 w-8" />
               <span className="text-xl font-bold">Buscampa</span>
             </Link>
             <p className="text-slate-400 mb-4 max-w-md">

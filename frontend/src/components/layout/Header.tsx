@@ -8,6 +8,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { Menu, X, LogOut, LayoutDashboard } from "lucide-react";
 import UserMenu from "./UserMenu";
+import logo from "../../assets/logo.svg";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -28,11 +29,7 @@ export default function Header() {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center gap-2">
-            <img
-              src="/src/assets/logo.svg"
-              alt="Buscampa"
-              className="h-8 w-8"
-            />
+            <img src={logo} alt="Buscampa" className="h-8 w-8" />
             <span className="text-xl font-bold text-slate-900">Buscampa</span>
           </Link>
 
