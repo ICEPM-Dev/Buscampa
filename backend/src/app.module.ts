@@ -9,9 +9,10 @@ import { Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { CampamentoModule } from './campamento/campamento.module';
 import { InscriptionModule } from './inscription/inscription.module';
+import { SitemapModule } from './sitemap/sitemap.module';
 
 @Module({
-  imports: [AuthModule, CampamentoModule, InscriptionModule],
+  imports: [AuthModule, CampamentoModule, InscriptionModule, SitemapModule],
   controllers: [],
   providers: [],
 })
