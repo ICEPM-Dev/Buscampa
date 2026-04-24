@@ -169,21 +169,21 @@ export default function Profile() {
           Volver
         </button>
 
-        <div className="flex flex-col md:flex-row gap-4 md:gap-8">
-          <aside className="w-full md:w-64 shrink-0">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
+          <aside className="w-full lg:w-64 shrink-0">
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-3 sm:p-4">
-              <nav className="flex md:block space-y-1">
+              <nav className="flex lg:block space-y-1 overflow-x-auto lg:overflow-visible">
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors whitespace-nowrap ${
                       activeTab === tab.id
                         ? "bg-blue-50 text-blue-700 font-medium"
                         : "text-slate-700 hover:bg-slate-50"
                     }`}
                   >
-                    <tab.icon className="h-5 w-5" />
+                    <tab.icon className="h-5 w-5 shrink-0" />
                     <span className="text-sm">{tab.label}</span>
                   </button>
                 ))}

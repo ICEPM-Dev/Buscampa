@@ -13,6 +13,10 @@
   ],
   "routes": [
     {
+      "src": "/api/auth/(google|facebook|x)/callback",
+      "dest": "backend/api/index.ts"
+    },
+    {
       "src": "/robots.txt",
       "dest": "backend/api/index.ts"
     },
