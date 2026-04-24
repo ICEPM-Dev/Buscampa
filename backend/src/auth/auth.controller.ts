@@ -11,7 +11,6 @@ import {
   UseGuards,
   Req,
   Res,
-  UnauthorizedException,
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
@@ -140,10 +139,20 @@ export class AuthController {
 /**
     * Callback de Facebook OAuth
     * GET /auth/facebook/callback
+    * Handle both success and cancellation
     */
   @Get('facebook/callback')
   @UseGuards(AuthGuard('facebook'))
   async facebookAuthCallback(@Req() req: Request, @Res() res: Response) {
+    // Check for cancellation first (even after guard runs)
+    const error = req.query.error as string;
+    const errorReason = req.query.error_reason as string;
+    
+    if (error === 'access_denied' || errorReason === 'user_denied') {
+      const frontendUrl = process.env.FRONTEND_URL || 'https://buscampa.com.ar';
+      return res.redirect(`${frontendUrl}/auth?error=facebook_denied`);
+    }
+    
     const user = req.user as any;
     
     if (!user?.access_token) {

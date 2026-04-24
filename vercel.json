@@ -30,8 +30,16 @@
       "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
     },
     {
-      "src": "/auth/(google|facebook|x)/callback",
-      "dest": "backend/api/index.ts"
+      "src": "/auth/google/callback",
+      "dest": "frontend/index.html"
+    },
+    {
+      "src": "/auth/x/callback",
+      "dest": "frontend/index.html"
+    },
+    {
+      "src": "/auth/facebook/callback",
+      "dest": "frontend/index.html"
     },
     {
       "src": "/assets/(.*)",

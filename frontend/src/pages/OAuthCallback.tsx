@@ -23,16 +23,15 @@ export default function OAuthCallback() {
         // Check for Facebook cancellation - error comes as separate query params
         const fbError = searchParams.get("error_reason");
         const errorCode = searchParams.get("error_code");
+        const fbErrorDesc = searchParams.get("error_description");
         
-        if (fbError === 'user_denied' || errorCode === '200') {
+        if (fbError === 'user_denied' || errorCode === '200' || fbErrorDesc) {
           throw new Error("Cancelaste la autenticación con Facebook");
         }
 
         if (errorParam === 'access_denied' || errorParam === 'user_denied') {
           throw new Error("Cancelaste la autenticación");
         }
-
-        if (errorParam) {
           throw new Error(
             errorParam === "google_denied" 
               ? "Cancelaste la autenticación con Google" 
