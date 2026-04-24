@@ -17,15 +17,9 @@ export const createNestServer = async (expressInstance: express.Express) => {
     exclude: [
       { path: 'robots.txt', method: RequestMethod.GET },
       { path: 'sitemap.xml', method: RequestMethod.GET },
-      { path: 'auth/facebook', method: RequestMethod.GET },
-      { path: 'auth/facebook/callback', method: RequestMethod.GET },
-      { path: 'auth/google', method: RequestMethod.GET },
-      { path: 'auth/google/callback', method: RequestMethod.GET },
-      { path: 'auth/x', method: RequestMethod.GET },
-      { path: 'auth/x/callback', method: RequestMethod.GET },
     ],
   });
-  app.enableCors(); // configurá según tu necesidad
+  app.enableCors();
 
   await app.init();
   return app;
