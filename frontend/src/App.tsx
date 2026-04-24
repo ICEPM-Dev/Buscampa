@@ -34,46 +34,54 @@ function App() {
         <div className="min-h-screen bg-slate-50 flex flex-col">
           <Header /> {/* Barra de navegación */}
           <main className="flex-1">
-          <Routes>
-            {/* Rutas públicas */}
-            <Route path="/" element={<Home />} />
-            <Route path="/auth" element={<Auth />} />
+            <Routes>
+              {/* Rutas públicas */}
+              <Route path="/" element={<Home />} />
+              <Route path="/auth" element={<Auth />} />
 
-            <Route path="/campamentos" element={<Campamentos />} />
-            <Route path="/campamentos/:id" element={<CampamentoDetail />} />
-            <Route path="/c/:id" element={<CampamentoDetail />} />
-            <Route path="/auth/google/callback" element={<OAuthCallback />} />
-            <Route path="/terms-conditions" element={<TermsConditions />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-
-            {/* Rutas protegidas (requieren autenticación) */}
-            <Route element={<ProtectedRoute />}>
+              <Route path="/campamentos" element={<Campamentos />} />
+              <Route path="/campamentos/:id" element={<CampamentoDetail />} />
+              <Route path="/c/:id" element={<CampamentoDetail />} />
+              <Route path="/auth/google/callback" element={<OAuthCallback />} />
               <Route
-                path="/campamentos/:id/inscribirse"
-                element={<InscripcionForm />}
+                path="/auth/facebook/callback"
+                element={<OAuthCallback />}
               />
-              <Route path="/inscripciones" element={<MisInscripciones />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/profile/verify-church" element={<VerifyChurch />} />
-              <Route path="/profile/delete" element={<DeleteAccount />} />
-            </Route>
+              <Route path="/auth/x/callback" element={<OAuthCallback />} />
+              <Route path="/terms-conditions" element={<TermsConditions />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
-            {/* Rutas protegidas para iglesias (requieren tipo IGLESIA) */}
-            <Route element={<ProtectedRoute requiredType="IGLESIA" />}>
-              <Route
-                path="/dashboard/campamentos/nuevo"
-                element={<CampamentoForm />}
-              />
-              <Route
-                path="/dashboard/campamentos/:id/editar"
-                element={<CampamentoForm />}
-              />
-              <Route path="/dashboard/*" element={<Dashboard />} />
-            </Route>
+              {/* Rutas protegidas (requieren autenticación) */}
+              <Route element={<ProtectedRoute />}>
+                <Route
+                  path="/campamentos/:id/inscribirse"
+                  element={<InscripcionForm />}
+                />
+                <Route path="/inscripciones" element={<MisInscripciones />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route
+                  path="/profile/verify-church"
+                  element={<VerifyChurch />}
+                />
+                <Route path="/profile/delete" element={<DeleteAccount />} />
+              </Route>
 
-            {/* Ruta catch-all que redirige al home */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+              {/* Rutas protegidas para iglesias (requieren tipo IGLESIA) */}
+              <Route element={<ProtectedRoute requiredType="IGLESIA" />}>
+                <Route
+                  path="/dashboard/campamentos/nuevo"
+                  element={<CampamentoForm />}
+                />
+                <Route
+                  path="/dashboard/campamentos/:id/editar"
+                  element={<CampamentoForm />}
+                />
+                <Route path="/dashboard/*" element={<Dashboard />} />
+              </Route>
+
+              {/* Ruta catch-all que redirige al home */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
           </main>
           <Footer />
         </div>
