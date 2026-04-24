@@ -32,6 +32,8 @@ export default function OAuthCallback() {
         if (errorParam === 'access_denied' || errorParam === 'user_denied') {
           throw new Error("Cancelaste la autenticación");
         }
+
+        if (errorParam) {
           throw new Error(
             errorParam === "google_denied" 
               ? "Cancelaste la autenticación con Google" 

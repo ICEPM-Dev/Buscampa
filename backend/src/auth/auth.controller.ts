@@ -100,23 +100,23 @@ export class AuthController {
   @UseGuards(AuthGuard('google'))
   async googleAuth() {}
 
-/**
-    * Callback de Google OAuth
-    * GET /auth/google/callback
-    */
+  /**
+   * Callback de Google OAuth
+   * GET /auth/google/callback
+   */
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   async googleAuthCallback(@Req() req: Request, @Res() res: Response) {
     const error = req.query.error as string;
     const errorReason = req.query.error_reason as string;
-    
+
     if (error === 'access_denied' || errorReason === 'user_denied') {
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
       return res.redirect(`${frontendUrl}/auth?error=google_denied`);
     }
-    
+
     const user = req.user as any;
-    
+
     if (!user || !user.access_token) {
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
       return res.redirect(`${frontendUrl}/auth?error=google_auth_failed`);
@@ -124,7 +124,7 @@ export class AuthController {
 
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
     const redirectUrl = `${frontendUrl}/auth/google/callback?token=${user.access_token}`;
-    
+
     return res.redirect(redirectUrl);
   }
 
@@ -136,33 +136,32 @@ export class AuthController {
   @UseGuards(AuthGuard('facebook'))
   async facebookAuth() {}
 
-/**
-    * Callback de Facebook OAuth
-    * GET /auth/facebook/callback
-    * Handle both success and cancellation
-    */
+  /**
+   * Callback de Facebook OAuth
+   * GET /auth/facebook/callback
+   * Handle both success and cancellation
+   */
   @Get('facebook/callback')
   @UseGuards(AuthGuard('facebook'))
   async facebookAuthCallback(@Req() req: Request, @Res() res: Response) {
     // Check for cancellation first (even after guard runs)
     const error = req.query.error as string;
     const errorReason = req.query.error_reason as string;
-    
+
     if (error === 'access_denied' || errorReason === 'user_denied') {
       const frontendUrl = process.env.FRONTEND_URL || 'https://buscampa.com.ar';
       return res.redirect(`${frontendUrl}/auth?error=facebook_denied`);
     }
-    
+
     const user = req.user as any;
-    
+
     if (!user?.access_token) {
       const frontendUrl = process.env.FRONTEND_URL || 'https://buscampa.com.ar';
       return res.redirect(`${frontendUrl}/auth?error=facebook_auth_failed`);
     }
 
     const frontendUrl = process.env.FRONTEND_URL || 'https://buscampa.com.ar';
-    const redirectUrl = `${frontendUrl}/auth/google/callback?token=${user.access_token}`;
-    
+    const redirectUrl = `${frontendUrl}/auth/facebook/callback?token=${user.access_token}`;
     return res.redirect(redirectUrl);
   }
 
@@ -174,23 +173,23 @@ export class AuthController {
   @UseGuards(AuthGuard('x'))
   async xAuth() {}
 
-/**
-    * Callback de X (Twitter) OAuth
-    * GET /auth/x/callback
-    */
+  /**
+   * Callback de X (Twitter) OAuth
+   * GET /auth/x/callback
+   */
   @Get('x/callback')
   @UseGuards(AuthGuard('x'))
   async xAuthCallback(@Req() req: Request, @Res() res: Response) {
     const error = req.query.error as string;
     const errorReason = req.query.error_reason as string;
-    
+
     if (error === 'access_denied' || errorReason === 'user_denied') {
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
       return res.redirect(`${frontendUrl}/auth?error=x_denied`);
     }
-    
+
     const user = req.user as any;
-    
+
     if (!user || !user.access_token) {
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
       return res.redirect(`${frontendUrl}/auth?error=x_auth_failed`);
@@ -198,7 +197,7 @@ export class AuthController {
 
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
     const redirectUrl = `${frontendUrl}/auth/google/callback?token=${user.access_token}`;
-    
+
     return res.redirect(redirectUrl);
   }
 }
