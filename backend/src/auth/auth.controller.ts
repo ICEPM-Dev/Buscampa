@@ -138,12 +138,13 @@ export class AuthController {
   async facebookAuth() {}
 
 /**
-    * Callback de Facebook OAuth - maneja errores de usuario que cancela
+    * Callback de Facebook OAuth
     * GET /auth/facebook/callback
     */
   @Get('facebook/callback')
   @UseGuards(AuthGuard('facebook'))
   async facebookAuthCallback(@Req() req: Request, @Res() res: Response) {
+    // Si llegó hasta aquí con error en query, el usuario canceló
     const error = req.query.error as string;
     const errorReason = req.query.error_reason as string;
     
@@ -154,7 +155,7 @@ export class AuthController {
     
     const user = req.user as any;
     
-    if (!user || !user.access_token) {
+    if (!user?.access_token) {
       const frontendUrl = process.env.FRONTEND_URL || 'https://buscampa.com.ar';
       return res.redirect(`${frontendUrl}/auth?error=facebook_auth_failed`);
     }
