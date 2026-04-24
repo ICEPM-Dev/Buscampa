@@ -148,18 +148,18 @@ export class AuthController {
     const errorReason = req.query.error_reason as string;
     
     if (error === 'access_denied' || errorReason === 'user_denied') {
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      const frontendUrl = process.env.FRONTEND_URL || 'https://buscampa.com.ar';
       return res.redirect(`${frontendUrl}/auth?error=facebook_denied`);
     }
     
     const user = req.user as any;
     
     if (!user || !user.access_token) {
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      const frontendUrl = process.env.FRONTEND_URL || 'https://buscampa.com.ar';
       return res.redirect(`${frontendUrl}/auth?error=facebook_auth_failed`);
     }
 
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const frontendUrl = process.env.FRONTEND_URL || 'https://buscampa.com.ar';
     const redirectUrl = `${frontendUrl}/auth/google/callback?token=${user.access_token}`;
     
     return res.redirect(redirectUrl);
