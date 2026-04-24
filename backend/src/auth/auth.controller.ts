@@ -101,36 +101,32 @@ export class AuthController {
   @UseGuards(AuthGuard('google'))
   async googleAuth() {}
 
-  /**
-   * Callback de Google OAuth
-   * GET /auth/google/callback
-   */
+/**
+    * Callback de Google OAuth
+    * GET /auth/google/callback
+    */
   @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
   async googleAuthCallback(@Req() req: Request, @Res() res: Response) {
     const error = req.query.error as string;
     const errorReason = req.query.error_reason as string;
-
+    
     if (error === 'access_denied' || errorReason === 'user_denied') {
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
       return res.redirect(`${frontendUrl}/auth?error=google_denied`);
     }
-
-    try {
-      const user = req.user as any;
-
-      if (!user || !user.access_token) {
-        throw new UnauthorizedException('Error en autenticación Google');
-      }
-
+    
+    const user = req.user as any;
+    
+    if (!user || !user.access_token) {
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-      const redirectUrl = `${frontendUrl}/auth/google/callback?token=${user.access_token}`;
-
-      return res.redirect(redirectUrl);
-    } catch (err) {
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-      const errorUrl = `${frontendUrl}/auth?error=google_auth_failed`;
-      return res.redirect(errorUrl);
+      return res.redirect(`${frontendUrl}/auth?error=google_auth_failed`);
     }
+
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const redirectUrl = `${frontendUrl}/auth/google/callback?token=${user.access_token}`;
+    
+    return res.redirect(redirectUrl);
   }
 
   /**
@@ -141,36 +137,32 @@ export class AuthController {
   @UseGuards(AuthGuard('facebook'))
   async facebookAuth() {}
 
-  /**
-   * Callback de Facebook OAuth
-   * GET /auth/facebook/callback
-   */
+/**
+    * Callback de Facebook OAuth - maneja errores de usuario que cancela
+    * GET /auth/facebook/callback
+    */
   @Get('facebook/callback')
+  @UseGuards(AuthGuard('facebook'))
   async facebookAuthCallback(@Req() req: Request, @Res() res: Response) {
     const error = req.query.error as string;
     const errorReason = req.query.error_reason as string;
-
+    
     if (error === 'access_denied' || errorReason === 'user_denied') {
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
       return res.redirect(`${frontendUrl}/auth?error=facebook_denied`);
     }
-
-    try {
-      const user = req.user as any;
-
-      if (!user || !user.access_token) {
-        throw new UnauthorizedException('Error en autenticación Facebook');
-      }
-
+    
+    const user = req.user as any;
+    
+    if (!user || !user.access_token) {
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-      const redirectUrl = `${frontendUrl}/auth/google/callback?token=${user.access_token}`;
-
-      return res.redirect(redirectUrl);
-    } catch (err) {
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-      const errorUrl = `${frontendUrl}/auth?error=facebook_auth_failed`;
-      return res.redirect(errorUrl);
+      return res.redirect(`${frontendUrl}/auth?error=facebook_auth_failed`);
     }
+
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const redirectUrl = `${frontendUrl}/auth/google/callback?token=${user.access_token}`;
+    
+    return res.redirect(redirectUrl);
   }
 
   /**
@@ -181,35 +173,31 @@ export class AuthController {
   @UseGuards(AuthGuard('x'))
   async xAuth() {}
 
-  /**
-   * Callback de X (Twitter) OAuth
-   * GET /auth/x/callback
-   */
+/**
+    * Callback de X (Twitter) OAuth
+    * GET /auth/x/callback
+    */
   @Get('x/callback')
+  @UseGuards(AuthGuard('x'))
   async xAuthCallback(@Req() req: Request, @Res() res: Response) {
     const error = req.query.error as string;
     const errorReason = req.query.error_reason as string;
-
+    
     if (error === 'access_denied' || errorReason === 'user_denied') {
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
       return res.redirect(`${frontendUrl}/auth?error=x_denied`);
     }
-
-    try {
-      const user = req.user as any;
-
-      if (!user || !user.access_token) {
-        throw new UnauthorizedException('Error en autenticación X');
-      }
-
+    
+    const user = req.user as any;
+    
+    if (!user || !user.access_token) {
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-      const redirectUrl = `${frontendUrl}/auth/google/callback?token=${user.access_token}`;
-
-      return res.redirect(redirectUrl);
-    } catch (err) {
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-      const errorUrl = `${frontendUrl}/auth?error=x_auth_failed`;
-      return res.redirect(errorUrl);
+      return res.redirect(`${frontendUrl}/auth?error=x_auth_failed`);
     }
+
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const redirectUrl = `${frontendUrl}/auth/google/callback?token=${user.access_token}`;
+    
+    return res.redirect(redirectUrl);
   }
 }

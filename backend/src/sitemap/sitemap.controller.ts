@@ -17,7 +17,7 @@ Disallow: /dashboard
 Disallow: /profile
 Disallow: /inscripciones
 
-Sitemap: ${baseUrl}/api/sitemap.xml`;
+Sitemap: ${baseUrl}/sitemap.xml`;
 
     res.setHeader('Content-Type', 'text/plain');
     res.send(robots);
