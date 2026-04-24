@@ -1,0 +1,16 @@
+{
+  "name": "Buscampa",
+  "short_name": "Buscampa",
+  "description": "Campamentos Cristianos en Argentina",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1e40af",
+  "icons": [
+    {
+      "src": "/og-image.png",
+      "sizes": "500x500",
+      "type": "image/png"
+    }
+  ]
+}
