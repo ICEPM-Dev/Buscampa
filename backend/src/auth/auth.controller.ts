@@ -17,6 +17,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from './guards/auth.guard';
 import { GetUser } from './decorators/user.decorator';
 import { AuthService } from './auth.service';
+import { FacebookAuthGuard } from './guards/facebook-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -142,7 +143,7 @@ export class AuthController {
    * Handle both success and cancellation
    */
   @Get('facebook/callback')
-  @UseGuards(AuthGuard('facebook'))
+  @UseGuards(FacebookAuthGuard)
   async facebookAuthCallback(@Req() req: Request, @Res() res: Response) {
     // Check for cancellation first (even after guard runs)
     const error = req.query.error as string;
@@ -196,8 +197,7 @@ export class AuthController {
     }
 
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-    const redirectUrl = `${frontendUrl}/auth/google/callback?token=${user.access_token}`;
-
+    const redirectUrl = `${frontendUrl}/auth/x/callback?token=${user.access_token}`;
     return res.redirect(redirectUrl);
   }
 }

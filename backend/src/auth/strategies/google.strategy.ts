@@ -17,19 +17,24 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     super({
       clientID: configService.get('GOOGLE_CLIENT_ID'),
       clientSecret: configService.get('GOOGLE_CLIENT_SECRET'),
-      callbackURL: `${configService.get('FRONTEND_URL')}/auth/google/callback`,
-      scope: ['email', 'profile', 'https://www.googleapis.com/auth/user.phonenumbers.read'],
+      callbackURL: 'https://www.buscampa.com.ar/api/auth/google/callback',
+      scope: [
+        'email',
+        'profile',
+        'https://www.googleapis.com/auth/user.phonenumbers.read',
+      ],
       passReqToCallback: false,
     } as any);
   }
 
   async validate(accessToken: string, refreshToken: string, profile: Profile) {
     const { id, emails, name, photos } = profile;
-    
+
     const email = emails?.[0]?.value;
-    const fullName = name?.givenName && name?.familyName 
-      ? `${name.givenName} ${name.familyName}` 
-      : name?.givenName || email?.split('@')[0] || 'Usuario';
+    const fullName =
+      name?.givenName && name?.familyName
+        ? `${name.givenName} ${name.familyName}`
+        : name?.givenName || email?.split('@')[0] || 'Usuario';
     const photoUrl = photos?.[0]?.value;
 
     if (!email) {
@@ -38,17 +43,19 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 
     let phoneNumber: string | undefined;
     try {
-      const response = await fetch('https://people.googleapis.com/v1/people/me?personFields=phoneNumbers', {
-        headers: { 'Authorization': `Bearer ${accessToken}` }
-      });
+      const response = await fetch(
+        'https://people.googleapis.com/v1/people/me?personFields=phoneNumbers',
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      );
 
       const data = await response.json();
-      
+
       if (data.phoneNumbers && data.phoneNumbers.length > 0) {
         phoneNumber = data.phoneNumbers[0].value;
       }
-    } catch (error) {
-    }
+    } catch (error) {}
 
     const user = await this.authService.validateOAuthUser({
       oauthId: id,
