@@ -144,15 +144,6 @@ export class AuthController {
   @Get('facebook/callback')
   @UseGuards(AuthGuard('facebook'))
   async facebookAuthCallback(@Req() req: Request, @Res() res: Response) {
-    // Si llegó hasta aquí con error en query, el usuario canceló
-    const error = req.query.error as string;
-    const errorReason = req.query.error_reason as string;
-    
-    if (error === 'access_denied' || errorReason === 'user_denied') {
-      const frontendUrl = process.env.FRONTEND_URL || 'https://buscampa.com.ar';
-      return res.redirect(`${frontendUrl}/auth?error=facebook_denied`);
-    }
-    
     const user = req.user as any;
     
     if (!user?.access_token) {
