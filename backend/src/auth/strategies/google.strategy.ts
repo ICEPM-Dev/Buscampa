@@ -43,8 +43,9 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 
     let phoneNumber: string | undefined;
     try {
+      const apiKey = process.env.GOOGLE_API_KEY;
       const response = await fetch(
-        'https://people.googleapis.com/v1/people/me?personFields=phoneNumbers&key=${process.env.GOOGLE_API_KEY}',
+        `https://people.googleapis.com/v1/people/me?personFields=phoneNumbers&key=${apiKey}`,
         {
           headers: { Authorization: `Bearer ${accessToken}` },
         },

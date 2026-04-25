@@ -237,7 +237,7 @@ export default function Profile() {
 
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-2">
-                        Teléfono (opcional)
+                        Teléfono
                       </label>
                       <Input
                         type="tel"
@@ -261,13 +261,14 @@ export default function Profile() {
                       <Button
                         type="button"
                         variant="outline"
-                        onClick={() =>
+                        onClick={() => {
                           setFormData({
                             name: user?.name || "",
                             email: user?.email || "",
                             phone: user?.phone || "",
-                          })
-                        }
+                          });
+                          window.history.back();
+                        }}
                         disabled={loading}
                         className="flex-1 sm:flex-none"
                       >
@@ -388,6 +389,7 @@ export default function Profile() {
                           setCurrentPassword("");
                           setNewPassword("");
                           setErrors({});
+                          window.history.back();
                         }}
                         disabled={loading}
                         className="flex-1 sm:flex-none"
