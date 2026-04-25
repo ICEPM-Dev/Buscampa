@@ -18,6 +18,8 @@ interface AuthContextType {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  needsPhone: boolean;
+  dismissPhoneModal: () => void;
   loginWithGoogle: (token: string) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
@@ -30,6 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [needsPhone, setNeedsPhone] = useState(false);
 
   const isAuthenticated = Boolean(token && user);
 
@@ -67,6 +70,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const currentUser = await authService.getMe();
       setToken(token);
       setUser(currentUser);
+
+      if (!currentUser.phone) {
+        setNeedsPhone(true);
+      }
     } catch (error: any) {
       try {
         const { api } = await import("../services/api");
@@ -74,10 +81,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } catch (clearError) {
         console.error("Error clearing token:", clearError);
       }
-      
+
       throw error;
     }
   };
+
+  const dismissPhoneModal = () => setNeedsPhone(false);
 
   const logout = () => {
     authService.logout();
@@ -96,6 +105,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         token,
         isAuthenticated,
         isLoading,
+        needsPhone,
+        dismissPhoneModal,
         loginWithGoogle,
         logout,
         refreshUser,

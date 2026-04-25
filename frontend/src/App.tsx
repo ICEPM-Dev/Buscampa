@@ -23,6 +23,7 @@ import OAuthCallback from "./pages/OAuthCallback";
 import TermsConditions from "./pages/TermsConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import { Analytics } from "@vercel/analytics/react";
+import PhoneModal from "./components/ui/PhoneModal";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         {" "}
         {/* Proveedor de contexto de autenticación */}
         <div className="min-h-screen bg-slate-50 flex flex-col">
+          <PhoneModal />
           <Header /> {/* Barra de navegación */}
           <main className="flex-1">
             <Routes>
