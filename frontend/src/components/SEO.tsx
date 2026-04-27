@@ -40,13 +40,6 @@ export default function SEO({
     updateMeta("og:url", fullUrl);
     updateMeta("og:type", "website");
     
-    // Twitter
-    updateMeta("twitter:title", fullTitle);
-    updateMeta("twitter:description", fullDescription);
-    updateMeta("twitter:image", fullImage);
-    updateMeta("twitter:card", "summary_large_image");
-    updateMeta("twitter:url", fullUrl);
-    
     // Canonical
     let canonical = document.querySelector("link[rel='canonical']");
     if (!canonical) {
@@ -66,7 +59,7 @@ function updateMeta(name: string, content: string) {
   
   if (!element) {
     element = document.createElement("meta");
-    if (name.startsWith("og:") || name.startsWith("twitter:")) {
+    if (name.startsWith("og:")) {
       element.setAttribute("property", name);
     } else {
       element.setAttribute("name", name);

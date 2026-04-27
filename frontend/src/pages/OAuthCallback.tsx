@@ -39,8 +39,6 @@ export default function OAuthCallback() {
               ? "Cancelaste la autenticación con Google" 
               : errorParam === "facebook_denied"
               ? "Cancelaste la autenticación con Facebook"
-              : errorParam === "x_denied"
-              ? "Cancelaste la autenticación con X"
               : errorParam === "google_auth_failed" 
               ? "Error en la autenticación con Google" 
               : "Error inesperado durante la autenticación"

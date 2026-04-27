@@ -1,6 +1,6 @@
 /**
  * Controlador para las rutas de autenticación OAuth.
- * Solo maneja login/registro con redes sociales (Google, Facebook, X).
+ * Solo maneja login/registro con redes sociales (Google, Facebook).
  */
 import {
   Controller,
@@ -163,41 +163,6 @@ export class AuthController {
 
     const frontendUrl = process.env.FRONTEND_URL || 'https://buscampa.com.ar';
     const redirectUrl = `${frontendUrl}/auth/facebook/callback?token=${user.access_token}`;
-    return res.redirect(redirectUrl);
-  }
-
-  /**
-   * Endpoint para iniciar autenticación con X (Twitter) OAuth
-   * GET /auth/x
-   */
-  @Get('x')
-  @UseGuards(AuthGuard('x'))
-  async xAuth() {}
-
-  /**
-   * Callback de X (Twitter) OAuth
-   * GET /auth/x/callback
-   */
-  @Get('x/callback')
-  @UseGuards(AuthGuard('x'))
-  async xAuthCallback(@Req() req: Request, @Res() res: Response) {
-    const error = req.query.error as string;
-    const errorReason = req.query.error_reason as string;
-
-    if (error === 'access_denied' || errorReason === 'user_denied') {
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-      return res.redirect(`${frontendUrl}/auth?error=x_denied`);
-    }
-
-    const user = req.user as any;
-
-    if (!user || !user.access_token) {
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-      return res.redirect(`${frontendUrl}/auth?error=x_auth_failed`);
-    }
-
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-    const redirectUrl = `${frontendUrl}/auth/x/callback?token=${user.access_token}`;
     return res.redirect(redirectUrl);
   }
 }

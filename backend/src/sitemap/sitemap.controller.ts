@@ -9,7 +9,7 @@ export class SitemapController {
   @Get('robots.txt')
   getRobots(@Res() res: Response) {
     const baseUrl = process.env.FRONTEND_URL || 'https://buscampa.com.ar';
-    
+
     const robots = `# Robots.txt para Buscampa
 User-agent: *
 Allow: /
@@ -26,7 +26,7 @@ Sitemap: ${baseUrl}/sitemap.xml`;
   @Get('sitemap.xml')
   async getSitemap(@Res() res: Response) {
     const baseUrl = process.env.FRONTEND_URL || 'https://buscampa.com.ar';
-    
+
     const campamentos = await this.prisma.campamento.findMany({
       where: {
         startDate: {
@@ -86,12 +86,16 @@ Sitemap: ${baseUrl}/sitemap.xml`;
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.map(url => `  <url>
+${urls
+  .map(
+    (url) => `  <url>
     <loc>${url.loc}</loc>
     <lastmod>${url.lastmod}</lastmod>
     <changefreq>${url.changefreq}</changefreq>
     <priority>${url.priority}</priority>
-  </url>`).join('\n')}
+  </url>`,
+  )
+  .join('\n')}
 </urlset>`;
 
     res.setHeader('Content-Type', 'application/xml');

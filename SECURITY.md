@@ -21,7 +21,7 @@ Si descubrí una vulnerabilidad de seguridad, por favor reportala de manera resp
 ## Medidas de Seguridad
 
 ### Autenticación
-- Integración OAuth 2.0 con Google, Facebook y X (Twitter)
+- Integración OAuth 2.0 con Google y Facebook
 - Tokens JWT para gestión de sesiones
 - Los tokens incluyen tiempo de expiración
 
