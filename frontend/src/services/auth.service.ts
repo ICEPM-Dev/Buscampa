@@ -1,6 +1,6 @@
 /**
  * Servicio de autenticación.
- * Solo maneja OAuth (Google, Facebook, X) y gestión de usuarios.
+ * Solo maneja OAuth (Google, Facebook) y gestión de usuarios.
  */
 import { api } from "./api";
 import type {

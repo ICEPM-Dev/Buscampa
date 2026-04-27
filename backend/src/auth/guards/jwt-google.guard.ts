@@ -32,7 +32,9 @@ export class JwtGoogleAuthGuard extends AuthGuard(['jwt', 'google']) {
    */
   handleRequest(err, user, info) {
     if (err || !user) {
-      throw err || new Error('No autorizado - Autenticación combinada requerida');
+      throw (
+        err || new Error('No autorizado - Autenticación combinada requerida')
+      );
     }
     return user;
   }

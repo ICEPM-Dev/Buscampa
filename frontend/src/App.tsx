@@ -49,7 +49,6 @@ function App() {
                 path="/auth/facebook/callback"
                 element={<OAuthCallback />}
               />
-              <Route path="/auth/x/callback" element={<OAuthCallback />} />
               <Route path="/terms-conditions" element={<TermsConditions />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 

@@ -14,7 +14,6 @@ import { JwtAuthGuard } from './guards/auth.guard';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { FacebookStrategy } from './strategies/facebook.strategy';
-import { XStrategy } from './strategies/x.strategy';
 
 @Module({
   imports: [
@@ -27,7 +26,13 @@ import { XStrategy } from './strategies/x.strategy';
     }),
   ],
   controllers: [AuthController], // Controlador para endpoints de auth
-  providers: [AuthService, JwtAuthGuard, JwtStrategy, GoogleStrategy, FacebookStrategy, XStrategy], // Servicios y estrategias
+  providers: [
+    AuthService,
+    JwtAuthGuard,
+    JwtStrategy,
+    GoogleStrategy,
+    FacebookStrategy,
+  ], // Servicios y estrategias
   exports: [AuthService], // Exporta el servicio para uso en otros módulos
 })
 export class AuthModule {}

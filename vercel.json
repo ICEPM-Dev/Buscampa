@@ -21,7 +21,7 @@
       "dest": "backend/api/index.ts"
     },
     {
-      "src": "/api/auth/(google|facebook|x)/callback",
+      "src": "/api/auth/(google|facebook)/callback",
       "dest": "backend/api/index.ts"
     },
     {
@@ -35,10 +35,6 @@
     },
     {
       "src": "/auth/google/callback",
-      "dest": "frontend/index.html"
-    },
-    {
-      "src": "/auth/x/callback",
       "dest": "frontend/index.html"
     },
     {

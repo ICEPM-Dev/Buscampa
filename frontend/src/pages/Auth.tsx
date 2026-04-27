@@ -21,7 +21,6 @@ export default function Auth() {
         <div className="bg-white rounded-2xl shadow-xl p-8 space-y-4">
           <SocialButton provider="google" />
           <SocialButton provider="facebook" />
-          <SocialButton provider="x" />
         </div>
 
         <p className="text-center mt-6 text-sm text-slate-500">

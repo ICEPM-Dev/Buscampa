@@ -41,14 +41,14 @@ export interface LoginDto {
 }
 
 /**
- * DTO para validación de usuario OAuth (Google, Facebook, X)
+ * DTO para validación de usuario OAuth (Google, Facebook)
  */
 export interface OAuthUserDto {
   oauthId: string;
   email: string;
   name: string;
   photoUrl?: string;
-  provider: 'google' | 'facebook' | 'x';
+  provider: 'google' | 'facebook';
   phone?: string;
 }
 
@@ -288,12 +288,12 @@ export class AuthService {
     return { message: 'Cuenta eliminada exitosamente' };
   }
 
-/**
-    * Valida o crea un usuario autenticado vía OAuth (Google, Facebook, X).
-    * Maneja usuarios nuevos y existentes, actualizando información si es necesario.
-    * @param oauthUser Datos del usuario OAuth
-    * @returns Token JWT y datos del usuario
-    */
+  /**
+   * Valida o crea un usuario autenticado vía OAuth (Google, Facebook).
+   * Maneja usuarios nuevos y existentes, actualizando información si es necesario.
+   * @param oauthUser Datos del usuario OAuth
+   * @returns Token JWT y datos del usuario
+   */
   async validateOAuthUser(oauthUser: OAuthUserDto) {
     const { oauthId, email, name, photoUrl, phone, provider } = oauthUser;
 
@@ -305,9 +305,12 @@ export class AuthService {
 
     if (existingUser) {
       // Determinar el campo de ID según el proveedor
-      const idField = provider === 'google' ? 'googleId' 
-        : provider === 'facebook' ? 'facebookId' 
-        : 'xId';
+      const idField =
+        provider === 'google'
+          ? 'googleId'
+          : provider === 'facebook'
+            ? 'facebookId'
+            : undefined;
       const existingId = existingUser[idField as keyof typeof existingUser];
 
       // Si el usuario ya tiene LinkedIn de otro proveedor, actualizar
@@ -315,12 +318,12 @@ export class AuthService {
         const updateData: any = { name };
         if (photoUrl) updateData.photoUrl = photoUrl;
         if (phone) updateData.phone = phone;
-        
+
         await this.prisma.user.update({
           where: { id: existingUser.id },
           data: updateData,
         });
-        
+
         // Obtener usuario actualizado
         const updatedUser = await this.prisma.user.findUnique({
           where: { id: existingUser.id },
@@ -364,9 +367,13 @@ export class AuthService {
       photoUrl: photoUrl || null,
       phone: phone || null,
     };
-    createData[provider === 'google' ? 'googleId' 
-      : provider === 'facebook' ? 'facebookId' 
-      : 'xId'] = oauthId;
+    createData[
+      provider === 'google'
+        ? 'googleId'
+        : provider === 'facebook'
+          ? 'facebookId'
+          : undefined
+    ] = oauthId;
 
     const newUser = await this.prisma.user.create({
       data: createData,
@@ -377,9 +384,9 @@ export class AuthService {
   }
 
   /**
-    * Valida o crea un usuario autenticado vía Google OAuth.
-    * @deprecated Usar validateOAuthUser en su lugar
-    */
+   * Valida o crea un usuario autenticado vía Google OAuth.
+   * @deprecated Usar validateOAuthUser en su lugar
+   */
   async validateGoogleUser(googleUser: GoogleUserDto) {
     const { googleId, email, name, phone } = googleUser;
 
@@ -414,13 +421,15 @@ export class AuthService {
             data: { name },
           });
         }
-        
+
         return this.generateToken(existingUser);
       }
 
       // Si existe con email pero con googleId diferente, error de seguridad
       if (existingUser.googleId && existingUser.googleId !== googleId) {
-        throw new ConflictException('Email ya registrado con otra cuenta de Google');
+        throw new ConflictException(
+          'Email ya registrado con otra cuenta de Google',
+        );
       }
     }
 
@@ -463,7 +472,9 @@ export class AuthService {
     });
 
     if (existingGoogleUser && existingGoogleUser.id !== userId) {
-      throw new ConflictException('Cuenta de Google ya está vinculada a otro usuario');
+      throw new ConflictException(
+        'Cuenta de Google ya está vinculada a otro usuario',
+      );
     }
 
     // Actualizar usuario con Google ID
@@ -480,11 +491,11 @@ export class AuthService {
     return updatedUser;
   }
 
-/**
-    * Método auxiliar para eliminar datos de usuario (iglesias, campamentos, inscripciones)
-    * @param user Usuario a eliminar
-    * @param currentUser Usuario de la sesión
-    */
+  /**
+   * Método auxiliar para eliminar datos de usuario (iglesias, campamentos, inscripciones)
+   * @param user Usuario a eliminar
+   * @param currentUser Usuario de la sesión
+   */
   private async _deleteUserData(user: any, currentUser: any) {
     // Si es una iglesia, eliminar campamentos primero
     if (user.type === 'IGLESIA' && user.churchId) {
