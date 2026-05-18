@@ -10,10 +10,11 @@ import { AuthModule } from './auth/auth.module';
 import { CampamentoModule } from './campamento/campamento.module';
 import { InscriptionModule } from './inscription/inscription.module';
 import { SitemapModule } from './sitemap/sitemap.module';
+import { GeocodeController } from './geocode/geocode.controller';
 
 @Module({
   imports: [AuthModule, CampamentoModule, InscriptionModule, SitemapModule],
-  controllers: [],
+  controllers: [GeocodeController],
   providers: [],
 })
 export class AppModule {}

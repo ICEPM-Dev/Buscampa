@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { MapPin } from "lucide-react";
+import { api } from "../../services/api";
 
 interface LocationAutocompleteProps {
   value: string;
@@ -58,17 +59,11 @@ export default function LocationAutocomplete({
     debounceRef.current = setTimeout(async () => {
       setLoading(true);
       try {
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(newValue)}&countrycodes=ar&limit=5`,
-          {
-            headers: {
-              "User-Agent": "Buscampa/1.0",
-            },
-          }
-        );
-        const data = await response.json();
-        setResults(data);
-        if (data.length > 0) {
+        const results = await api.get<SearchResult[]>("/geocode/search", {
+          params: { q: newValue, limit: 5 },
+        });
+        setResults(results);
+        if (results.length > 0) {
           setShowResults(true);
         }
       } catch (err) {
