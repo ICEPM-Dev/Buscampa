@@ -12,6 +12,8 @@ import { Link } from "react-router-dom";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import { useState } from "react";
+import RichTextDisplay from "../ui/RichTextDisplay";
+import LocationMap from "../ui/LocationMap";
 
 interface CampamentoDetailProps {
   campamento: Campamento;
@@ -52,7 +54,7 @@ export default function CampamentoDetail({
     return `${format(start, "dd MMM", { locale: es })} - ${format(
       end,
       "dd MMM yyyy",
-      { locale: es }
+      { locale: es },
     )}`;
   };
 
@@ -65,23 +67,23 @@ export default function CampamentoDetail({
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
       <div className="bg-linear-to-r from-blue-600 to-blue-800 text-white p-8">
-<Link
-            to="/campamentos"
-            className="inline-flex items-center gap-2 text-white"
-          >
-            <ArrowLeft className="h-5 w-5" />
-            Volver
-          </Link>
+        <Link
+          to="/campamentos"
+          className="inline-flex items-center gap-2 text-white"
+        >
+          <ArrowLeft className="h-5 w-5" />
+          Volver
+        </Link>
 
-          <button
-            onClick={handleCopyLink}
-            className="inline-flex items-center gap-2 text-white transition-colors ml-4"
-          >
-            <Share2 className="h-5 w-5" />
-            {copied ? "¡Copiado!" : "Compartir"}
-          </button>
+        <button
+          onClick={handleCopyLink}
+          className="inline-flex items-center gap-2 text-white transition-colors ml-4"
+        >
+          <Share2 className="h-5 w-5" />
+          {copied ? "¡Copiado!" : "Compartir"}
+        </button>
 
-        <div className="flex items-start justify-between mb-4">
+        <div className="flex items-start justify-between mb-4 mt-4">
           <div>
             <div className="inline-flex items-center gap-2 mb-3">
               <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white/20 text-white">
@@ -105,11 +107,6 @@ export default function CampamentoDetail({
             </div>
 
             <h1 className="text-3xl font-bold mb-2">{campamento.name}</h1>
-
-            <div className="flex items-center gap-2 text-blue-100">
-              <Church className="h-5 w-5" />
-              <span className="text-lg">{campamento.church.name}</span>
-            </div>
           </div>
         </div>
       </div>
@@ -120,24 +117,12 @@ export default function CampamentoDetail({
             <h2 className="text-xl font-semibold text-slate-900 mb-3">
               Descripción
             </h2>
-            <p className="text-slate-600 leading-relaxed">
-              {campamento.description}
-            </p>
+            <RichTextDisplay html={campamento.description} />
           </div>
         )}
 
         <div className="grid md:grid-cols-2 gap-6 mb-8">
           <div className="space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="shrink-0">
-                <MapPin className="h-5 w-5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-slate-500">Ubicación</p>
-                <p className="text-slate-900">{campamento.location}</p>
-              </div>
-            </div>
-
             <div className="flex items-start gap-3">
               <div className="shrink-0">
                 <Calendar className="h-5 w-5 text-blue-600" />
@@ -149,6 +134,20 @@ export default function CampamentoDetail({
                 </p>
                 <p className="text-sm text-slate-500 mt-1">
                   Duración: {getDuration(startDate, endDate)}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="shrink-0">
+                <Church className="h-5 w-5 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-500">
+                  Organizador
+                </p>
+                <p className="text-slate-900">{campamento.church.name}</p>
+                <p className="text-sm text-slate-500 mt-1">
+                  {campamento.church.denomination}
                 </p>
               </div>
             </div>
@@ -169,16 +168,12 @@ export default function CampamentoDetail({
 
             <div className="flex items-start gap-3">
               <div className="shrink-0">
-                <Church className="h-5 w-5 text-blue-600" />
+                <MapPin className="h-5 w-5 text-blue-600" />
               </div>
-              <div>
-                <p className="text-sm font-medium text-slate-500">
-                  Organizador
-                </p>
-                <p className="text-slate-900">{campamento.church.name}</p>
-                <p className="text-sm text-slate-500 mt-1">
-                  {campamento.church.denomination}
-                </p>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-slate-500">Ubicación</p>
+                <p className="text-slate-900 mb-3">{campamento.location}</p>
+                <LocationMap address={campamento.location} />
               </div>
             </div>
           </div>
@@ -203,8 +198,8 @@ export default function CampamentoDetail({
                 {isPast
                   ? "Campamento finalizado"
                   : isOngoing
-                  ? "Campamento en curso"
-                  : "Inscribirse ahora"}
+                    ? "Campamento en curso"
+                    : "Inscribirse ahora"}
               </button>
             )}
           </div>
