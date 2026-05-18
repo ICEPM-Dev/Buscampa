@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import { api } from "../../services/api";
 
 interface LocationMapProps {
   address: string;
@@ -40,20 +41,13 @@ export default function LocationMap({ address }: LocationMapProps) {
       setError(null);
 
       try {
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`,
-          {
-            headers: {
-              "User-Agent": "Buscampa/1.0",
-            },
-          }
-        );
+        const data = await api.get<{ lat?: number; lon?: number; error?: string }>("/geocode", {
+          params: { address },
+        });
 
-        const data = await response.json();
-
-        if (data && data.length > 0) {
-          setCoords([parseFloat(data[0].lat), parseFloat(data[0].lon)]);
-        } else {
+        if (data.lat && data.lon) {
+          setCoords([data.lat, data.lon]);
+        } else if (data.error) {
           setError("Ubicación no encontrada");
         }
       } catch (err) {
