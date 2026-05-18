@@ -10,6 +10,8 @@ import type {
 } from "../../types";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
+import RichTextEditor from "../ui/RichTextEditor";
+import LocationAutocomplete from "../ui/LocationAutocomplete";
 
 export default function CampamentoForm() {
   const { id } = useParams<{ id: string }>();
@@ -96,7 +98,7 @@ export default function CampamentoForm() {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value, type } = e.target;
     setFormData((prev) => ({
@@ -160,14 +162,12 @@ export default function CampamentoForm() {
             <label className="block text-sm font-medium text-slate-700 mb-1.5">
               Descripción
             </label>
-            <textarea
-              name="description"
-              placeholder="Describe las actividades, requisitos, detalles importantes..."
+            <RichTextEditor
               value={formData.description}
-              onChange={handleChange}
+              onChange={(value) =>
+                setFormData((prev) => ({ ...prev, description: value }))
+              }
               disabled={loading}
-              rows={4}
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none disabled:bg-slate-50 disabled:cursor-not-allowed placeholder:text-slate-400"
             />
             {errors.description && (
               <p className="mt-1.5 text-sm text-red-600">
@@ -216,16 +216,13 @@ export default function CampamentoForm() {
               required
             />
 
-            <Input
-              label="Ubicación"
-              type="text"
-              placeholder="Ej: Mar del Plata, Buenos Aires"
-              name="location"
+            <LocationAutocomplete
               value={formData.location}
-              onChange={handleChange}
+              onChange={(value) =>
+                setFormData((prev) => ({ ...prev, location: value }))
+              }
               error={errors.location}
               disabled={loading}
-              required
             />
           </div>
 

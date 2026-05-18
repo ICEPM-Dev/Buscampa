@@ -11,12 +11,13 @@ interface CampamentoCardProps {
 export default function CampamentoCard({ campamento }: CampamentoCardProps) {
   const startDate = parseISO(campamento.startDate);
   const endDate = parseISO(campamento.endDate);
+  const stripHtml = (html?: string) => html?.replace(/<[^>]*>/g, "");
 
   const formatDateRange = (start: Date, end: Date) => {
     return `${format(start, "dd MMM", { locale: es })} - ${format(
       end,
       "dd MMM yyyy",
-      { locale: es }
+      { locale: es },
     )}`;
   };
 
@@ -34,7 +35,7 @@ export default function CampamentoCard({ campamento }: CampamentoCardProps) {
         </h3>
 
         <p className="text-slate-600 text-sm mb-4 line-clamp-2">
-          {campamento.description || "Sin descripción"}
+          {stripHtml(campamento.description) || "Sin descripción"}
         </p>
 
         <div className="space-y-2">
