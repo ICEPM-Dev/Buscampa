@@ -121,62 +121,59 @@ export default function CampamentoDetail({
           </div>
         )}
 
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
-          <div className="space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="shrink-0">
-                <Calendar className="h-5 w-5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-slate-500">Fechas</p>
-                <p className="text-slate-900">
-                  {formatDateRange(startDate, endDate)}
-                </p>
-                <p className="text-sm text-slate-500 mt-1">
-                  Duración: {getDuration(startDate, endDate)}
-                </p>
-              </div>
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
+          <div className="flex items-start gap-3">
+            <div className="shrink-0">
+              <Church className="h-5 w-5 text-blue-600" />
             </div>
-            <div className="flex items-start gap-3">
-              <div className="shrink-0">
-                <Church className="h-5 w-5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-slate-500">
-                  Organizador
-                </p>
-                <p className="text-slate-900">{campamento.church.name}</p>
-                <p className="text-sm text-slate-500 mt-1">
-                  {campamento.church.denomination}
-                </p>
-              </div>
+            <div>
+              <p className="text-sm font-medium text-slate-500">Organizador</p>
+              <p className="text-slate-900">{campamento.church.name}</p>
+              <p className="text-sm text-slate-500 mt-1">
+                {campamento.church.denomination}
+              </p>
             </div>
           </div>
 
-          <div className="space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="shrink-0">
-                <DollarSign className="h-5 w-5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-slate-500">Precio</p>
-                <p className="text-2xl font-bold text-slate-900">
-                  ${campamento.price.toLocaleString("es-AR")}
-                </p>
-              </div>
+          <div className="flex items-start gap-3">
+            <div className="shrink-0">
+              <Calendar className="h-5 w-5 text-blue-600" />
             </div>
-
-            <div className="flex items-start gap-3">
-              <div className="shrink-0">
-                <MapPin className="h-5 w-5 text-blue-600" />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-slate-500">Ubicación</p>
-                <p className="text-slate-900 mb-3">{campamento.location}</p>
-                <LocationMap address={campamento.location} />
-              </div>
+            <div>
+              <p className="text-sm font-medium text-slate-500">Fechas</p>
+              <p className="text-slate-900">
+                {formatDateRange(startDate, endDate)}
+              </p>
+              <p className="text-sm text-slate-500 mt-1">
+                Duración: {getDuration(startDate, endDate)}
+              </p>
             </div>
           </div>
+
+          <div className="flex items-start gap-3">
+            <div className="shrink-0">
+              <DollarSign className="h-5 w-5 text-blue-600" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-slate-500">Precio</p>
+              <p className="text-2xl font-bold text-slate-900">
+                ${campamento.price.toLocaleString("es-AR")}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-3 mb-6">
+          <div className="shrink-0">
+            <MapPin className="h-5 w-5 text-blue-600" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-medium text-slate-500">Ubicación</p>
+            <p className="text-slate-900">{campamento.location}</p>
+          </div>
+        </div>
+        <div className="-mx-8 px-8 mb-8">
+          <LocationMap address={campamento.location} />
         </div>
 
         {onInscribirse && (

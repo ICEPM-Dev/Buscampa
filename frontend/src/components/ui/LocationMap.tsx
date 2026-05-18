@@ -1,44 +1,102 @@
-import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 import { useState, useEffect } from "react";
+import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 
 interface LocationMapProps {
   address: string;
 }
 
+const defaultIcon = L.icon({
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+});
+
+L.Marker.prototype.options.icon = defaultIcon;
+
+function UpdateMapCenter({ center }: { center: [number, number] }) {
+  const map = useMap();
+  useEffect(() => {
+    map.setView(center, 14);
+  }, [center, map]);
+  return null;
+}
+
 export default function LocationMap({ address }: LocationMapProps) {
-  const { isLoaded } = useLoadScript({
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-  });
-  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
-    null,
-  );
+  const [coords, setCoords] = useState<[number, number] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isLoaded || !address) return;
-    const geocoder = new google.maps.Geocoder();
-    geocoder.geocode({ address }, (results, status) => {
-      if (status === "OK" && results?.[0]) {
-        const loc = results[0].geometry.location;
-        setCoords({ lat: loc.lat(), lng: loc.lng() });
-      }
-    });
-  }, [address, isLoaded]);
+    if (!address) return;
 
-  if (!isLoaded || !coords)
+    const geocodeAddress = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`,
+          {
+            headers: {
+              "User-Agent": "Buscampa/1.0",
+            },
+          }
+        );
+
+        const data = await response.json();
+
+        if (data && data.length > 0) {
+          setCoords([parseFloat(data[0].lat), parseFloat(data[0].lon)]);
+        } else {
+          setError("Ubicación no encontrada");
+        }
+      } catch (err) {
+        setError("Error al cargar el mapa");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    geocodeAddress();
+  }, [address]);
+
+  if (loading) {
     return (
       <div className="w-full h-48 bg-slate-100 rounded-xl animate-pulse flex items-center justify-center text-slate-400 text-sm">
         Cargando mapa...
       </div>
     );
+  }
+
+  if (error || !coords) {
+    return (
+      <div className="w-full h-48 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 text-sm">
+        {error || "Ubicación no disponible"}
+      </div>
+    );
+  }
 
   return (
-    <GoogleMap
-      mapContainerClassName="w-full h-48 rounded-xl overflow-hidden"
-      center={coords}
-      zoom={14}
-      options={{ disableDefaultUI: true, zoomControl: true }}
-    >
-      <Marker position={coords} />
-    </GoogleMap>
+    <div className="w-full h-48 rounded-xl overflow-hidden border border-slate-200">
+      <MapContainer
+        center={coords}
+        zoom={14}
+        scrollWheelZoom={false}
+        style={{ height: "100%", width: "100%" }}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <Marker position={coords} />
+        <UpdateMapCenter center={coords} />
+      </MapContainer>
+    </div>
   );
 }
