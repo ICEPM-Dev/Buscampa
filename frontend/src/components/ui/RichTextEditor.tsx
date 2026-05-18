@@ -1,4 +1,5 @@
 import { useEditor, EditorContent } from "@tiptap/react";
+import { useEffect } from "react";
 import StarterKit from "@tiptap/starter-kit";
 import { Bold, Italic, List, ListOrdered } from "lucide-react";
 
@@ -15,12 +16,21 @@ export default function RichTextEditor({
 }: RichTextEditorProps) {
   const editor = useEditor({
     extensions: [StarterKit],
-    content: value,
+    content: value || "",
     editable: !disabled,
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
     },
   });
+
+  useEffect(() => {
+    if (editor && value !== undefined) {
+      const currentContent = editor.getHTML();
+      if (value !== currentContent) {
+        editor.commands.setContent(value || "");
+      }
+    }
+  }, [value, editor]);
 
   if (!editor) return null;
 
@@ -65,7 +75,7 @@ export default function RichTextEditor({
       )}
       <EditorContent
         editor={editor}
-        className="px-4 py-2.5 min-h-[100px] prose prose-sm max-w-none outline-none [&_.ProseMirror]:outline-none [&_.ProseMirror]:min-h-[80px]"
+        className="px-4 py-2.5 min-h-25 prose prose-sm max-w-none outline-none [&_.ProseMirror]:outline-none [&_.ProseMirror]:min-h-20"
       />
     </div>
   );

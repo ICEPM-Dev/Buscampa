@@ -34,6 +34,7 @@ export default function Dashboard() {
   const { isChurch } = useAuth();
   const [, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
+  const stripHtml = (html?: string) => html?.replace(/<[^>]*>/g, "");
 
   const {
     data: campamentos,
@@ -259,7 +260,7 @@ export default function Dashboard() {
                                         </h3>
                                         {campamento.description && (
                                           <p className="text-sm text-slate-600 line-clamp-2">
-                                            {campamento.description}
+                                            {stripHtml(campamento.description) || "Sin descripción"}
                                           </p>
                                         )}
                                       </div>

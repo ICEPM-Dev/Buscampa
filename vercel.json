@@ -53,6 +53,10 @@
     {
       "src": "/(.*)",
       "dest": "frontend/index.html"
+    },
+    {
+      "src": "/c/(.*)",
+      "dest": "backend/api/index.ts"
     }
   ]
 }
