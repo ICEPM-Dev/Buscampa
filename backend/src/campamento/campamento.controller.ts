@@ -12,7 +12,9 @@ import {
   Put,
   Delete,
   UseGuards,
+  Res,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { CampamentoService } from './campamento.service';
 import { JwtAuthGuard } from '../auth/guards/auth.guard';
 import { GetUser } from '../auth/decorators/user.decorator';
@@ -115,5 +117,29 @@ export class CampamentoController {
   @UseGuards(JwtAuthGuard)
   async findByCampamento(@Param('id') id: string) {
     return this.inscriptionService.findByCampamento(Number(id));
+  }
+
+  @Get('c/:id')
+  async campamentoOg(@Param('id') id: string, @Res() res: Response) {
+    try {
+      const campamento = await this.campamentoService.findOne(parseInt(id));
+      const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta property="og:title" content="${campamento.name}" />
+  <meta property="og:description" content="${campamento.church.name} - ${campamento.location}" />
+  <meta property="og:image" content="https://www.buscampa.com.ar/og-image.png" />
+  <meta property="og:url" content="https://www.buscampa.com.ar/c/${id}" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta http-equiv="refresh" content="0;url=https://www.buscampa.com.ar/c/${id}" />
+</head>
+<body>Redirigiendo...</body>
+</html>`;
+      res.setHeader('Content-Type', 'text/html');
+      res.send(html);
+    } catch {
+      res.redirect('https://www.buscampa.com.ar');
+    }
   }
 }
