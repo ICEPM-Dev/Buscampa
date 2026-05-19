@@ -58,7 +58,7 @@ export default function Campamentos() {
                   Campamentos
                 </h1>
                 <p className="text-slate-500 text-sm mt-1">
-                  Descubrí todos los eventos disponibles en Argentina
+                  Descubrí todos los eventos disponibles
                 </p>
               </div>
 

@@ -1,11 +1,11 @@
 /**
- * Componente que muestra lista de campamentos con filtros.
- * Incluye búsqueda, filtrado por ubicación y precio.
+ * Lista de campamentos con filtros — estilo consistente.
  */
 import { useState, useMemo } from "react";
 import CampamentoCard from "./CampamentoCard";
 import CampamentoFilters from "./CampamentoFilters";
 import type { Campamento } from "../../types";
+import { Tent } from "lucide-react";
 
 interface CampamentoListProps {
   campamentos: Campamento[];
@@ -24,62 +24,36 @@ export default function CampamentoList({
   });
 
   const filteredCampamentos = useMemo(() => {
-    return campamentos.filter((campamento) => {
+    return campamentos.filter((c) => {
       const matchesSearch =
         !searchQuery ||
-        campamento.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (campamento.description
-          ?.toLowerCase()
-          .includes(searchQuery.toLowerCase()) ??
+        c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (c.description?.toLowerCase().includes(searchQuery.toLowerCase()) ??
           false) ||
-        campamento.church.name
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase());
-
+        c.church.name.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesLocation =
         !locationFilter ||
-        campamento.location
-          .toLowerCase()
-          .includes(locationFilter.toLowerCase());
-
+        c.location.toLowerCase().includes(locationFilter.toLowerCase());
       const matchesPrice =
-        campamento.price >= priceFilter.min &&
-        campamento.price <= priceFilter.max;
-
+        c.price >= priceFilter.min && c.price <= priceFilter.max;
       return matchesSearch && matchesLocation && matchesPrice;
     });
   }, [campamentos, searchQuery, locationFilter, priceFilter]);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
-          <p className="mt-4 text-slate-600">Cargando campamentos...</p>
-        </div>
+      <div className="flex flex-col items-center justify-center py-20">
+        <div className="w-10 h-10 rounded-full border-4 border-blue-100 border-t-blue-600 animate-spin mb-4" />
+        <p className="text-sm text-slate-500">Cargando campamentos...</p>
       </div>
     );
   }
 
-  if (filteredCampamentos.length === 0) {
-    return (
-      <div>
-        <CampamentoFilters
-          onSearch={setSearchQuery}
-          onLocationFilter={setLocationFilter}
-          onPriceFilter={setPriceFilter}
-        />
-        <div className="text-center py-12">
-          <p className="text-slate-600 text-lg">
-            No se encontró nada
-          </p>
-          <p className="text-slate-500 mt-2">
-            Intenta ajustar los filtros de búsqueda
-          </p>
-        </div>
-      </div>
-    );
-  }
+  const hasFilters =
+    searchQuery ||
+    locationFilter ||
+    priceFilter.min > 0 ||
+    priceFilter.max < Infinity;
 
   return (
     <div>
@@ -89,29 +63,57 @@ export default function CampamentoList({
         onPriceFilter={setPriceFilter}
       />
 
-      <div className="mb-4 text-sm text-slate-600">
-        Mostrando{" "}
-        <span className="font-semibold">{filteredCampamentos.length}</span>{" "}
-        {filteredCampamentos.length === 1 ? "campamento" : "campamentos"}
-        {searchQuery && (
-          <>
-            {" "}
-            para "<span className="font-medium">{searchQuery}</span>"
-          </>
-        )}
-        {locationFilter && (
-          <>
-            {" "}
-            en <span className="font-medium">{locationFilter}</span>
-          </>
-        )}
-      </div>
+      {filteredCampamentos.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-4">
+            <Tent className="h-8 w-8 text-slate-400" />
+          </div>
+          <p className="text-base font-semibold text-slate-700 mb-1">
+            {hasFilters ? "Sin resultados" : "No hay campamentos"}
+          </p>
+          <p className="text-sm text-slate-400">
+            {hasFilters
+              ? "Intentá ajustar los filtros de búsqueda"
+              : "Volvé pronto para ver nuevos eventos"}
+          </p>
+        </div>
+      ) : (
+        <>
+          {/* Results summary */}
+          <div className="flex items-center gap-2 mb-5">
+            <p className="text-sm text-slate-500">
+              <span className="font-semibold text-slate-800">
+                {filteredCampamentos.length}
+              </span>{" "}
+              {filteredCampamentos.length === 1 ? "campamento" : "campamentos"}
+              {searchQuery && (
+                <>
+                  {" "}
+                  para{" "}
+                  <span className="font-medium text-blue-600">
+                    "{searchQuery}"
+                  </span>
+                </>
+              )}
+              {locationFilter && (
+                <>
+                  {" "}
+                  en{" "}
+                  <span className="font-medium text-blue-600">
+                    {locationFilter}
+                  </span>
+                </>
+              )}
+            </p>
+          </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCampamentos.map((campamento) => (
-          <CampamentoCard key={campamento.id} campamento={campamento} />
-        ))}
-      </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {filteredCampamentos.map((campamento) => (
+              <CampamentoCard key={campamento.id} campamento={campamento} />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

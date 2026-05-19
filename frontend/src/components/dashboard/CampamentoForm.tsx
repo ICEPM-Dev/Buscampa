@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Save, X, Image as ImageIcon, Upload } from "lucide-react";
+import { Save, X, ImageIcon, Upload, ChevronLeft, Tent } from "lucide-react";
 import { useApi } from "../../hooks/useApi";
 import { campamentoService } from "../../services/campamento.service";
 import { api } from "../../services/api";
@@ -14,6 +14,12 @@ import Button from "../ui/Button";
 import RichTextEditor from "../ui/RichTextEditor";
 import LocationAutocomplete from "../ui/LocationAutocomplete";
 import { getThumbnailUrl } from "../../utils/imageUtils";
+
+const SectionLabel = ({ children }: { children: React.ReactNode }) => (
+  <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">
+    {children}
+  </p>
+);
 
 export default function CampamentoForm() {
   const { id } = useParams<{ id: string }>();
@@ -30,7 +36,6 @@ export default function CampamentoForm() {
     price: 0,
     location: "",
   });
-
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -38,9 +43,7 @@ export default function CampamentoForm() {
   const { data: campamento, execute: loadCampamento } = useApi<Campamento>();
 
   useEffect(() => {
-    if (id) {
-      loadCampamento(() => campamentoService.getById(parseInt(id)));
-    }
+    if (id) loadCampamento(() => campamentoService.getById(parseInt(id)));
   }, [id, loadCampamento]);
 
   useEffect(() => {
@@ -60,173 +63,202 @@ export default function CampamentoForm() {
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-    if (!allowedTypes.includes(file.type)) {
-      setErrors((prev) => ({ ...prev, image: "Tipo de archivo no permitido" }));
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      setErrors((p) => ({ ...p, image: "Tipo de archivo no permitido" }));
       return;
     }
-
     if (file.size > 5 * 1024 * 1024) {
-      setErrors((prev) => ({ ...prev, image: "El archivo es demasiado grande (máx 5MB)" }));
+      setErrors((p) => ({
+        ...p,
+        image: "El archivo es demasiado grande (máx 5MB)",
+      }));
       return;
     }
-
     setUploadingImage(true);
-    setErrors((prev) => ({ ...prev, image: "" }));
-
+    setErrors((p) => ({ ...p, image: "" }));
     try {
       const result = await api.uploadFile(file);
-      setFormData((prev) => ({
-        ...prev,
-        images: [...(prev.images || []), result.url],
-      }));
-    } catch (error) {
-      setErrors((prev) => ({ ...prev, image: "Error al subir la imagen" }));
+      setFormData((p) => ({ ...p, images: [...(p.images || []), result.url] }));
+    } catch {
+      setErrors((p) => ({ ...p, image: "Error al subir la imagen" }));
     } finally {
       setUploadingImage(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
-  const handleRemoveImage = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      images: prev.images?.filter((_, i) => i !== index),
+  const handleRemoveImage = (index: number) =>
+    setFormData((p) => ({
+      ...p,
+      images: p.images?.filter((_, i) => i !== index),
     }));
-  };
 
   const validate = (): boolean => {
-    const newErrors: Record<string, string> = {};
-    let isValid = true;
-
-    if (!formData.name.trim()) {
-      newErrors.name = "El nombre es requerido";
-      isValid = false;
-    } else if (formData.name.trim().length < 3) {
-      newErrors.name = "El nombre debe tener al menos 3 caracteres";
-      isValid = false;
-    }
-
-    if (!formData.startDate) {
-      newErrors.startDate = "La fecha de inicio es requerida";
-      isValid = false;
-    }
-
-    if (!formData.endDate) {
-      newErrors.endDate = "La fecha de fin es requerida";
-      isValid = false;
-    }
-
+    const e: Record<string, string> = {};
+    if (!formData.name.trim() || formData.name.trim().length < 3)
+      e.name = "Mínimo 3 caracteres";
+    if (!formData.startDate) e.startDate = "Requerido";
+    if (!formData.endDate) e.endDate = "Requerido";
     if (
       formData.startDate &&
       formData.endDate &&
       new Date(formData.startDate) > new Date(formData.endDate)
-    ) {
-      newErrors.endDate =
-        "La fecha de fin debe ser posterior a la fecha de inicio";
-      isValid = false;
-    }
-
-    if (formData.price < 0) {
-      newErrors.price = "El precio no puede ser negativo";
-      isValid = false;
-    }
-
-    if (!formData.location.trim()) {
-      newErrors.location = "La ubicación es requerida";
-      isValid = false;
-    }
-
-    setErrors(newErrors);
-    return isValid;
+    )
+      e.endDate = "Debe ser posterior a la fecha de inicio";
+    if (formData.price < 0) e.price = "No puede ser negativo";
+    if (!formData.location.trim()) e.location = "Requerido";
+    setErrors(e);
+    return !Object.keys(e).length;
   };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value, type } = e.target;
-    setFormData((prev) => ({
-      ...prev,
+    setFormData((p) => ({
+      ...p,
       [name]: type === "number" ? parseFloat(value) || 0 : value,
     }));
-    setErrors((prev) => ({ ...prev, [name]: "" }));
+    setErrors((p) => ({ ...p, [name]: "" }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validate()) return;
-
     setLoading(true);
-
     try {
-      if (isEditing && id) {
-        const updateDto: UpdateCampamentoDto = formData;
-        await campamentoService.update(parseInt(id), updateDto);
-      } else {
-        await campamentoService.create(formData);
-      }
+      if (isEditing && id)
+        await campamentoService.update(
+          parseInt(id),
+          formData as UpdateCampamentoDto,
+        );
+      else await campamentoService.create(formData);
       navigate("/dashboard");
-    } catch (error: any) {
+    } catch {
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-slate-900 mb-2">
-            {isEditing ? "Editar Campamento" : "Crear Nuevo Campamento"}
-          </h2>
-          <p className="text-slate-600">
+    <div className="min-h-screen bg-slate-50">
+      {/* Page header */}
+      <div className="bg-white border-b border-slate-200 py-6">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors mb-4"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Dashboard
+          </button>
+          <div className="flex items-center gap-2 mb-1">
+            <Tent className="h-4 w-4 text-blue-600" />
+            <span className="text-xs font-semibold text-blue-600 uppercase tracking-widest">
+              {isEditing ? "Editar" : "Nuevo campamento"}
+            </span>
+          </div>
+          <h1 className="text-2xl font-bold text-slate-900">
+            {isEditing ? "Editar campamento" : "Crear nuevo campamento"}
+          </h1>
+          <p className="text-sm text-slate-500 mt-0.5">
             {isEditing
-              ? "Actualiza la información"
-              : "Completa los detalles para crear un nuevo campamento"}
+              ? "Actualizá la información del campamento"
+              : "Completá los detalles para publicar un nuevo campamento"}
           </p>
         </div>
+      </div>
 
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid md:grid-cols-2 gap-6">
-            <Input
-              label="Nombre"
-              type="text"
-              placeholder="Ej: Campamento de Verano 2026"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              error={errors.name}
-              disabled={loading}
-              required
-            />
+          {/* ── BASIC INFO ── */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <SectionLabel>Información básica</SectionLabel>
+            <div className="space-y-5">
+              <Input
+                label="Nombre del campamento"
+                type="text"
+                placeholder="Ej: Campamento de Verano 2026"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                error={errors.name}
+                disabled={loading}
+                required
+              />
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                  Descripción
+                </label>
+                <RichTextEditor
+                  value={formData.description}
+                  onChange={(value) =>
+                    setFormData((p) => ({ ...p, description: value }))
+                  }
+                  disabled={loading}
+                />
+                {errors.description && (
+                  <p className="mt-1.5 text-sm text-red-600">
+                    {errors.description}
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
 
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">
-              Descripción
-            </label>
-            <RichTextEditor
-              value={formData.description}
-              onChange={(value) =>
-                setFormData((prev) => ({ ...prev, description: value }))
-              }
-              disabled={loading}
-            />
-            {errors.description && (
-              <p className="mt-1.5 text-sm text-red-600">
-                {errors.description}
-              </p>
-            )}
+          {/* ── DATES & PRICE ── */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <SectionLabel>Fechas y precio</SectionLabel>
+            <div className="grid md:grid-cols-2 gap-5">
+              <Input
+                label="Fecha de inicio"
+                type="date"
+                name="startDate"
+                value={formData.startDate}
+                onChange={handleChange}
+                error={errors.startDate}
+                disabled={loading}
+                required
+              />
+              <Input
+                label="Fecha de fin"
+                type="date"
+                name="endDate"
+                value={formData.endDate}
+                onChange={handleChange}
+                error={errors.endDate}
+                disabled={loading}
+                min={formData.startDate}
+                required
+              />
+              <Input
+                label="Precio (ARS)"
+                type="number"
+                placeholder="0.00"
+                name="price"
+                value={formData.price || ""}
+                onChange={handleChange}
+                error={errors.price}
+                disabled={loading}
+                min="0"
+                step="0.01"
+                required
+              />
+              <LocationAutocomplete
+                value={formData.location}
+                onChange={(value) =>
+                  setFormData((p) => ({ ...p, location: value }))
+                }
+                error={errors.location}
+                disabled={loading}
+              />
+            </div>
           </div>
 
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">
-              Imágenes
-            </label>
+          {/* ── IMAGES ── */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <SectionLabel>Imágenes</SectionLabel>
+
             <input
               ref={fileInputRef}
               type="file"
@@ -234,115 +266,83 @@ export default function CampamentoForm() {
               onChange={handleFileSelect}
               className="hidden"
             />
+
+            {/* Upload button */}
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={uploadingImage}
-              className="w-full py-3 border-2 border-dashed border-slate-300 rounded-lg text-slate-500 hover:border-blue-400 hover:text-blue-600 transition-colors flex items-center justify-center gap-2 mb-3"
+              className="w-full py-5 border-2 border-dashed border-slate-200 rounded-xl text-slate-400 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50/50 transition-all flex flex-col items-center justify-center gap-2 mb-4 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {uploadingImage ? (
                 <>
-                  <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full" />
-                  Subiendo imagen...
+                  <div className="w-6 h-6 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
+                  <span className="text-sm font-medium">
+                    Subiendo imagen...
+                  </span>
                 </>
               ) : (
                 <>
-                  <Upload className="h-5 w-5" />
-                  Seleccionar imagen desde tu ordenador
+                  <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center">
+                    <Upload className="h-5 w-5" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-medium text-slate-600">
+                      Seleccionar imagen
+                    </p>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      JPG, PNG o WebP · Máx 5MB
+                    </p>
+                  </div>
                 </>
               )}
             </button>
+
             {errors.image && (
-              <p className="mt-1.5 text-sm text-red-600 mb-2">{errors.image}</p>
+              <p className="text-sm text-red-600 mb-3">{errors.image}</p>
             )}
-            {formData.images && formData.images.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+            {/* Image grid */}
+            {formData.images && formData.images.length > 0 ? (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {formData.images.map((url, index) => (
-                  <div key={index} className="relative group">
+                  <div
+                    key={index}
+                    className="relative group rounded-xl overflow-hidden aspect-square bg-slate-100"
+                  >
                     <img
                       src={getThumbnailUrl(url)}
                       alt={`Imagen ${index + 1}`}
-                      className="w-full h-32 object-cover rounded-lg"
+                      className="w-full h-full object-cover"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src =
-                          "https://placehold.co/400x300?text=Imagen+no+disponible";
+                          "https://placehold.co/400x300?text=Error";
                       }}
                     />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors" />
                     <button
                       type="button"
                       onClick={() => handleRemoveImage(index)}
-                      className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute top-2 right-2 w-7 h-7 bg-red-500 text-white rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-red-600"
                     >
-                      <X className="h-4 w-4" />
+                      <X className="h-3.5 w-3.5" />
                     </button>
                   </div>
                 ))}
               </div>
-            )}
-            {(!formData.images || formData.images.length === 0) && (
-              <div className="flex items-center justify-center h-32 border-2 border-dashed border-slate-300 rounded-lg text-slate-400">
-                <div className="text-center">
-                  <ImageIcon className="h-8 w-8 mx-auto mb-2" />
-                  <p className="text-sm">Agrega URLs de imágenes</p>
-                </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-24 rounded-xl border border-slate-100 bg-slate-50 text-slate-400">
+                <ImageIcon className="h-6 w-6 mb-1.5" />
+                <p className="text-xs">Aún no hay imágenes</p>
               </div>
             )}
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <Input
-              label="Fecha de inicio"
-              type="date"
-              name="startDate"
-              value={formData.startDate}
-              onChange={handleChange}
-              error={errors.startDate}
-              disabled={loading}
-              required
-            />
-
-            <Input
-              label="Fecha de fin"
-              type="date"
-              name="endDate"
-              value={formData.endDate}
-              onChange={handleChange}
-              error={errors.endDate}
-              disabled={loading}
-              min={formData.startDate}
-              required
-            />
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            <Input
-              label="Precio (ARS)"
-              type="number"
-              placeholder="0.00"
-              name="price"
-              value={formData.price || ""}
-              onChange={handleChange}
-              error={errors.price}
-              disabled={loading}
-              min="0"
-              step="0.01"
-              required
-            />
-
-            <LocationAutocomplete
-              value={formData.location}
-              onChange={(value) =>
-                setFormData((prev) => ({ ...prev, location: value }))
-              }
-              error={errors.location}
-              disabled={loading}
-            />
-          </div>
-
-          <div className="flex gap-4 pt-4 border-t border-slate-100">
+          {/* ── ACTIONS ── */}
+          <div className="flex gap-3">
             <Button
               type="button"
-              variant="ghost"
+              variant="outline"
               onClick={() => navigate("/dashboard")}
               disabled={loading}
               className="flex-1"
@@ -354,8 +354,8 @@ export default function CampamentoForm() {
               loading={loading}
               className="flex-1 inline-flex items-center justify-center gap-2"
             >
-              <Save className="h-5 w-5" />
-              {isEditing ? "Guardar Cambios" : "Crear Campamento"}
+              <Save className="h-4 w-4" />
+              {isEditing ? "Guardar cambios" : "Publicar campamento"}
             </Button>
           </div>
         </form>
