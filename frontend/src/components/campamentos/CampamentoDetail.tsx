@@ -6,6 +6,8 @@ import {
   ArrowLeft,
   UserCheck,
   Share2,
+  X,
+  Download,
 } from "lucide-react";
 import type { Campamento } from "../../types";
 import { Link } from "react-router-dom";
@@ -30,6 +32,7 @@ export default function CampamentoDetail({
   const endDate = parseISO(campamento.endDate);
   const now = new Date();
   const [copied, setCopied] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const isUpcoming = startDate > now;
 
@@ -86,9 +89,6 @@ export default function CampamentoDetail({
         <div className="flex items-start justify-between mb-4 mt-4">
           <div>
             <div className="inline-flex items-center gap-2 mb-3">
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white/20 text-white">
-                {campamento.church.denomination}
-              </span>
               {isUpcoming && (
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-500 text-white">
                   Próximamente
@@ -121,6 +121,34 @@ export default function CampamentoDetail({
           </div>
         )}
 
+        {campamento.images && campamento.images.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold text-slate-900 mb-3">
+              Imágenes
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {campamento.images.map((url, index) => (
+                <div
+                  key={index}
+                  className="relative group cursor-pointer"
+                  onClick={() => setSelectedImage(url)}
+                >
+                  <img
+                    src={url}
+                    alt={`Imagen ${index + 1}`}
+                    className="w-full h-32 object-cover rounded-lg hover:opacity-90 transition-opacity"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src =
+                        "https://placehold.co/400x300?text=Imagen+no+disponible";
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors rounded-lg" />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="grid md:grid-cols-3 gap-6 mb-8">
           <div className="flex items-start gap-3">
             <div className="shrink-0">
@@ -129,9 +157,6 @@ export default function CampamentoDetail({
             <div>
               <p className="text-sm font-medium text-slate-500">Organizador</p>
               <p className="text-slate-900">{campamento.church.name}</p>
-              <p className="text-sm text-slate-500 mt-1">
-                {campamento.church.denomination}
-              </p>
             </div>
           </div>
 
@@ -202,6 +227,37 @@ export default function CampamentoDetail({
           </div>
         )}
       </div>
+
+      {selectedImage && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+          onClick={() => setSelectedImage(null)}
+        >
+          <button
+            className="absolute top-4 right-4 text-white hover:text-gray-300 p-2"
+            onClick={() => setSelectedImage(null)}
+          >
+            <X className="h-8 w-8" />
+          </button>
+
+          <img
+            src={selectedImage}
+            alt="Imagen ampliada"
+            className="max-w-full max-h-[85vh] object-contain rounded-lg"
+            onClick={(e) => e.stopPropagation()}
+          />
+
+          <a
+            href={selectedImage}
+            download={`campamento-${campamento.id}-imagen`}
+            className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white text-slate-900 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 flex items-center gap-2"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Download className="h-5 w-5" />
+            Descargar imagen
+          </a>
+        </div>
+      )}
     </div>
   );
 }

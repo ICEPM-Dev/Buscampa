@@ -93,7 +93,6 @@ buscampa/
 
 - ID único
 - Nombre
-- Denominación
 - Teléfono opcional
 - ID del usuario administrador
 

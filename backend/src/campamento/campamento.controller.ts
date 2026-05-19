@@ -53,15 +53,6 @@ export class CampamentoController {
   }
 
   /**
-   * GET /campamentos/:id
-   * Obtiene un campamento específico por ID (PÚBLICO - cualquiera puede ver)
-   */
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.campamentoService.findOne(Number(id));
-  }
-
-  /**
    * POST /campamentos
    * Crea un nuevo campamento para la iglesia del usuario (REQUIERE AUTH)
    */
@@ -123,16 +114,26 @@ export class CampamentoController {
   async campamentoOg(@Param('id') id: string, @Res() res: Response) {
     try {
       const campamento = await this.campamentoService.findOne(parseInt(id));
+      const description = campamento.description
+        ? campamento.description.replace(/<[^>]*>/g, '').slice(0, 200)
+        : `${campamento.church.name} - ${campamento.location}`;
+
       const html = `<!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+  <meta charset="UTF-8" />
+  <title>${campamento.name} - Buscampa</title>
   <meta property="og:title" content="${campamento.name}" />
-  <meta property="og:description" content="${campamento.church.name} - ${campamento.location}" />
+  <meta property="og:description" content="${description}" />
   <meta property="og:image" content="https://www.buscampa.com.ar/og-image.png" />
   <meta property="og:url" content="https://www.buscampa.com.ar/c/${id}" />
   <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Buscampa" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta http-equiv="refresh" content="0;url=https://www.buscampa.com.ar/c/${id}" />
+  <meta name="twitter:title" content="${campamento.name}" />
+  <meta name="twitter:description" content="${description}" />
+  <meta name="twitter:image" content="https://www.buscampa.com.ar/og-image.png" />
+  <meta http-equiv="refresh" content="0;url=https://www.buscampa.com.ar/campamentos/${id}" />
 </head>
 <body>Redirigiendo...</body>
 </html>`;
@@ -141,5 +142,10 @@ export class CampamentoController {
     } catch {
       res.redirect('https://www.buscampa.com.ar');
     }
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.campamentoService.findOne(Number(id));
   }
 }

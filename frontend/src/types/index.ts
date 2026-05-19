@@ -42,13 +42,11 @@ export interface RegisterChurchDto {
   email: string;
   name: string;
   password: string;
-  denomination: string;
 }
 
 export interface Iglesia {
   id: number;
   name: string;
-  denomination: string;
   phone?: string;
   userId?: number;
 }
@@ -57,6 +55,7 @@ export interface Campamento {
   id: number;
   name: string;
   description?: string;
+  images?: string[];
   location: string;
   startDate: string;
   endDate: string;
@@ -81,6 +80,7 @@ export interface Registration {
 export interface CreateCampamentoDto {
   name: string;
   description?: string;
+  images?: string[];
   startDate: string;
   endDate: string;
   price: number;
@@ -90,6 +90,7 @@ export interface CreateCampamentoDto {
 export interface UpdateCampamentoDto {
   name?: string;
   description?: string;
+  images?: string[];
   startDate?: string;
   endDate?: string;
   price?: number;

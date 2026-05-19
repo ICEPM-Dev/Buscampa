@@ -29,7 +29,6 @@ export interface RegisterChurchDto {
   email: string;
   name: string;
   password: string;
-  denomination: string;
 }
 
 /**
@@ -129,7 +128,6 @@ export class AuthService {
     const church = await this.prisma.iglesia.create({
       data: {
         name: dto.name,
-        denomination: dto.denomination,
       },
     });
 
@@ -517,33 +515,5 @@ export class AuthService {
 
     // Finalmente eliminar el usuario
     await this.prisma.user.delete({ where: { id: currentUser.id } });
-  }
-
-  /**
-   * Verifica un usuario como iglesia.
-   * Crea la iglesia y actualiza el tipo de usuario.
-   * @param denomination Denominación de la iglesia
-   * @param user Usuario a verificar
-   */
-  async verifyChurchAsUser(denomination: string, user: any) {
-    // Crear la iglesia
-    const church = await this.prisma.iglesia.create({
-      data: {
-        name: user.name,
-        denomination,
-      },
-    });
-
-    // Actualizar el usuario a tipo IGLESIA
-    const updatedUser = await this.prisma.user.update({
-      where: { id: user.id },
-      data: {
-        type: 'IGLESIA',
-        churchId: church.id,
-      },
-      include: { church: true },
-    });
-
-    return { user: updatedUser, church };
   }
 }

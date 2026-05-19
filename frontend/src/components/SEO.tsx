@@ -6,6 +6,7 @@ interface SEOProps {
   image?: string;
   url?: string;
   noindex?: boolean;
+  type?: string;
 }
 
 const DEFAULT_TITLE = "Buscampa - Campamentos Cristianos en Argentina";
@@ -18,7 +19,8 @@ export default function SEO({
   description, 
   image, 
   url, 
-  noindex = false 
+  noindex = false,
+  type = "website"
 }: SEOProps) {
   const fullTitle = title ? `${title} | Buscampa` : DEFAULT_TITLE;
   const fullDescription = description || DEFAULT_DESCRIPTION;
@@ -28,17 +30,26 @@ export default function SEO({
   useEffect(() => {
     document.title = fullTitle;
     
-    // Meta tags
+    // Meta tags básicos
     updateMeta("title", fullTitle);
     updateMeta("description", fullDescription);
     updateMeta("robots", noindex ? "noindex, follow" : "index, follow");
     
-    // Open Graph
+    // Open Graph - Facebook
     updateMeta("og:title", fullTitle);
     updateMeta("og:description", fullDescription);
     updateMeta("og:image", fullImage);
     updateMeta("og:url", fullUrl);
-    updateMeta("og:type", "website");
+    updateMeta("og:type", type);
+    updateMeta("og:site_name", "Buscampa");
+    
+    // Twitter Card
+    updateMeta("twitter:card", "summary_large_image");
+    updateMeta("twitter:title", fullTitle);
+    updateMeta("twitter:description", fullDescription);
+    updateMeta("twitter:image", fullImage);
+    updateMeta("twitter:domain", "buscampa.com.ar");
+    updateMeta("twitter:url", fullUrl);
     
     // Canonical
     let canonical = document.querySelector("link[rel='canonical']");
@@ -48,7 +59,7 @@ export default function SEO({
       document.head.appendChild(canonical);
     }
     canonical.setAttribute("href", fullUrl);
-  }, [fullTitle, fullDescription, fullImage, fullUrl, noindex]);
+  }, [fullTitle, fullDescription, fullImage, fullUrl, noindex, type]);
 
   return null;
 }
@@ -59,7 +70,7 @@ function updateMeta(name: string, content: string) {
   
   if (!element) {
     element = document.createElement("meta");
-    if (name.startsWith("og:")) {
+    if (name.startsWith("og:") || name.startsWith("twitter:")) {
       element.setAttribute("property", name);
     } else {
       element.setAttribute("name", name);

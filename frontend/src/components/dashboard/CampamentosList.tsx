@@ -38,6 +38,7 @@ export default function CampamentosList({
   } = useApi<Campamento[]>();
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const stripHtml = (html?: string) => html?.replace(/<[^>]*>/g, "");
   const [filterStatus, setFilterStatus] = useState<
     "all" | "upcoming" | "ongoing" | "past"
   >("all");
@@ -214,7 +215,8 @@ export default function CampamentosList({
                       </h3>
                       {campamento.description && (
                         <p className="text-sm text-slate-600 line-clamp-2">
-                          {campamento.description}
+                          {stripHtml(campamento.description) ||
+                            "Sin descripción"}
                         </p>
                       )}
                     </div>
