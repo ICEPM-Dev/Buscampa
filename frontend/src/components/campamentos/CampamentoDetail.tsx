@@ -13,7 +13,7 @@ import type { Campamento } from "../../types";
 import { Link } from "react-router-dom";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import RichTextDisplay from "../ui/RichTextDisplay";
 import LocationMap from "../ui/LocationMap";
 import { getThumbnailUrl, getLargeUrl } from "../../utils/imageUtils";
@@ -34,6 +34,44 @@ export default function CampamentoDetail({
   const now = new Date();
   const [copied, setCopied] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownload = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!selectedImage || downloading) return;
+    
+    setDownloading(true);
+    try {
+      fetch(selectedImage)
+        .then(response => response.blob())
+        .then(blob => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `campamento-${campamento.id}-imagen.jpg`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        })
+        .catch(error => console.error('Error downloading image:', error))
+        .finally(() => setDownloading(false));
+    } catch (error) {
+      console.error('Error downloading image:', error);
+      setDownloading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedImage) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [selectedImage]);
 
   const isUpcoming = startDate > now;
 
@@ -231,32 +269,38 @@ export default function CampamentoDetail({
 
       {selectedImage && (
         <div
-          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+          className="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center p-4"
           onClick={() => setSelectedImage(null)}
         >
-          <button
-            className="absolute top-4 right-4 text-white hover:text-gray-300 p-2"
-            onClick={() => setSelectedImage(null)}
-          >
-            <X className="h-8 w-8" />
-          </button>
+          <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+            <button
+              onClick={(e) => handleDownload(e)}
+              disabled={downloading}
+              className="text-white hover:text-gray-300 p-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors disabled:opacity-50"
+              title="Descargar imagen"
+            >
+              <Download className={`h-6 w-6 ${downloading ? 'animate-spin' : ''}`} />
+            </button>
+            <button
+              className="text-white hover:text-gray-300 p-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedImage(null);
+              }}
+              title="Cerrar"
+            >
+              <X className="h-6 w-6" />
+            </button>
+          </div>
 
           <img
             src={getLargeUrl(selectedImage)}
             alt="Imagen ampliada"
-            className="max-w-full max-h-[85vh] object-contain rounded-lg"
+            className="max-w-full max-h-[90vh] object-contain rounded-lg"
             onClick={(e) => e.stopPropagation()}
+            onWheel={(e) => e.stopPropagation()}
+            style={{ touchAction: 'pan-y pinch-zoom' }}
           />
-
-          <a
-            href={getLargeUrl(selectedImage)}
-            download={`campamento-${campamento.id}-imagen`}
-            className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white text-slate-900 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 flex items-center gap-2"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Download className="h-5 w-5" />
-            Descargar imagen
-          </a>
         </div>
       )}
     </div>

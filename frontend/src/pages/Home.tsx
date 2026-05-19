@@ -535,7 +535,7 @@ export default function Home() {
                   de fe
                 </h1>
                 <p className="hero-sub">
-                  Conectá con iglesias de toda Argentina y viví experiencias de
+                  Conectá con iglesias y viví experiencias de
                   comunidad que te van a transformar.
                 </p>
                 <div className="hero-ctas">
