@@ -2,7 +2,7 @@
  * DTO para la creación de campamentos.
  * Incluye validaciones para todos los campos obligatorios.
  */
-import { IsNotEmpty, IsDateString, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsDateString, IsNumber, IsOptional, IsArray } from 'class-validator';
 
 export class CreateCampamentoDto {
   @IsNotEmpty()
@@ -19,5 +19,10 @@ export class CreateCampamentoDto {
 
   @IsNotEmpty()
   location: string;
+
+  @IsOptional()
+  @IsArray()
+  images?: string[];
+
   description?: string;
 }

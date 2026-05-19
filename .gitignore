@@ -3,3 +3,4 @@
 .vs
 .env
 .vercel
+.env*.local

@@ -81,19 +81,6 @@ export class AuthController {
   }
 
   /**
-   * Endpoint para verificar cuenta como iglesia
-   * POST /auth/verify-church
-   */
-  @UseGuards(JwtAuthGuard)
-  @Post('verify-church')
-  async verifyChurch(
-    @Body() body: { denomination: string },
-    @GetUser() user: any,
-  ) {
-    return this.authService.verifyChurchAsUser(body.denomination, user);
-  }
-
-  /**
    * Endpoint para iniciar autenticación con Google OAuth
    * GET /auth/google
    */

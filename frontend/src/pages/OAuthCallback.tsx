@@ -1,13 +1,9 @@
-/**
- * Página de callback para Google OAuth.
- * Maneja la respuesta de Google OAuth y establece la sesión del usuario.
- */
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { Tent } from "lucide-react";
 
-
-export default function OAuthCallback() {
+export function OAuthCallback() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { loginWithGoogle } = useAuth();
@@ -15,119 +11,92 @@ export default function OAuthCallback() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const handleOAuthCallback = async () => {
+    const run = async () => {
       try {
         const token = searchParams.get("token");
         const errorParam = searchParams.get("error");
-        
-        // Check for Facebook cancellation - error comes as separate query params
         const fbError = searchParams.get("error_reason");
         const errorCode = searchParams.get("error_code");
         const fbErrorDesc = searchParams.get("error_description");
-        
-        if (fbError === 'user_denied' || errorCode === '200' || fbErrorDesc) {
+
+        if (fbError === "user_denied" || errorCode === "200" || fbErrorDesc)
           throw new Error("Cancelaste la autenticación con Facebook");
-        }
-
-        if (errorParam === 'access_denied' || errorParam === 'user_denied') {
+        if (errorParam === "access_denied" || errorParam === "user_denied")
           throw new Error("Cancelaste la autenticación");
-        }
-
-        if (errorParam) {
+        if (errorParam)
           throw new Error(
-            errorParam === "google_denied" 
-              ? "Cancelaste la autenticación con Google" 
+            errorParam === "google_denied"
+              ? "Cancelaste la autenticación con Google"
               : errorParam === "facebook_denied"
-              ? "Cancelaste la autenticación con Facebook"
-              : errorParam === "google_auth_failed" 
-              ? "Error en la autenticación con Google" 
-              : "Error inesperado durante la autenticación"
+                ? "Cancelaste la autenticación con Facebook"
+                : errorParam === "google_auth_failed"
+                  ? "Error en la autenticación con Google"
+                  : "Error inesperado durante la autenticación",
           );
-        }
+        if (!token) throw new Error("No se recibió token de autenticación");
 
-        if (!token) {
-          throw new Error("No se recibió token de autenticación");
-        }
-
-        // Iniciar sesión con el token de Google
         await loginWithGoogle(token);
-        
-        // Redirigir al dashboard después del login exitoso
         navigate("/", { replace: true });
-        
-      } catch (error: any) {
-        console.error("Error en OAuth callback:", error);
-        setError(error.message || "Error en la autenticación con Google");
-        
-        // Redirigir al login después de un delay
-        setTimeout(() => {
-          navigate("/auth", { replace: true });
-        }, 3000);
+      } catch (err: any) {
+        setError(err.message || "Error en la autenticación");
+        setTimeout(() => navigate("/auth", { replace: true }), 3000);
       } finally {
         setLoading(false);
       }
     };
-
-    handleOAuthCallback();
+    run();
   }, [searchParams, navigate, loginWithGoogle]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-slate-800">
+  return (
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
+      <div className="text-center max-w-sm">
+        {/* Logo */}
+        <div className="inline-flex items-center gap-2 justify-center mb-8">
+          <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow-sm">
+            <Tent className="h-4.5 w-4.5 text-white" strokeWidth={2.5} />
+          </div>
+          <span className="text-lg font-bold text-slate-900 tracking-tight">
+            Busca<span className="text-blue-600">mpa</span>
+          </span>
+        </div>
+
+        {loading ? (
+          <>
+            <div className="w-12 h-12 rounded-full border-4 border-blue-100 border-t-blue-600 animate-spin mx-auto mb-4" />
+            <h2 className="text-lg font-semibold text-slate-800 mb-1">
               Procesando autenticación...
             </h2>
-            <p className="text-slate-600">
-              Estableciendo tu sesión con Google
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="text-center space-y-4 max-w-md mx-auto px-4">
-          <div className="bg-red-50 border border-red-200 rounded-full w-16 h-16 flex items-center justify-center mx-auto">
-            <svg
-              className="w-8 h-8 text-red-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-          
-          <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-red-800">
+            <p className="text-sm text-slate-500">Estableciendo tu sesión</p>
+          </>
+        ) : error ? (
+          <>
+            <div className="w-14 h-14 bg-red-50 border border-red-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <svg
+                className="w-7 h-7 text-red-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <h2 className="text-lg font-semibold text-red-800 mb-1">
               Error en la autenticación
             </h2>
-            <p className="text-red-600">{error}</p>
-          </div>
-          
-          <div className="space-y-2 pt-2">
-            <p className="text-sm text-slate-600">
-              Serás redirigido a la página de login en 3 segundos...
+            <p className="text-sm text-red-600 mb-4">{error}</p>
+            <p className="text-xs text-slate-400">
+              Serás redirigido al login en 3 segundos...
             </p>
-            <div className="animate-pulse">
-              <div className="h-2 w-32 bg-blue-200 rounded-full mx-auto"></div>
-            </div>
-          </div>
-        </div>
+          </>
+        ) : null}
       </div>
-    );
-  }
-
-  return null; // No debería mostrar nada si todo va bien
+    </div>
+  );
 }
+
+export default OAuthCallback;
