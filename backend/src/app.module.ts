@@ -11,9 +11,10 @@ import { CampamentoModule } from './campamento/campamento.module';
 import { InscriptionModule } from './inscription/inscription.module';
 import { SitemapModule } from './sitemap/sitemap.module';
 import { GeocodeController } from './geocode/geocode.controller';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
-  imports: [AuthModule, CampamentoModule, InscriptionModule, SitemapModule],
+  imports: [AuthModule, CampamentoModule, InscriptionModule, SitemapModule, UploadModule],
   controllers: [GeocodeController],
   providers: [],
 })

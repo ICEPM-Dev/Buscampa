@@ -2,6 +2,7 @@
  * Página de inicio rediseñada — paleta azul/slate original, estética moderna.
  */
 import { useAuth } from "../hooks/useAuth";
+import heroBg from '../assets/banner2.jpg';
 import {
   ArrowRight,
   Church,
@@ -32,7 +33,7 @@ export default function Home() {
           min-height: 100vh;
           display: flex;
           align-items: center;
-          background: url('/banner2.jpg') center/cover no-repeat;
+          background: url(${heroBg}) center/cover no-repeat;
         }
 
         .hero-overlay {
