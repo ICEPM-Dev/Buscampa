@@ -1,9 +1,8 @@
 /**
  * Componente principal de la aplicación.
- * Configura el enrutamiento, proveedores de contexto y estructura general.
- * Incluye rutas públicas y protegidas con diferentes niveles de acceso.
  */
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import { AuthProvider } from "./contexts/AuthContext";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
@@ -25,67 +24,73 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import { Analytics } from "@vercel/analytics/react";
 import PhoneModal from "./components/ui/PhoneModal";
 
+function AppContent() {
+  const location = useLocation();
+  const isAuthPage = location.pathname === "/auth";
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
+  return (
+    <div className="min-h-screen bg-slate-50 flex flex-col">
+      <PhoneModal />
+      {!isAuthPage && <Header />}
+      <main className="flex-1">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/campamentos" element={<Campamentos />} />
+          <Route path="/campamentos/:id" element={<CampamentoDetail />} />
+          <Route path="/c/:id" element={<CampamentoDetail />} />
+          <Route path="/auth/google/callback" element={<OAuthCallback />} />
+          <Route
+            path="/auth/facebook/callback"
+            element={<OAuthCallback />}
+          />
+          <Route path="/terms-conditions" element={<TermsConditions />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+
+          <Route element={<ProtectedRoute />}>
+            <Route
+              path="/campamentos/:id/inscribirse"
+              element={<InscripcionForm />}
+            />
+            <Route path="/inscripciones" element={<MisInscripciones />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route
+              path="/profile/verify-church"
+              element={<VerifyChurch />}
+            />
+            <Route path="/profile/delete" element={<DeleteAccount />} />
+          </Route>
+
+          <Route element={<ProtectedRoute requiredType="IGLESIA" />}>
+            <Route
+              path="/dashboard/campamentos/nuevo"
+              element={<CampamentoForm />}
+            />
+            <Route
+              path="/dashboard/campamentos/:id/editar"
+              element={<CampamentoForm />}
+            />
+            <Route path="/dashboard/*" element={<Dashboard />} />
+          </Route>
+
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+      {!isAuthPage && <Footer />}
+    </div>
+  );
+}
+
 function App() {
   return (
     <BrowserRouter>
-      <Analytics /> {/* Proveedor de enrutamiento */}
+      <Analytics />
       <AuthProvider>
-        {" "}
-        {/* Proveedor de contexto de autenticación */}
-        <div className="min-h-screen bg-slate-50 flex flex-col">
-          <PhoneModal />
-          <Header /> {/* Barra de navegación */}
-          <main className="flex-1">
-            <Routes>
-              {/* Rutas públicas */}
-              <Route path="/" element={<Home />} />
-              <Route path="/auth" element={<Auth />} />
-
-              <Route path="/campamentos" element={<Campamentos />} />
-              <Route path="/campamentos/:id" element={<CampamentoDetail />} />
-              <Route path="/c/:id" element={<CampamentoDetail />} />
-              <Route path="/auth/google/callback" element={<OAuthCallback />} />
-              <Route
-                path="/auth/facebook/callback"
-                element={<OAuthCallback />}
-              />
-              <Route path="/terms-conditions" element={<TermsConditions />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-
-              {/* Rutas protegidas (requieren autenticación) */}
-              <Route element={<ProtectedRoute />}>
-                <Route
-                  path="/campamentos/:id/inscribirse"
-                  element={<InscripcionForm />}
-                />
-                <Route path="/inscripciones" element={<MisInscripciones />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route
-                  path="/profile/verify-church"
-                  element={<VerifyChurch />}
-                />
-                <Route path="/profile/delete" element={<DeleteAccount />} />
-              </Route>
-
-              {/* Rutas protegidas para iglesias (requieren tipo IGLESIA) */}
-              <Route element={<ProtectedRoute requiredType="IGLESIA" />}>
-                <Route
-                  path="/dashboard/campamentos/nuevo"
-                  element={<CampamentoForm />}
-                />
-                <Route
-                  path="/dashboard/campamentos/:id/editar"
-                  element={<CampamentoForm />}
-                />
-                <Route path="/dashboard/*" element={<Dashboard />} />
-              </Route>
-
-              {/* Ruta catch-all que redirige al home */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
+        <AppContent />
       </AuthProvider>
     </BrowserRouter>
   );

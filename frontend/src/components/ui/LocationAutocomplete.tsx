@@ -15,7 +15,7 @@ interface SearchResult {
   lon: string;
 }
 
-export default function LocationAutocomplete({
+export function LocationAutocomplete({
   value,
   onChange,
   error,
@@ -33,40 +33,32 @@ export default function LocationAutocomplete({
   }, [value]);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+    const handler = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node))
         setShowResults(false);
-      }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setQuery(newValue);
-    onChange(newValue);
-
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-
-    if (newValue.length < 3) {
+    const v = e.target.value;
+    setQuery(v);
+    onChange(v);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (v.length < 3) {
       setResults([]);
       return;
     }
-
     debounceRef.current = setTimeout(async () => {
       setLoading(true);
       try {
-        const results = await api.get<SearchResult[]>("/geocode/search", {
-          params: { q: newValue, limit: 5 },
+        const res = await api.get<SearchResult[]>("/geocode/search", {
+          params: { q: v, limit: 5 },
         });
-        setResults(results);
-        if (results.length > 0) {
-          setShowResults(true);
-        }
-      } catch (err) {
+        setResults(res);
+        if (res.length > 0) setShowResults(true);
+      } catch {
         setResults([]);
       } finally {
         setLoading(false);
@@ -82,14 +74,12 @@ export default function LocationAutocomplete({
   };
 
   return (
-    <div className="w-full" ref={wrapperRef}>
+    <div className="w-full relative" ref={wrapperRef}>
       <label className="block text-sm font-medium text-slate-700 mb-1.5">
         Ubicación
       </label>
       <div className="relative">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <MapPin className="h-5 w-5 text-slate-400" />
-        </div>
+        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
         <input
           type="text"
           value={query}
@@ -97,34 +87,39 @@ export default function LocationAutocomplete({
           onFocus={() => results.length > 0 && setShowResults(true)}
           disabled={disabled}
           placeholder="Ej: Mar del Plata, Buenos Aires"
-          className={`w-full pl-10 pr-4 py-2.5 rounded-lg border transition-all focus:outline-none focus:ring-2 ${
+          className={[
+            "w-full pl-9 pr-4 py-2.5 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2",
             error
-              ? "border-red-300 focus:border-red-500 focus:ring-red-500"
-              : "border-slate-300 focus:border-blue-500 focus:ring-blue-500"
-          } disabled:bg-slate-50 disabled:cursor-not-allowed`}
+              ? "border-red-300 focus:border-red-400 focus:ring-red-500/20"
+              : "border-slate-200 focus:border-blue-500 focus:ring-blue-500/20",
+            disabled ? "bg-slate-50 cursor-not-allowed" : "bg-white",
+          ].join(" ")}
         />
         {loading && (
-          <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-            <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full" />
+          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+            <div className="w-4 h-4 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
           </div>
         )}
       </div>
 
       {showResults && results.length > 0 && (
-        <ul className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-60 overflow-auto">
-          {results.map((result, index) => (
+        <ul className="absolute z-20 w-full mt-1.5 bg-white border border-slate-200 rounded-xl shadow-lg max-h-56 overflow-auto">
+          {results.map((result, i) => (
             <li
-              key={index}
+              key={i}
               onClick={() => handleSelect(result)}
-              className="px-4 py-2.5 hover:bg-slate-50 cursor-pointer text-sm text-slate-700 border-b border-slate-100 last:border-0"
+              className="flex items-start gap-2.5 px-4 py-2.5 hover:bg-slate-50 cursor-pointer text-sm text-slate-700 border-b border-slate-100 last:border-0 transition-colors"
             >
-              {result.display_name}
+              <MapPin className="h-3.5 w-3.5 text-slate-400 shrink-0 mt-0.5" />
+              <span className="line-clamp-2">{result.display_name}</span>
             </li>
           ))}
         </ul>
       )}
 
-      {error && <p className="mt-1.5 text-sm text-red-600">{error}</p>}
+      {error && <p className="mt-1.5 text-xs text-red-500">{error}</p>}
     </div>
   );
 }
+
+export default LocationAutocomplete;

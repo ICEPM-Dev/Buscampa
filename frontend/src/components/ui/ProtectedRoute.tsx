@@ -1,37 +1,34 @@
-/**
- * Componente de ruta protegida.
- * Verifica autenticación y opcionalmente el tipo de usuario requerido.
- * Redirige a login si no autenticado o a home si tipo incorrecto.
- */
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
-import { Loader2 } from "lucide-react";
+import { Tent } from "lucide-react";
 
 interface ProtectedRouteProps {
   requiredType?: "USER" | "IGLESIA";
 }
 
-export default function ProtectedRoute({ requiredType }: ProtectedRouteProps) {
+export function ProtectedRoute({ requiredType }: ProtectedRouteProps) {
   const { isAuthenticated, isLoading, user } = useAuth();
 
-  if (isLoading) {
+  if (isLoading)
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-slate-600">Cargando...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 gap-4">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm">
+            <Tent className="h-4 w-4 text-white" strokeWidth={2.5} />
+          </div>
+          <span className="text-lg font-bold text-slate-900 tracking-tight">
+            Busca<span className="text-blue-600">mpa</span>
+          </span>
         </div>
+        <div className="w-8 h-8 rounded-full border-4 border-blue-100 border-t-blue-600 animate-spin" />
+        <p className="text-sm text-slate-500">Cargando...</p>
       </div>
     );
-  }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/auth" replace />;
-  }
-
-  if (requiredType && user?.type !== requiredType) {
+  if (!isAuthenticated) return <Navigate to="/auth" replace />;
+  if (requiredType && user?.type !== requiredType)
     return <Navigate to="/" replace />;
-  }
-
   return <Outlet />;
 }
+
+export default ProtectedRoute;
