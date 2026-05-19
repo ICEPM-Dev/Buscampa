@@ -532,7 +532,6 @@ export default function Home() {
                   <br />
                   <span className="accent">campamento</span>
                   <br />
-                  de fe
                 </h1>
                 <p className="hero-sub">
                   Conectá con iglesias y viví experiencias de
