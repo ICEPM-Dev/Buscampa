@@ -118,6 +118,25 @@ class ApiService {
     const response = await this.client.delete<T>(url, config);
     return response.data;
   }
+
+  /**
+   * Método para subir archivos.
+   */
+  async uploadFile(file: File): Promise<{ url: string; filename: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await this.client.post<{ url: string; filename: string }>(
+      '/upload',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+    return response.data;
+  }
 }
 
 // Instancia singleton del servicio API

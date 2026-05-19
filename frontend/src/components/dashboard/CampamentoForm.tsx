@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Save, X, Plus, Image as ImageIcon } from "lucide-react";
+import { Save, X, Image as ImageIcon, Upload } from "lucide-react";
 import { useApi } from "../../hooks/useApi";
 import { campamentoService } from "../../services/campamento.service";
+import { api } from "../../services/api";
 import type {
   Campamento,
   CreateCampamentoDto,
@@ -12,11 +13,13 @@ import Input from "../ui/Input";
 import Button from "../ui/Button";
 import RichTextEditor from "../ui/RichTextEditor";
 import LocationAutocomplete from "../ui/LocationAutocomplete";
+import { getThumbnailUrl } from "../../utils/imageUtils";
 
 export default function CampamentoForm() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isEditing = Boolean(id);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState<CreateCampamentoDto>({
     name: "",
@@ -28,9 +31,9 @@ export default function CampamentoForm() {
     location: "",
   });
 
-  const [newImageUrl, setNewImageUrl] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const { data: campamento, execute: loadCampamento } = useApi<Campamento>();
 
@@ -54,17 +57,36 @@ export default function CampamentoForm() {
     }
   }, [campamento, isEditing]);
 
-  const handleAddImage = () => {
-    if (newImageUrl.trim()) {
-      const url = newImageUrl.trim();
-      if (url.startsWith("http://") || url.startsWith("https://")) {
-        setFormData((prev) => ({
-          ...prev,
-          images: [...(prev.images || []), url],
-        }));
-        setNewImageUrl("");
-      } else {
-        setErrors((prev) => ({ ...prev, image: "URL inválida" }));
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      setErrors((prev) => ({ ...prev, image: "Tipo de archivo no permitido" }));
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setErrors((prev) => ({ ...prev, image: "El archivo es demasiado grande (máx 5MB)" }));
+      return;
+    }
+
+    setUploadingImage(true);
+    setErrors((prev) => ({ ...prev, image: "" }));
+
+    try {
+      const result = await api.uploadFile(file);
+      setFormData((prev) => ({
+        ...prev,
+        images: [...(prev.images || []), result.url],
+      }));
+    } catch (error) {
+      setErrors((prev) => ({ ...prev, image: "Error al subir la imagen" }));
+    } finally {
+      setUploadingImage(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
       }
     }
   };
@@ -205,27 +227,31 @@ export default function CampamentoForm() {
             <label className="block text-sm font-medium text-slate-700 mb-1.5">
               Imágenes
             </label>
-            <div className="flex gap-2 mb-3">
-              <input
-                type="url"
-                value={newImageUrl}
-                onChange={(e) => {
-                  setNewImageUrl(e.target.value);
-                  setErrors((prev) => ({ ...prev, image: "" }));
-                }}
-                placeholder="https://ejemplo.com/imagen.jpg"
-                className="flex-1 px-4 py-2.5 rounded-lg border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-              />
-              <button
-                type="button"
-                onClick={handleAddImage}
-                disabled={!newImageUrl.trim()}
-                className="px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed flex items-center gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                Agregar
-              </button>
-            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadingImage}
+              className="w-full py-3 border-2 border-dashed border-slate-300 rounded-lg text-slate-500 hover:border-blue-400 hover:text-blue-600 transition-colors flex items-center justify-center gap-2 mb-3"
+            >
+              {uploadingImage ? (
+                <>
+                  <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full" />
+                  Subiendo imagen...
+                </>
+              ) : (
+                <>
+                  <Upload className="h-5 w-5" />
+                  Seleccionar imagen desde tu ordenador
+                </>
+              )}
+            </button>
             {errors.image && (
               <p className="mt-1.5 text-sm text-red-600 mb-2">{errors.image}</p>
             )}
@@ -234,7 +260,7 @@ export default function CampamentoForm() {
                 {formData.images.map((url, index) => (
                   <div key={index} className="relative group">
                     <img
-                      src={url}
+                      src={getThumbnailUrl(url)}
                       alt={`Imagen ${index + 1}`}
                       className="w-full h-32 object-cover rounded-lg"
                       onError={(e) => {

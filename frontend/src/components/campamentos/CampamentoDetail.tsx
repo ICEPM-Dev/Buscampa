@@ -16,6 +16,7 @@ import { es } from "date-fns/locale";
 import { useState } from "react";
 import RichTextDisplay from "../ui/RichTextDisplay";
 import LocationMap from "../ui/LocationMap";
+import { getThumbnailUrl, getLargeUrl } from "../../utils/imageUtils";
 
 interface CampamentoDetailProps {
   campamento: Campamento;
@@ -134,7 +135,7 @@ export default function CampamentoDetail({
                   onClick={() => setSelectedImage(url)}
                 >
                   <img
-                    src={url}
+                    src={getThumbnailUrl(url)}
                     alt={`Imagen ${index + 1}`}
                     className="w-full h-32 object-cover rounded-lg hover:opacity-90 transition-opacity"
                     onError={(e) => {
@@ -241,14 +242,14 @@ export default function CampamentoDetail({
           </button>
 
           <img
-            src={selectedImage}
+            src={getLargeUrl(selectedImage)}
             alt="Imagen ampliada"
             className="max-w-full max-h-[85vh] object-contain rounded-lg"
             onClick={(e) => e.stopPropagation()}
           />
 
           <a
-            href={selectedImage}
+            href={getLargeUrl(selectedImage)}
             download={`campamento-${campamento.id}-imagen`}
             className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white text-slate-900 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 flex items-center gap-2"
             onClick={(e) => e.stopPropagation()}
