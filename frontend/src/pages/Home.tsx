@@ -642,7 +642,7 @@ export default function Home() {
                 {
                   icon: <Calendar size={16} />,
                   title: "Fácil inscripción",
-                  text: "Registrate en segundos con un proceso simple y seguro. Sin formularios interminables.",
+                  text: "Registrate en segundos con un proceso simple y seguro. Sin formularios largos.",
                 },
                 {
                   icon: <Church size={16} />,
@@ -652,7 +652,7 @@ export default function Home() {
                 {
                   icon: <Users size={16} />,
                   title: "Comunidad activa",
-                  text: "Formá parte de una red de fe vibrante que crece cada día en toda Argentina.",
+                  text: "Formá parte de una red de fe que crece en toda Argentina.",
                 },
               ].map((f) => (
                 <div className="feature-item" key={f.title}>
@@ -675,11 +675,11 @@ export default function Home() {
                 Sumate hoy
               </span>
               <h2 className="cta-title">
-                ¿Listo para tu próxima aventura de fe?
+                ¿Listo para tu próxima aventura?
               </h2>
               <p className="cta-sub">
                 Creá tu cuenta en minutos y empezá a descubrir campamentos
-                cristianos increíbles en toda Argentina.
+                cristianos increíbles.
               </p>
               <div
                 style={{
