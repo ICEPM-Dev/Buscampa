@@ -8,6 +8,7 @@ import {
   Share2,
   X,
   Download,
+  Clock,
 } from "lucide-react";
 import type { Campamento } from "../../types";
 import { Link } from "react-router-dom";
@@ -36,225 +37,240 @@ export default function CampamentoDetail({
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
 
+  const isUpcoming = startDate > now;
+  const isPast = endDate < now;
+  const isOngoing = startDate <= now && endDate >= now;
+
   const handleDownload = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!selectedImage || downloading) return;
-    
     setDownloading(true);
-    try {
-      fetch(selectedImage)
-        .then(response => response.blob())
-        .then(blob => {
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `campamento-${campamento.id}-imagen.jpg`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          window.URL.revokeObjectURL(url);
-        })
-        .catch(error => console.error('Error downloading image:', error))
-        .finally(() => setDownloading(false));
-    } catch (error) {
-      console.error('Error downloading image:', error);
-      setDownloading(false);
-    }
+    fetch(selectedImage)
+      .then((r) => r.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `campamento-${campamento.id}-imagen.jpg`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      })
+      .catch(console.error)
+      .finally(() => setDownloading(false));
   };
 
   useEffect(() => {
-    if (selectedImage) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    document.body.style.overflow = selectedImage ? "hidden" : "";
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     };
   }, [selectedImage]);
 
-  const isUpcoming = startDate > now;
-
   const handleCopyLink = () => {
-    const url = `${window.location.origin}/c/${campamento.id}`;
-    navigator.clipboard.writeText(url);
+    navigator.clipboard.writeText(
+      `${window.location.origin}/c/${campamento.id}`,
+    );
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-  const isPast = endDate < now;
-  const isOngoing = startDate <= now && endDate >= now;
 
   const formatDateRange = (start: Date, end: Date) => {
     if (
       start.getMonth() === end.getMonth() &&
       start.getFullYear() === end.getFullYear()
     ) {
-      return `${start.getDate()} - ${end.getDate()} de ${format(end, "MMMM", {
-        locale: es,
-      })}, ${end.getFullYear()}`;
+      return `${start.getDate()} al ${end.getDate()} de ${format(end, "MMMM", { locale: es })}, ${end.getFullYear()}`;
     }
-    return `${format(start, "dd MMM", { locale: es })} - ${format(
-      end,
-      "dd MMM yyyy",
-      { locale: es },
-    )}`;
+    return `${format(start, "dd MMM", { locale: es })} — ${format(end, "dd MMM yyyy", { locale: es })}`;
   };
 
   const getDuration = (start: Date, end: Date) => {
-    const diffTime = Math.abs(end.getTime() - start.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return `${diffDays} día${diffDays > 1 ? "s" : ""}`;
+    const days = Math.ceil(
+      Math.abs(end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24),
+    );
+    return `${days} día${days > 1 ? "s" : ""}`;
   };
 
+  const statusBadge = isUpcoming
+    ? {
+        label: "Próximamente",
+        bg: "bg-green-100 text-green-700 border-green-200",
+      }
+    : isOngoing
+      ? {
+          label: "En curso",
+          bg: "bg-amber-100 text-amber-700 border-amber-200",
+        }
+      : {
+          label: "Finalizado",
+          bg: "bg-slate-100 text-slate-500 border-slate-200",
+        };
+
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-      <div className="bg-linear-to-r from-blue-600 to-blue-800 text-white p-8">
-        <Link
-          to="/campamentos"
-          className="inline-flex items-center gap-2 text-white"
-        >
-          <ArrowLeft className="h-5 w-5" />
-          Volver
-        </Link>
+    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+      {/* ── HEADER ── */}
+      <div className="relative bg-linear-to-br from-blue-700 to-blue-900 text-white">
+        {/* Noise overlay for depth */}
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          }}
+        />
 
-        <button
-          onClick={handleCopyLink}
-          className="inline-flex items-center gap-2 text-white transition-colors ml-4"
-        >
-          <Share2 className="h-5 w-5" />
-          {copied ? "¡Copiado!" : "Compartir"}
-        </button>
-
-        <div className="flex items-start justify-between mb-4 mt-4">
-          <div>
-            <div className="inline-flex items-center gap-2 mb-3">
-              {isUpcoming && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-500 text-white">
-                  Próximamente
-                </span>
-              )}
-              {isOngoing && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-500 text-white">
-                  En curso
-                </span>
-              )}
-              {isPast && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-slate-500 text-white">
-                  Finalizado
-                </span>
-              )}
-            </div>
-
-            <h1 className="text-3xl font-bold mb-2">{campamento.name}</h1>
+        <div className="relative px-6 pt-5 pb-7 sm:px-8 sm:pt-6 sm:pb-8">
+          {/* Nav row */}
+          <div className="flex items-center justify-between mb-6">
+            <Link
+              to="/campamentos"
+              className="inline-flex items-center gap-1.5 text-sm text-blue-200 hover:text-white transition-colors font-medium"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Campamentos
+            </Link>
+            <button
+              onClick={handleCopyLink}
+              className="inline-flex items-center gap-1.5 text-sm text-blue-200 hover:text-white transition-colors font-medium px-3 py-1.5 rounded-lg hover:bg-white/10"
+            >
+              <Share2 className="h-4 w-4" />
+              {copied ? "¡Copiado!" : "Compartir"}
+            </button>
           </div>
+
+          {/* Status + title */}
+          <span
+            className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold border mb-3 ${statusBadge.bg}`}
+          >
+            {statusBadge.label}
+          </span>
+          <h1 className="text-2xl sm:text-3xl font-bold leading-tight">
+            {campamento.name}
+          </h1>
+          <p className="mt-1.5 text-sm text-blue-200">
+            {campamento.church.name}
+          </p>
         </div>
       </div>
 
-      <div className="p-8">
-        {campamento.description && (
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">
-              Descripción
-            </h2>
-            <RichTextDisplay html={campamento.description} />
-          </div>
-        )}
-
-        {campamento.images && campamento.images.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">
-              Imágenes
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {campamento.images.map((url, index) => (
-                <div
-                  key={index}
-                  className="relative group cursor-pointer"
-                  onClick={() => setSelectedImage(url)}
-                >
-                  <img
-                    src={getThumbnailUrl(url)}
-                    alt={`Imagen ${index + 1}`}
-                    className="w-full h-32 object-cover rounded-lg hover:opacity-90 transition-opacity"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src =
-                        "https://placehold.co/400x300?text=Imagen+no+disponible";
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors rounded-lg" />
-                </div>
-              ))}
+      <div className="p-6 sm:p-8 space-y-8">
+        {/* ── INFO CHIPS ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {/* Church */}
+          <div className="flex items-center gap-3 bg-slate-50 rounded-xl px-4 py-3.5 border border-slate-100">
+            <div className="w-9 h-9 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
+              <Church className="h-4.5 w-4.5 text-blue-600" />
             </div>
-          </div>
-        )}
-
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <div className="flex items-start gap-3">
-            <div className="shrink-0">
-              <Church className="h-5 w-5 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-slate-500">Organizador</p>
-              <p className="text-slate-900">{campamento.church.name}</p>
+            <div className="min-w-0">
+              <p className="text-xs text-slate-400 font-medium">Organizador</p>
+              <p className="text-sm font-semibold text-slate-900 truncate">
+                {campamento.church.name}
+              </p>
             </div>
           </div>
 
-          <div className="flex items-start gap-3">
-            <div className="shrink-0">
-              <Calendar className="h-5 w-5 text-blue-600" />
+          {/* Dates */}
+          <div className="flex items-center gap-3 bg-slate-50 rounded-xl px-4 py-3.5 border border-slate-100">
+            <div className="w-9 h-9 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
+              <Calendar className="h-4.5 w-4.5 text-blue-600" />
             </div>
-            <div>
-              <p className="text-sm font-medium text-slate-500">Fechas</p>
-              <p className="text-slate-900">
+            <div className="min-w-0">
+              <p className="text-xs text-slate-400 font-medium">Fechas</p>
+              <p className="text-sm font-semibold text-slate-900">
                 {formatDateRange(startDate, endDate)}
               </p>
-              <p className="text-sm text-slate-500 mt-1">
-                Duración: {getDuration(startDate, endDate)}
+              <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
+                <Clock className="h-3 w-3" /> {getDuration(startDate, endDate)}
               </p>
             </div>
           </div>
 
-          <div className="flex items-start gap-3">
-            <div className="shrink-0">
-              <DollarSign className="h-5 w-5 text-blue-600" />
+          {/* Price */}
+          <div className="flex items-center gap-3 bg-slate-50 rounded-xl px-4 py-3.5 border border-slate-100">
+            <div className="w-9 h-9 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
+              <DollarSign className="h-4.5 w-4.5 text-blue-600" />
             </div>
             <div>
-              <p className="text-sm font-medium text-slate-500">Precio</p>
-              <p className="text-2xl font-bold text-slate-900">
+              <p className="text-xs text-slate-400 font-medium">Precio</p>
+              <p className="text-xl font-bold text-slate-900">
                 ${campamento.price.toLocaleString("es-AR")}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="flex items-start gap-3 mb-6">
-          <div className="shrink-0">
-            <MapPin className="h-5 w-5 text-blue-600" />
+        {/* ── DESCRIPTION ── */}
+        {campamento.description && (
+          <div>
+            <h2 className="text-base font-bold text-slate-900 mb-3">
+              Descripción
+            </h2>
+            <div className="text-slate-600 leading-relaxed">
+              <RichTextDisplay html={campamento.description} />
+            </div>
           </div>
-          <div className="flex-1">
-            <p className="text-sm font-medium text-slate-500">Ubicación</p>
-            <p className="text-slate-900">{campamento.location}</p>
+        )}
+
+        {/* ── IMAGES ── */}
+        {campamento.images && campamento.images.length > 0 && (
+          <div>
+            <h2 className="text-base font-bold text-slate-900 mb-3">
+              Imágenes
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {campamento.images.map((url, index) => (
+                <div
+                  key={index}
+                  className="relative group cursor-pointer rounded-xl overflow-hidden bg-slate-100 aspect-square"
+                  onClick={() => setSelectedImage(url)}
+                >
+                  <img
+                    src={getThumbnailUrl(url)}
+                    alt={`Imagen ${index + 1}`}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src =
+                        "https://placehold.co/400x300?text=No+disponible";
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors" />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-        <div className="-mx-8 px-8 mb-8">
-          <LocationMap address={campamento.location} />
+        )}
+
+        {/* ── LOCATION ── */}
+        <div>
+          <h2 className="text-base font-bold text-slate-900 mb-3">Ubicación</h2>
+          <div className="flex items-center gap-2 text-sm text-slate-600 mb-3">
+            <MapPin className="h-4 w-4 text-blue-500 shrink-0" />
+            {campamento.location}
+          </div>
+          <div className="rounded-xl overflow-hidden border border-slate-200">
+            <LocationMap address={campamento.location} />
+          </div>
         </div>
 
+        {/* ── CTA ── */}
         {onInscribirse && (
-          <div className="mt-8">
+          <div className="pt-2">
             {isAlreadyInscribed ? (
               <button
                 onClick={() => (window.location.href = "/inscripciones")}
-                className="w-full bg-green-600 text-white py-4 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                className="w-full flex items-center justify-center gap-2 bg-green-600 text-white py-3.5 rounded-xl text-sm font-semibold hover:bg-green-700 transition-colors shadow-sm shadow-green-200"
               >
                 <UserCheck className="h-5 w-5" />
-                Ya estás inscripto
+                Ya estás inscripto — ver mis inscripciones
               </button>
             ) : (
               <button
                 onClick={onInscribirse}
                 disabled={isPast || isOngoing}
-                className="w-full bg-blue-600 text-white py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-slate-300 disabled:cursor-not-allowed"
+                className="w-full py-3.5 rounded-xl text-sm font-semibold transition-colors shadow-sm disabled:cursor-not-allowed
+                  bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200
+                  disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
               >
                 {isPast
                   ? "Campamento finalizado"
@@ -267,39 +283,41 @@ export default function CampamentoDetail({
         )}
       </div>
 
+      {/* ── LIGHTBOX ── */}
       {selectedImage && (
         <div
-          className="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center p-4"
+          className="fixed inset-0 z-9999 bg-black/92 flex items-center justify-center p-4"
           onClick={() => setSelectedImage(null)}
         >
           <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
             <button
-              onClick={(e) => handleDownload(e)}
+              onClick={handleDownload}
               disabled={downloading}
-              className="text-white hover:text-gray-300 p-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors disabled:opacity-50"
+              className="p-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-colors disabled:opacity-50"
               title="Descargar imagen"
             >
-              <Download className={`h-6 w-6 ${downloading ? 'animate-spin' : ''}`} />
+              <Download
+                className={`h-5 w-5 ${downloading ? "animate-spin" : ""}`}
+              />
             </button>
             <button
-              className="text-white hover:text-gray-300 p-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
+              className="p-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-colors"
               onClick={(e) => {
                 e.stopPropagation();
                 setSelectedImage(null);
               }}
               title="Cerrar"
             >
-              <X className="h-6 w-6" />
+              <X className="h-5 w-5" />
             </button>
           </div>
 
           <img
             src={getLargeUrl(selectedImage)}
             alt="Imagen ampliada"
-            className="max-w-full max-h-[90vh] object-contain rounded-lg"
+            className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl"
             onClick={(e) => e.stopPropagation()}
-            onWheel={(e) => e.stopPropagation()}
-            style={{ touchAction: 'pan-y pinch-zoom' }}
+            style={{ touchAction: "pan-y pinch-zoom" }}
           />
         </div>
       )}

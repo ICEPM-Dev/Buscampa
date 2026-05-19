@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, CheckCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle, Tent, Lock } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { inscriptionService } from "../../services/inscription.service";
 import type { CreateInscriptionDto } from "../../types";
@@ -20,13 +20,12 @@ export default function InscripcionForm() {
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    if (user) {
+    if (user)
       setFormData({
         fullName: user.name || "",
         email: user.email || "",
         phone: user.phone || "",
       });
-    }
   }, [user]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,17 +35,16 @@ export default function InscripcionForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!id) return;
-    if (!formData.fullName.trim() || !formData.email.trim()) return;
-
+    if (!id || !formData.fullName.trim() || !formData.email.trim()) return;
     setLoading(true);
-
     try {
       await inscriptionService.create(parseInt(id), formData);
       setSuccess(true);
     } catch (error: any) {
-      if (error.response?.status === 409 || error.response?.data?.message?.includes("inscripto")) {
+      if (
+        error.response?.status === 409 ||
+        error.response?.data?.message?.includes("inscripto")
+      ) {
         setTimeout(() => navigate(`/campamentos/${id}`), 2000);
       }
     } finally {
@@ -54,35 +52,34 @@ export default function InscripcionForm() {
     }
   };
 
+  /* ── SUCCESS STATE ── */
   if (success) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center py-12 px-4">
-        <div className="max-w-md w-full">
-          <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6">
-              <CheckCircle className="h-10 w-10 text-green-600" />
+        <div className="w-full max-w-sm text-center">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-2xl mb-5">
+              <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-
-            <h2 className="text-2xl font-bold text-slate-900 mb-2">
-              ¡Inscripción Exitosa!
+            <h2 className="text-xl font-bold text-slate-900 mb-1.5">
+              ¡Inscripción exitosa!
             </h2>
-            <p className="text-slate-600 mb-6">
-              Te has inscripto correctamente en el campamento.
+            <p className="text-sm text-slate-500 mb-6">
+              Te inscribiste correctamente en el campamento.
             </p>
-
-            <div className="space-y-3">
+            <div className="flex flex-col gap-2.5">
               <Button
                 onClick={() => navigate("/inscripciones")}
                 className="w-full"
               >
-                Ver Mis Inscripciones
+                Ver mis inscripciones
               </Button>
               <Button
                 variant="outline"
                 onClick={() => navigate("/campamentos")}
                 className="w-full"
               >
-                Volver a Campamentos
+                Volver a campamentos
               </Button>
             </div>
           </div>
@@ -91,24 +88,39 @@ export default function InscripcionForm() {
     );
   }
 
+  /* ── FORM ── */
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="max-w-md mx-auto px-4 py-12">
-        <button
-          onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-6 transition-colors"
-        >
-          <ArrowLeft className="h-5 w-5" />
-          Volver
-        </button>
+      {/* Page header */}
+      <div className="bg-white border-b border-slate-200 py-6">
+        <div className="max-w-md mx-auto px-4">
+          <button
+            onClick={() => navigate(-1)}
+            className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors mb-4"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Volver
+          </button>
+          <div className="flex items-center gap-2 mb-1">
+            <Tent className="h-4 w-4 text-blue-600" />
+            <span className="text-xs font-semibold text-blue-600 uppercase tracking-widest">
+              Inscripción
+            </span>
+          </div>
+          <h1 className="text-2xl font-bold text-slate-900">
+            Inscribirse en campamento
+          </h1>
+        </div>
+      </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-slate-900 mb-2">
-              Inscribirse en Campamento
-            </h2>
-            <p className="text-slate-600">
-              Tus datos de cuenta se usarán automáticamente
+      <div className="max-w-md mx-auto px-4 py-8">
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
+          {/* Notice */}
+          <div className="flex items-start gap-3 bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6">
+            <Lock className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
+            <p className="text-xs text-blue-700 leading-relaxed">
+              Tus datos están precargados desde tu cuenta. Solo el teléfono
+              puede editarse si no lo tenés cargado.
             </p>
           </div>
 
@@ -123,7 +135,6 @@ export default function InscripcionForm() {
               disabled
               required
             />
-
             <Input
               label="Email"
               type="email"
@@ -134,7 +145,6 @@ export default function InscripcionForm() {
               disabled
               required
             />
-
             <Input
               label="Teléfono"
               type="tel"
@@ -146,9 +156,11 @@ export default function InscripcionForm() {
               required
             />
 
-            <Button type="submit" fullWidth loading={loading}>
-              {loading ? "Procesando..." : "Inscribirse"}
-            </Button>
+            <div className="pt-1">
+              <Button type="submit" fullWidth loading={loading}>
+                {loading ? "Procesando..." : "Confirmar inscripción"}
+              </Button>
+            </div>
           </form>
         </div>
       </div>
