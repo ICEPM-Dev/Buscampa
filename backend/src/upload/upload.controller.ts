@@ -21,11 +21,11 @@ export class UploadController {
       throw new BadRequestException('El archivo es demasiado grande. Máximo 5MB');
     }
 
-    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}-${file.originalname}`;
+    const fileName = `buscampa-blob/${Date.now()}-${Math.random().toString(36).substring(7)}-${file.originalname}`;
     
     const blob = await put(fileName, file.buffer, {
       access: 'public',
-      addRandomSuffix: false,
+      token: process.env.BLOB_READ_WRITE_TOKEN,
     });
 
     return {
