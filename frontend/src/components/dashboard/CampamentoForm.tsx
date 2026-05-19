@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Save } from "lucide-react";
+import { Save, X, Plus, Image as ImageIcon } from "lucide-react";
 import { useApi } from "../../hooks/useApi";
 import { campamentoService } from "../../services/campamento.service";
 import type {
@@ -21,12 +21,14 @@ export default function CampamentoForm() {
   const [formData, setFormData] = useState<CreateCampamentoDto>({
     name: "",
     description: "",
+    images: [],
     startDate: "",
     endDate: "",
     price: 0,
     location: "",
   });
 
+  const [newImageUrl, setNewImageUrl] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
@@ -43,6 +45,7 @@ export default function CampamentoForm() {
       setFormData({
         name: campamento.name,
         description: campamento.description || "",
+        images: campamento.images || [],
         startDate: new Date(campamento.startDate).toISOString().split("T")[0],
         endDate: new Date(campamento.endDate).toISOString().split("T")[0],
         price: campamento.price,
@@ -50,6 +53,28 @@ export default function CampamentoForm() {
       });
     }
   }, [campamento, isEditing]);
+
+  const handleAddImage = () => {
+    if (newImageUrl.trim()) {
+      const url = newImageUrl.trim();
+      if (url.startsWith("http://") || url.startsWith("https://")) {
+        setFormData((prev) => ({
+          ...prev,
+          images: [...(prev.images || []), url],
+        }));
+        setNewImageUrl("");
+      } else {
+        setErrors((prev) => ({ ...prev, image: "URL inválida" }));
+      }
+    }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      images: prev.images?.filter((_, i) => i !== index),
+    }));
+  };
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -130,7 +155,7 @@ export default function CampamentoForm() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-slate-900 mb-2">
@@ -173,6 +198,68 @@ export default function CampamentoForm() {
               <p className="mt-1.5 text-sm text-red-600">
                 {errors.description}
               </p>
+            )}
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              Imágenes
+            </label>
+            <div className="flex gap-2 mb-3">
+              <input
+                type="url"
+                value={newImageUrl}
+                onChange={(e) => {
+                  setNewImageUrl(e.target.value);
+                  setErrors((prev) => ({ ...prev, image: "" }));
+                }}
+                placeholder="https://ejemplo.com/imagen.jpg"
+                className="flex-1 px-4 py-2.5 rounded-lg border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+              />
+              <button
+                type="button"
+                onClick={handleAddImage}
+                disabled={!newImageUrl.trim()}
+                className="px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Agregar
+              </button>
+            </div>
+            {errors.image && (
+              <p className="mt-1.5 text-sm text-red-600 mb-2">{errors.image}</p>
+            )}
+            {formData.images && formData.images.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {formData.images.map((url, index) => (
+                  <div key={index} className="relative group">
+                    <img
+                      src={url}
+                      alt={`Imagen ${index + 1}`}
+                      className="w-full h-32 object-cover rounded-lg"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src =
+                          "https://placehold.co/400x300?text=Imagen+no+disponible";
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(index)}
+                      className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            {(!formData.images || formData.images.length === 0) && (
+              <div className="flex items-center justify-center h-32 border-2 border-dashed border-slate-300 rounded-lg text-slate-400">
+                <div className="text-center">
+                  <ImageIcon className="h-8 w-8 mx-auto mb-2" />
+                  <p className="text-sm">Agrega URLs de imágenes</p>
+                </div>
+              </div>
             )}
           </div>
 

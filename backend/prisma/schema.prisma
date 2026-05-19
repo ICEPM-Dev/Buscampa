@@ -48,7 +48,6 @@ model User {
 model Iglesia {
   id           Int          @id @default(autoincrement()) // ID único
   name         String // Nombre de la iglesia
-  denomination String // Denominación religiosa
   phone        String? // Teléfono de contacto opcional
   userId       Int?         @unique // ID del usuario administrador
   user         User?        @relation("UserChurch") // Usuario administrador
@@ -63,6 +62,7 @@ model Campamento {
   id            Int            @id @default(autoincrement()) // ID único
   name          String // Nombre del campamento
   description   String? // Descripción opcional
+  images        String[] // URLs de imágenes del campamento
   location      String // Ubicación del campamento
   startDate     DateTime // Fecha de inicio
   endDate       DateTime // Fecha de fin

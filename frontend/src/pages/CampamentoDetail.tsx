@@ -5,7 +5,10 @@ import { useAuth } from "../hooks/useAuth";
 import { campamentoService } from "../services/campamento.service";
 import { inscriptionService } from "../services/inscription.service";
 import CampamentoDetail from "../components/campamentos/CampamentoDetail";
+import SEO from "../components/SEO";
 import type { Registration } from "../types";
+import { format, parseISO } from "date-fns";
+import { es } from "date-fns/locale";
 
 export default function CampamentoDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -85,15 +88,34 @@ export default function CampamentoDetailPage() {
     );
   }
 
+  const startDate = parseISO(campamento.startDate);
+  const endDate = parseISO(campamento.endDate);
+  const formattedDates = format(startDate, "d MMM", { locale: es }) + " - " + format(endDate, "d MMM yyyy", { locale: es });
+
+  const seoTitle = `${campamento.name} - ${campamento.location}`;
+  const seoDescription = `${campamento.church.name} organiza este campamento en ${campamento.location}. ${formattedDates}. Precio: $${campamento.price.toLocaleString("es-AR")}. ¡Inscríbete ahora!`;
+  const seoImage = campamento.images && campamento.images.length > 0 
+    ? campamento.images[0] 
+    : undefined;
+
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <CampamentoDetail
-          campamento={campamento}
-          onInscribirse={isOrganizer ? undefined : handleInscribirse}
-          isAlreadyInscribed={isAlreadyInscribed}
-        />
+    <>
+      <SEO 
+        title={seoTitle}
+        description={seoDescription}
+        url={`/campamentos/${campamento.id}`}
+        image={seoImage}
+        type="article"
+      />
+      <div className="min-h-screen bg-slate-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <CampamentoDetail
+            campamento={campamento}
+            onInscribirse={isOrganizer ? undefined : handleInscribirse}
+            isAlreadyInscribed={isAlreadyInscribed}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 }

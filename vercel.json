@@ -12,51 +12,23 @@
     }
   ],
   "routes": [
-    {
-      "src": "/robots.txt",
-      "dest": "backend/api/index.ts"
-    },
-    {
-      "src": "/sitemap.xml",
-      "dest": "backend/api/index.ts"
-    },
+    { "src": "/robots.txt", "dest": "backend/api/index.ts" },
+    { "src": "/sitemap.xml", "dest": "backend/api/index.ts" },
     {
       "src": "/api/auth/(google|facebook)/callback",
       "dest": "backend/api/index.ts"
     },
-    {
-      "src": "/favicon.svg",
-      "dest": "frontend/favicon.svg"
-    },
+    { "src": "/favicon.svg", "dest": "frontend/favicon.svg" },
     {
       "src": "/api/(.*)",
       "dest": "backend/api/index.ts",
       "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
     },
-    {
-      "src": "/auth/google/callback",
-      "dest": "frontend/index.html"
-    },
-    {
-      "src": "/auth/facebook/callback",
-      "dest": "frontend/index.html"
-    },
-    {
-      "src": "/assets/(.*)",
-      "dest": "frontend/assets/$1"
-    },
-    {
-      "src": "/((?!api/).*)",
-      "dest": "frontend/$1",
-      "continue": true
-    },
-    {
-      "src": "/(.*)",
-      "dest": "frontend/index.html"
-    },
-    {
-      "src": "/c/(.*)",
-      "dest": "backend/api/index.ts"
-    }
+    { "src": "/auth/google/callback", "dest": "frontend/index.html" },
+    { "src": "/auth/facebook/callback", "dest": "frontend/index.html" },
+    { "src": "/assets/(.*)", "dest": "frontend/assets/$1" },
+    { "src": "/c/(.*)", "dest": "backend/api/index.ts" },
+    { "src": "/((?!api/).*)", "dest": "frontend/$1", "continue": true },
+    { "src": "/(.*)", "dest": "frontend/index.html" }
   ]
 }

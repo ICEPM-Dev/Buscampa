@@ -24,11 +24,6 @@ export default function CampamentoCard({ campamento }: CampamentoCardProps) {
   return (
     <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-slate-200 overflow-hidden flex flex-col">
       <div className="p-6 flex-1">
-        <div className="flex items-start justify-between mb-3">
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-            {campamento.church.denomination}
-          </span>
-        </div>
 
         <h3 className="text-xl font-semibold text-slate-900 mb-2 line-clamp-2">
           {campamento.name}
