@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Save, X, ImageIcon, Upload, ChevronLeft, Tent } from "lucide-react";
+import { Save, X, ImageIcon, Upload, ChevronLeft } from "lucide-react";
 import { useApi } from "../../hooks/useApi";
 import { campamentoService } from "../../services/campamento.service";
 import { api } from "../../services/api";
@@ -153,7 +153,6 @@ export default function CampamentoForm() {
             Dashboard
           </button>
           <div className="flex items-center gap-2 mb-1">
-            <Tent className="h-4 w-4 text-blue-600" />
             <span className="text-xs font-semibold text-blue-600 uppercase tracking-widest">
               {isEditing ? "Editar" : "Nuevo campamento"}
             </span>
