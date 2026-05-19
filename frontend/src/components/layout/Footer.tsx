@@ -2,7 +2,7 @@
  * Footer rediseñado — moderno, paleta slate/blue original
  */
 import { Link } from "react-router-dom";
-import { FileText, Shield, Mail, MapPin } from "lucide-react";
+import { FileText, Shield, Mail } from "lucide-react";
 import logo from "../../assets/logo.svg";
 
 export default function Footer() {
@@ -237,10 +237,6 @@ export default function Footer() {
               © {new Date().getFullYear()} Buscampa. Todos los derechos
               reservados.
             </p>
-            <div className="bc-footer-badge">
-              <MapPin size={11} />
-              Argentina
-            </div>
           </div>
         </div>
       </footer>
