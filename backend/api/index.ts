@@ -7,6 +7,14 @@ import express from 'express';
 
 const server = express();
 
+// Redirigir /c/:id a /share/campamento/:id para asegurar que la ruta
+// de Open Graph sea servida correctamente por el backend en plataformas
+// donde las rutas pueden llegar a este handler (ej. Vercel).
+server.get('/c/:id', (req, res) => {
+  const { id } = req.params;
+  return res.redirect(302, `/share/campamento/${id}`);
+});
+
 export const createNestServer = async (expressInstance: express.Express) => {
   const app = await NestFactory.create(
     AppModule,
@@ -17,6 +25,8 @@ export const createNestServer = async (expressInstance: express.Express) => {
     exclude: [
       { path: 'robots.txt', method: RequestMethod.GET },
       { path: 'sitemap.xml', method: RequestMethod.GET },
+      { path: 'c/(.*)', method: RequestMethod.ALL },
+      { path: 'share/(.*)', method: RequestMethod.ALL },
     ],
   });
   app.enableCors();

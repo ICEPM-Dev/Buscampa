@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useApi } from "../../hooks/useApi";
 import { campamentoService } from "../../services/campamento.service";
+import { inscriptionService } from "../../services/inscription.service";
 import type { Campamento, Registration } from "../../types";
 import { format, parseISO, isAfter, isWithinInterval } from "date-fns";
 import { es } from "date-fns/locale";
@@ -35,16 +36,7 @@ export function InscripcionesList() {
   const loadInscripciones = async (campamentoId: number) => {
     setLoadingInscripciones(true);
     try {
-      const token = localStorage.getItem("token");
-      const data = await fetch(
-        `http://localhost:3000/campamentos/${campamentoId}/inscripciones`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      ).then((r) => r.json());
+      const data = await inscriptionService.getByCampamento(campamentoId);
       setInscripciones(data);
     } catch (e) {
       console.error(e);
