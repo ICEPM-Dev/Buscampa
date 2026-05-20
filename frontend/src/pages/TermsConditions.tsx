@@ -61,8 +61,8 @@ export function Terms() {
               body: (
                 <p>
                   Buscampa conecta iglesias con personas interesadas en
-                  campamentos cristianos en Argentina. Las iglesias publican
-                  campamentos y los usuarios pueden inscribirse en ellos.
+                  campamentos en Argentina. Las iglesias publican campamentos y
+                  los usuarios pueden inscribirse en ellos.
                 </p>
               ),
             },

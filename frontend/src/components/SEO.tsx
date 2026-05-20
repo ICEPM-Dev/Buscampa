@@ -9,8 +9,8 @@ interface SEOProps {
   type?: string;
 }
 
-const DEFAULT_TITLE = "Buscampa - Campamentos Cristianos en Argentina";
-const DEFAULT_DESCRIPTION = "Encuentra y participa en campamentos cristianos en Argentina. Conecta con iglesias, inscríbete fácilmente y vive experiencias de fe y comunidad.";
+const DEFAULT_TITLE = "Buscampa - Aventura con Proposito";
+const DEFAULT_DESCRIPTION = "Encuentra y participa en campamentos cristianos. Conecta con iglesias, inscríbete fácilmente y vive experiencias de fe y comunidad.";
 const DEFAULT_IMAGE = "https://buscampa.com.ar/og-image.png";
 const BASE_URL = "https://buscampa.com.ar";
 

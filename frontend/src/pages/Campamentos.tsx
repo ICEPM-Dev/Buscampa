@@ -34,7 +34,7 @@ export default function Campamentos() {
     <>
       <SEO
         title="Campamentos"
-        description="Explora campamentos cristianos en Argentina. Encuentra retiros espirituales, campamentos juveniles y eventos de tu iglesia."
+        description="Explora campamentos cristianos. Encuentra retiros espirituales, campamentos juveniles y eventos de tu iglesia."
       />
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');

@@ -1,6 +1,6 @@
-# Buscampa
+# Buscampa - Aventura con Proposito
 
-Plataforma web para conectar iglesias con personas interesadas en campamentos cristianos en Argentina. Permite a las iglesias publicar y gestionar campamentos, mientras que los usuarios pueden explorar, inscribirse y participar.
+Plataforma web para conectar iglesias con personas interesadas en campamentos cristianos. Permite a las iglesias publicar y gestionar campamentos, mientras que los usuarios pueden explorar, inscribirse y participar.
 
 ## Características
 
