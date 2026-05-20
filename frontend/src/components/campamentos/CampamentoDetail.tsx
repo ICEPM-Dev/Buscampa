@@ -17,6 +17,7 @@ import { es } from "date-fns/locale";
 import { useState, useEffect } from "react";
 import RichTextDisplay from "../ui/RichTextDisplay";
 import LocationMap from "../ui/LocationMap";
+import ShareCampamento from "./ShareCampamento";
 import { getThumbnailUrl, getLargeUrl } from "../../utils/imageUtils";
 
 interface CampamentoDetailProps {
@@ -211,6 +212,11 @@ export default function CampamentoDetail({
             </div>
           </div>
         )}
+
+        {/* ── SHARE ── */}
+        <div className="bg-blue-50 rounded-xl border border-blue-200 p-6">
+          <ShareCampamento campamento={campamento} />
+        </div>
 
         {/* ── IMAGES ── */}
         {campamento.images && campamento.images.length > 0 && (
