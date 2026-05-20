@@ -153,9 +153,17 @@ export function InscripcionesList() {
             >
               <div className="flex items-start gap-4">
                 {/* Avatar */}
-                <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shrink-0 text-white font-bold text-sm">
-                  {ins.fullName.charAt(0).toUpperCase()}
-                </div>
+                {ins.user?.photoUrl ? (
+                  <img
+                    src={ins.user.photoUrl}
+                    alt={ins.fullName}
+                    className="w-10 h-10 rounded-xl object-cover shrink-0"
+                  />
+                ) : (
+                  <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shrink-0 text-white font-bold text-sm">
+                    {ins.fullName.charAt(0).toUpperCase()}
+                  </div>
+                )}
 
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-slate-900 text-sm">
