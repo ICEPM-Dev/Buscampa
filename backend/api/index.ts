@@ -26,7 +26,6 @@ export const createNestServer = async (expressInstance: express.Express) => {
       { path: 'robots.txt', method: RequestMethod.GET },
       { path: 'sitemap.xml', method: RequestMethod.GET },
       { path: 'c/*', method: RequestMethod.ALL },
-      { path: 'campamentos/*', method: RequestMethod.ALL },
       { path: 'share/campamento/*', method: RequestMethod.ALL },
     ],
   });
