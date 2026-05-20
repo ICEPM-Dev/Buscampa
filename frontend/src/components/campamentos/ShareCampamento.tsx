@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   shareOnWhatsApp,
   shareOnFacebook,
   copyShareUrl,
-  useNativeShare,
 } from "../../utils/shareUtils";
-import { Facebook, Clipboard, Share2, Phone } from "lucide-react";
+import { Facebook, Clipboard, Phone } from "lucide-react";
 
 interface ShareCampamentoProps {
   campamento: {
@@ -24,13 +23,6 @@ export default function ShareCampamento({
   onClose,
 }: ShareCampamentoProps) {
   const [copied, setCopied] = useState(false);
-  const [canNativeShare, setCanNativeShare] = useState(false);
-
-  useEffect(() => {
-    setCanNativeShare(
-      typeof navigator !== "undefined" && !!(navigator as any).share,
-    );
-  }, []);
 
   const handleCopyLink = async () => {
     const success = await copyShareUrl(campamento.id);
@@ -39,18 +31,6 @@ export default function ShareCampamento({
       setTimeout(() => setCopied(false), 2000);
       if (onClose) onClose();
     }
-  };
-
-  const handleNativeShare = async () => {
-    const success = await useNativeShare({
-      id: campamento.id,
-      name: campamento.name,
-      location: campamento.location ?? "",
-      church: campamento.church?.name ?? "",
-      price: campamento.price ?? 0,
-    });
-    if (success && onClose) onClose();
-    return success;
   };
 
   const handleWhatsApp = () => {
@@ -83,16 +63,6 @@ export default function ShareCampamento({
 
   return (
     <div className="space-y-4">
-      {canNativeShare && (
-        <button
-          onClick={handleNativeShare}
-          className="block sm:hidden w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors items-center justify-center gap-2"
-        >
-          <Share2 className="w-4 h-4 shrink-0" />
-          Compartir
-        </button>
-      )}
-
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <button
           onClick={handleWhatsApp}

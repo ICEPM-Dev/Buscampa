@@ -1,7 +1,7 @@
 /**
  * Componente principal de la aplicación.
  */
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { AuthProvider } from "./contexts/AuthContext";
 import Header from "./components/layout/Header";
@@ -24,6 +24,11 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import { Analytics } from "@vercel/analytics/react";
 import PhoneModal from "./components/ui/PhoneModal";
 
+function ShareCampamentoRedirect() {
+  const { id } = useParams();
+  return <Navigate to={`/campamentos/${id}`} replace />;
+}
+
 function AppContent() {
   const location = useLocation();
   const isAuthPage = location.pathname === "/auth";
@@ -42,6 +47,8 @@ function AppContent() {
           <Route path="/auth" element={<Auth />} />
           <Route path="/campamentos" element={<Campamentos />} />
           <Route path="/campamentos/:id" element={<CampamentoDetail />} />
+          <Route path="/share/campamento/:id" element={<ShareCampamentoRedirect />} />
+          <Route path="/c/:id" element={<ShareCampamentoRedirect />} />
           <Route path="/auth/google/callback" element={<OAuthCallback />} />
           <Route
             path="/auth/facebook/callback"
