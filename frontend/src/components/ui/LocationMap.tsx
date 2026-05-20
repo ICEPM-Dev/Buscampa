@@ -67,7 +67,10 @@ export function LocationMap({ address }: LocationMapProps) {
     );
 
   return (
-    <div className="w-full h-52 rounded-xl overflow-hidden border border-slate-200 shadow-sm" style={{ zIndex: 1 }}>
+    <div
+      className="w-full h-52 rounded-xl overflow-hidden border border-slate-200 shadow-sm"
+      style={{ isolation: "isolate", position: "relative", zIndex: 0 }}
+    >
       <MapContainer
         center={coords}
         zoom={14}
