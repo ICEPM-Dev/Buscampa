@@ -34,7 +34,7 @@ export default function CampamentoDetail({
   const startDate = parseISO(campamento.startDate);
   const endDate = parseISO(campamento.endDate);
   const now = new Date();
-  const [copied, setCopied] = useState(false);
+  const [copied] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
