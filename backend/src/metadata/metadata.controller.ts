@@ -18,10 +18,12 @@ export class MetadataController {
 
   /**
    * Endpoint para compartir campamentos en redes sociales
+   * GET /campamentos/:id
    * GET /c/:id
    * GET /share/campamento/:id
    * Devuelve HTML con metadatos del campamento inyectados
    */
+  @Get('campamentos/:id')
   @Get('c/:id')
   @Get('share/campamento/:id')
   async shareCampamento(

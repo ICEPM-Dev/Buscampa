@@ -5,7 +5,6 @@ import { useState, useMemo } from "react";
 import CampamentoCard from "./CampamentoCard";
 import CampamentoFilters from "./CampamentoFilters";
 import type { Campamento } from "../../types";
-import { Tent } from "lucide-react";
 
 interface CampamentoListProps {
   campamentos: Campamento[];
@@ -65,9 +64,6 @@ export default function CampamentoList({
 
       {filteredCampamentos.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-4">
-            <Tent className="h-8 w-8 text-slate-400" />
-          </div>
           <p className="text-base font-semibold text-slate-700 mb-1">
             {hasFilters ? "Sin resultados" : "No hay campamentos"}
           </p>
