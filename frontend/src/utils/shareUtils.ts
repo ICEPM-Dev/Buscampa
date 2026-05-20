@@ -4,7 +4,7 @@
  */
 
 const BASE_URL = "https://buscampa.com.ar";
-const SHARE_BASE_URL = `${BASE_URL}/campamentos`;
+const SHARE_BASE_URL = `${BASE_URL}/c`;
 
 interface CampamentoShareData {
   id: number;
