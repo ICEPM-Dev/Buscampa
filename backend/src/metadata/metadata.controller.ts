@@ -24,11 +24,32 @@ export class MetadataController {
    * Devuelve HTML con metadatos del campamento inyectados
    */
   @Get('campamentos/:id')
+  async shareCampamentoViaDirectLink(
+    @Param('id') id: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    return this.handleMetadataRequest(id, res);
+  }
+
   @Get('c/:id')
+  async shareCampamentoViaShortLink(
+    @Param('id') id: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    return this.handleMetadataRequest(id, res);
+  }
+
   @Get('share/campamento/:id')
   async shareCampamento(
     @Param('id') id: string,
     @Res() res: Response,
+  ): Promise<void> {
+    return this.handleMetadataRequest(id, res);
+  }
+
+  private async handleMetadataRequest(
+    id: string,
+    res: Response,
   ): Promise<void> {
     try {
       const campamentoId = parseInt(id, 10);
