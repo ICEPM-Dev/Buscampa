@@ -10,27 +10,16 @@ import { MetadataService } from './metadata.service';
 
 /**
  * Controller para servir metadata de campamentos a bots de redes sociales.
- * Detecta si la solicitud es de un bot y sirve HTML con metadatos inyectados.
+ * Sirve HTML con metadatos inyectados en rutas específicas de compartir.
  */
 @Controller()
 export class MetadataController {
   constructor(private metadataService: MetadataService) {}
 
   /**
-   * Endpoint para compartir campamentos en redes sociales
-   * GET /campamentos/:id
    * GET /c/:id
-   * GET /share/campamento/:id
-   * Devuelve HTML con metadatos del campamento inyectados
+   * Ruta corta para compartir campamentos
    */
-  @Get('campamentos/:id')
-  async shareCampamentoViaDirectLink(
-    @Param('id') id: string,
-    @Res() res: Response,
-  ): Promise<void> {
-    return this.handleMetadataRequest(id, res);
-  }
-
   @Get('c/:id')
   async shareCampamentoViaShortLink(
     @Param('id') id: string,
@@ -39,6 +28,10 @@ export class MetadataController {
     return this.handleMetadataRequest(id, res);
   }
 
+  /**
+   * GET /share/campamento/:id
+   * Ruta para compartir campamentos en redes sociales
+   */
   @Get('share/campamento/:id')
   async shareCampamento(
     @Param('id') id: string,
