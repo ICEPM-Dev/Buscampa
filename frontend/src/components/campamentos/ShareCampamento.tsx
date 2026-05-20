@@ -63,7 +63,7 @@ export default function ShareCampamento({
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 gap-3">
         <button
           onClick={handleWhatsApp}
           className="px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center gap-2 font-medium text-sm whitespace-nowrap min-h-10"
