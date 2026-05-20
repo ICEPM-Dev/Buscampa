@@ -12,7 +12,6 @@ import {
   Church,
   ArrowRight,
   AlertTriangle,
-  Tent,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { format, parseISO } from "date-fns";
@@ -62,7 +61,6 @@ export function MisInscripciones() {
       <div className="bg-white border-b border-slate-200 py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2 mb-1">
-            <Tent className="h-4 w-4 text-blue-600" />
             <span className="text-xs font-semibold text-blue-600 uppercase tracking-widest">
               Mi cuenta
             </span>
@@ -79,9 +77,6 @@ export function MisInscripciones() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {!inscripciones || inscripciones.length === 0 ? (
           <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-50 rounded-2xl mb-4">
-              <Tent className="h-8 w-8 text-blue-400" />
-            </div>
             <h3 className="text-lg font-semibold text-slate-900 mb-1">
               Aún no tenés inscripciones
             </h3>
