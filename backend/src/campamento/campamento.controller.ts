@@ -126,7 +126,7 @@ export class CampamentoController {
   <meta property="og:title" content="${campamento.name}" />
   <meta property="og:description" content="${description}" />
   <meta property="og:image" content="https://www.buscampa.com.ar/og-image.png" />
-  <meta property="og:url" content="https://www.buscampa.com.ar/c/${id}" />
+      <meta property="og:url" content="https://www.buscampa.com.ar/campamentos/${id}" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Buscampa" />
   <meta name="twitter:card" content="summary_large_image" />

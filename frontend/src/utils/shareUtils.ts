@@ -4,7 +4,7 @@
  */
 
 const BASE_URL = "https://buscampa.com.ar";
-const SHARE_BASE_URL = `${BASE_URL}/c`;
+const SHARE_BASE_URL = `${BASE_URL}/campamentos`;
 
 interface CampamentoShareData {
   id: number;
@@ -17,7 +17,7 @@ interface CampamentoShareData {
 
 /**
  * Genera la URL de compartir para un campamento
- * Esta URL usa el endpoint /c/:id del backend para servir metadatos a bots
+ * Esta URL usa el endpoint /campamentos/:id para mostrar la URL pública del campamento
  */
 export function getCampamentoShareUrl(campamentoId: number): string {
   return `${SHARE_BASE_URL}/${campamentoId}`;
@@ -38,24 +38,6 @@ export function shareOnWhatsApp(campamento: CampamentoShareData): string {
 export function shareOnFacebook(campamento: CampamentoShareData): string {
   const shareUrl = getCampamentoShareUrl(campamento.id);
   return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
-}
-
-/**
- * Genera la URL para compartir en Twitter
- */
-export function shareOnTwitter(campamento: CampamentoShareData): string {
-  const shareUrl = getCampamentoShareUrl(campamento.id);
-  const text = `¡Mira este campamento! ${campamento.name} en ${campamento.location} 🏕️`;
-  return `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`;
-}
-
-/**
- * Genera la URL para compartir en Telegram
- */
-export function shareOnTelegram(campamento: CampamentoShareData): string {
-  const shareUrl = getCampamentoShareUrl(campamento.id);
-  const text = `${campamento.name} - ${campamento.location}`;
-  return `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`;
 }
 
 /**

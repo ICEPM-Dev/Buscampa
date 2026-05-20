@@ -34,7 +34,8 @@ export default function CampamentoDetail({
   const startDate = parseISO(campamento.startDate);
   const endDate = parseISO(campamento.endDate);
   const now = new Date();
-  const [copied, setCopied] = useState(false);
+  const [copied] = useState(false);
+  const [showShare, setShowShare] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
 
@@ -70,11 +71,7 @@ export default function CampamentoDetail({
   }, [selectedImage]);
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(
-      `${window.location.origin}/c/${campamento.id}`,
-    );
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setShowShare(true);
   };
 
   const formatDateRange = (start: Date, end: Date) => {
@@ -213,10 +210,7 @@ export default function CampamentoDetail({
           </div>
         )}
 
-        {/* ── SHARE ── */}
-        <div className="bg-blue-50 rounded-xl border border-blue-200 p-6">
-          <ShareCampamento campamento={campamento} />
-        </div>
+        {/* Share UI is shown when user clicks the header share button */}
 
         {/* ── IMAGES ── */}
         {campamento.images && campamento.images.length > 0 && (
@@ -325,6 +319,31 @@ export default function CampamentoDetail({
             onClick={(e) => e.stopPropagation()}
             style={{ touchAction: "pan-y pinch-zoom" }}
           />
+        </div>
+      )}
+
+      {/* ── SHARE MODAL ── */}
+      {showShare && (
+        <div
+          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+          onClick={() => setShowShare(false)}
+        >
+          <div
+            className="bg-white rounded-2xl w-full max-w-md p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Compartir campamento</h3>
+              <button
+                onClick={() => setShowShare(false)}
+                className="p-2 rounded-full hover:bg-slate-100"
+                aria-label="Cerrar"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <ShareCampamento campamento={campamento} />
+          </div>
         </div>
       )}
     </div>

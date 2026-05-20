@@ -77,7 +77,7 @@ Sitemap: ${baseUrl}/sitemap.xml`;
 
     for (const camp of campamentos) {
       urls.push({
-        loc: `${baseUrl}/c/${camp.id}`,
+        loc: `${baseUrl}/campamentos/${camp.id}`,
         lastmod: camp.createdAt.toISOString().split('T')[0],
         priority: '0.7',
         changefreq: 'weekly',

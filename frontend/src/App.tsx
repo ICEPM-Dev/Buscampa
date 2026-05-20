@@ -42,7 +42,6 @@ function AppContent() {
           <Route path="/auth" element={<Auth />} />
           <Route path="/campamentos" element={<Campamentos />} />
           <Route path="/campamentos/:id" element={<CampamentoDetail />} />
-          <Route path="/c/:id" element={<CampamentoDetail />} />
           <Route path="/auth/google/callback" element={<OAuthCallback />} />
           <Route
             path="/auth/facebook/callback"

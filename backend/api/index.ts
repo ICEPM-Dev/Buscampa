@@ -7,10 +7,10 @@ import express from 'express';
 
 const server = express();
 
-// Redirigir /c/:id a /share/campamento/:id para asegurar que la ruta
+// Redirigir /campamentos/:id a /share/campamento/:id para asegurar que la ruta
 // de Open Graph sea servida correctamente por el backend en plataformas
 // donde las rutas pueden llegar a este handler (ej. Vercel).
-server.get('/c/:id', (req, res) => {
+server.get('/campamentos/:id', (req, res) => {
   const { id } = req.params;
   return res.redirect(302, `/share/campamento/${id}`);
 });
