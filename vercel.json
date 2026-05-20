@@ -17,14 +17,7 @@
     "formats": ["image/avif", "image/webp"]
   },
   "routes": [
-    {
-      "src": "/campamentos/(.*)",
-      "dest": "backend/api/index.ts"
-    },
-    {
-      "src": "/share/campamento/(.*)",
-      "dest": "backend/api/index.ts"
-    },
+    { "src": "/share/campamento/(.*)", "dest": "backend/api/index.ts" },
     { "src": "/robots.txt", "dest": "backend/api/index.ts" },
     { "src": "/sitemap.xml", "dest": "backend/api/index.ts" },
     {

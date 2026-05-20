@@ -4,8 +4,9 @@ import {
   Param,
   Res,
   BadRequestException,
+  Req,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { MetadataService } from './metadata.service';
 
 /**
@@ -24,8 +25,26 @@ export class MetadataController {
   async shareCampamentoViaShortLink(
     @Param('id') id: string,
     @Res() res: Response,
+    @Req() req: Request,
   ): Promise<void> {
-    return this.handleMetadataRequest(id, res);
+    const userAgent = req.get('user-agent')?.toLowerCase() || '';
+    const botPatterns = [
+      'facebookexternalhit',
+      'whatsapp',
+      'twitterbot',
+      'linkedinbot',
+      'discord',
+      'telegrambot',
+      'googlebot',
+    ];
+    const isBot = botPatterns.some((p) => userAgent.includes(p));
+
+    if (isBot) {
+      return this.handleMetadataRequest(id, res);
+    }
+
+    // Usuario normal → redirigir al frontend
+    res.redirect(302, `/campamentos/${id}`);
   }
 
   /**
