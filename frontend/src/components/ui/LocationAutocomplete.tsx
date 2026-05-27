@@ -85,11 +85,8 @@ export function LocationAutocomplete({
         q,
         limit: "6",
         lang: "es",
-        // Bias hacia Argentina (opcional — mejora resultados locales)
-        "bbox.min_lon": "-73.6",
-        "bbox.min_lat": "-55.1",
-        "bbox.max_lon": "-53.6",
-        "bbox.max_lat": "-21.8",
+        // Bias hacia Argentina: formato correcto de Photon es "minLon,minLat,maxLon,maxLat"
+        bbox: "-73.6,-55.1,-53.6,-21.8",
       });
 
       const res = await fetch(`https://photon.komoot.io/api/?${params}`, {
