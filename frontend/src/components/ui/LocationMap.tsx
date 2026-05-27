@@ -36,7 +36,7 @@ async function geocodeAddress(
     const params = new URLSearchParams({
       q: address,
       limit: "1",
-      lang: "es",
+      lang: "default",
       bbox: "-73.6,-55.1,-53.6,-21.8",
     });
     const res = await fetch(`https://photon.komoot.io/api/?${params}`);
