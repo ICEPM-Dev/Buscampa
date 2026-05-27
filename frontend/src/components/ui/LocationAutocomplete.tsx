@@ -84,8 +84,8 @@ export function LocationAutocomplete({
       const params = new URLSearchParams({
         q,
         limit: "6",
-        lang: "es",
-        // Bias hacia Argentina: formato correcto de Photon es "minLon,minLat,maxLon,maxLat"
+        // Photon solo soporta: default, de, en, fr
+        lang: "default",
         bbox: "-73.6,-55.1,-53.6,-21.8",
       });
 
