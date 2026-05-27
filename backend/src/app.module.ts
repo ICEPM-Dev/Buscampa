@@ -10,14 +10,13 @@ import { AuthModule } from './auth/auth.module';
 import { CampamentoModule } from './campamento/campamento.module';
 import { InscriptionModule } from './inscription/inscription.module';
 import { SitemapModule } from './sitemap/sitemap.module';
-import { GeocodeController } from './geocode/geocode.controller';
 import { UploadModule } from './upload/upload.module';
 import { MetadataModule } from './metadata/metadata.module';
 import { BotDetectorMiddleware } from './middleware/bot-detector.middleware';
 
 @Module({
   imports: [AuthModule, CampamentoModule, InscriptionModule, SitemapModule, UploadModule, MetadataModule],
-  controllers: [GeocodeController],
+  controllers: [],
   providers: [],
 })
 export class AppModule implements NestModule {

@@ -3,7 +3,6 @@ import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { MapPin } from "lucide-react";
-import { api } from "../../services/api";
 
 interface LocationMapProps {
   address: string;
@@ -29,21 +28,40 @@ function UpdateMapCenter({ center }: { center: [number, number] }) {
   return null;
 }
 
+/** Geocodifica una dirección usando Photon (OSM) directamente desde el frontend */
+async function geocodeAddress(
+  address: string,
+): Promise<[number, number] | null> {
+  try {
+    const params = new URLSearchParams({ q: address, limit: "1", lang: "es" });
+    const res = await fetch(`https://photon.komoot.io/api/?${params}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const feature = data.features?.[0];
+    if (!feature) return null;
+    const [lon, lat] = feature.geometry.coordinates;
+    return [lat, lon];
+  } catch {
+    return null;
+  }
+}
+
 export function LocationMap({ address }: LocationMapProps) {
   const [coords, setCoords] = useState<[number, number] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!address) return;
+    if (!address) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
-    api
-      .get<{ lat?: number; lon?: number; error?: string }>("/geocode", {
-        params: { address },
-      })
-      .then((data) => {
-        if (data.lat && data.lon) setCoords([data.lat, data.lon]);
+
+    geocodeAddress(address)
+      .then((result) => {
+        if (result) setCoords(result);
         else setError("Ubicación no encontrada");
       })
       .catch(() => setError("Error al cargar el mapa"))
