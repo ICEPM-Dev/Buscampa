@@ -12,7 +12,7 @@ export class CampamentoService {
   /**
    * Constructor que inyecta el servicio de Prisma
    */
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   /**
    * Crea un nuevo campamento asociado a la iglesia del usuario.
@@ -171,5 +171,18 @@ export class CampamentoService {
 
     // Eliminar el campamento
     return this.prisma.campamento.delete({ where: { id } });
+  }
+
+  /**
+ * Elimina todos los campamentos cuya fecha de fin ya pasó.
+ * Llamado por el cron de Vercel vía GET /api/campamentos/internal/cleanup
+ */
+  async deleteExpired(): Promise<number> {
+    const result = await this.prisma.campamento.deleteMany({
+      where: {
+        endDate: { lt: new Date() },
+      },
+    });
+    return result.count;
   }
 }
