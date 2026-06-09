@@ -1,7 +1,5 @@
 /**
  * Controlador para la gestión de campamentos.
- * Proporciona endpoints CRUD para campamentos y gestión de inscripciones.
- * Todas las rutas están protegidas por autenticación JWT.
  */
 import {
   Controller,
@@ -13,6 +11,8 @@ import {
   Delete,
   UseGuards,
   Res,
+  Headers,
+  UnauthorizedException,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { CampamentoService } from './campamento.service';
@@ -25,47 +25,40 @@ import { CreateInscriptionDto } from '../inscription/dto/create-inscription.dto'
 
 @Controller('campamentos')
 export class CampamentoController {
-  /**
-   * Constructor que inyecta los servicios necesarios
-   */
   constructor(
     private readonly campamentoService: CampamentoService,
     private readonly inscriptionService: InscriptionService,
-  ) {}
+  ) { }
 
-  /**
-   * GET /campamentos
-   * Obtiene todos los campamentos públicos (para usuarios no autenticados)
-   */
+  @Get('internal/cleanup')
+  async cleanup(@Headers('authorization') auth: string) {
+    const secret = process.env.CRON_SECRET;
+
+    if (!secret || auth !== `Bearer ${secret}`) {
+      throw new UnauthorizedException('No autorizado');
+    }
+
+    const deleted = await this.campamentoService.deleteExpired();
+    return { ok: true, deleted };
+  }
+
   @Get('public')
   findAllPublic() {
     return this.campamentoService.findAllPublic();
   }
 
-  /**
-   * GET /campamentos
-   * Obtiene todos los campamentos de la iglesia del usuario autenticado
-   */
   @Get()
   @UseGuards(JwtAuthGuard)
   findAll(@GetUser() user: any) {
     return this.campamentoService.findAll(user.churchId);
   }
 
-  /**
-   * POST /campamentos
-   * Crea un nuevo campamento para la iglesia del usuario (REQUIERE AUTH)
-   */
   @Post()
   @UseGuards(JwtAuthGuard)
   create(@Body() dto: CreateCampamentoDto, @GetUser() user: any) {
     return this.campamentoService.create(dto, user.id);
   }
 
-  /**
-   * PUT /campamentos/:id
-   * Actualiza un campamento existente (solo iglesia propietaria) (REQUIERE AUTH)
-   */
   @Put(':id')
   @UseGuards(JwtAuthGuard)
   update(
@@ -76,20 +69,12 @@ export class CampamentoController {
     return this.campamentoService.update(Number(id), dto, user.id);
   }
 
-  /**
-   * DELETE /campamentos/:id
-   * Elimina un campamento (solo iglesia propietaria) (REQUIERE AUTH)
-   */
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: string, @GetUser() user: any) {
     return this.campamentoService.remove(Number(id), user.id);
   }
 
-  /**
-   * POST /campamentos/:id/inscribirse
-   * Crea una nueva inscripción para el campamento (REQUIERE AUTH)
-   */
   @Post(':id/inscribirse')
   @UseGuards(JwtAuthGuard)
   async inscribe(
@@ -100,10 +85,6 @@ export class CampamentoController {
     return this.inscriptionService.create(dto, user.id, Number(id));
   }
 
-  /**
-   * GET /campamentos/:id/inscripciones
-   * Obtiene todas las inscripciones de un campamento (REQUIERE AUTH)
-   */
   @Get(':id/inscripciones')
   @UseGuards(JwtAuthGuard)
   async findByCampamento(@Param('id') id: string) {
@@ -126,7 +107,7 @@ export class CampamentoController {
   <meta property="og:title" content="${campamento.name}" />
   <meta property="og:description" content="${description}" />
   <meta property="og:image" content="https://www.buscampa.com.ar/og-image.png" />
-      <meta property="og:url" content="https://www.buscampa.com.ar/campamentos/${id}" />
+  <meta property="og:url" content="https://www.buscampa.com.ar/campamentos/${id}" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Buscampa" />
   <meta name="twitter:card" content="summary_large_image" />

@@ -36,5 +36,11 @@
     { "src": "/c/(.*)", "dest": "backend/api/index.ts" },
     { "src": "/((?!api/).*)", "dest": "frontend/$1", "continue": true },
     { "src": "/(.*)", "dest": "frontend/index.html" }
+  ],
+  "crons": [
+    {
+      "path": "/api/campamentos/internal/cleanup",
+      "schedule": "0 0 * * *"
+    }
   ]
 }
