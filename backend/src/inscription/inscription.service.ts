@@ -9,13 +9,14 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateInscriptionDto } from './dto/create-inscription.dto';
+import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class InscriptionService {
   /**
    * Constructor que inyecta el servicio de Prisma
    */
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private emailService: EmailService) {}
   /**
    * Crea una nueva inscripción para un campamento.
    * Verifica que el campamento existe y que el usuario no esté ya inscripto.
@@ -32,6 +33,7 @@ export class InscriptionService {
     // Verificar que el campamento existe
     const campamento = await this.prisma.campamento.findUnique({
       where: { id: campamentoId },
+      include: { church: true },
     });
 
     if (!campamento) throw new NotFoundException('Campamento no encontrado');
@@ -46,6 +48,17 @@ export class InscriptionService {
 
     if (existing)
       throw new ConflictException('Ya estás inscripto en este campamento');
+
+    this.emailService.sendInscripcionConfirmacion({
+      to: dto.email,
+      userName: dto.fullName,
+      campamentoName: campamento.name,
+      churchName: campamento.church.name,
+      location: campamento.location,
+      startDate: campamento.startDate,
+      endDate: campamento.endDate,
+      price: campamento.price,
+    });
 
     // Crear la inscripción
     return this.prisma.registration.create({

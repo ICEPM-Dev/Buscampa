@@ -46,12 +46,12 @@ model User {
  * Representa las iglesias que organizan campamentos.
  */
 model Iglesia {
-  id           Int          @id @default(autoincrement()) // ID único
-  name         String // Nombre de la iglesia
-  phone        String? // Teléfono de contacto opcional
-  userId       Int?         @unique // ID del usuario administrador
-  user         User?        @relation("UserChurch") // Usuario administrador
-  campamentos  Campamento[] @relation("CampamentoChurch") // Campamentos organizados
+  id          Int          @id @default(autoincrement()) // ID único
+  name        String // Nombre de la iglesia
+  phone       String? // Teléfono de contacto opcional
+  userId      Int?         @unique // ID del usuario administrador
+  user        User?        @relation("UserChurch") // Usuario administrador
+  campamentos Campamento[] @relation("CampamentoChurch") // Campamentos organizados
 }
 
 /**
