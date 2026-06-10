@@ -1,25 +1,10 @@
-import { Church, Mail, Clock, Tent } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Mail, Clock } from "lucide-react";
 
 export function VerifyChurch() {
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center py-12 px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 justify-center mb-5 group"
-          >
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center group-hover:bg-blue-700 transition-colors shadow-sm">
-              <Tent className="h-5 w-5 text-white" strokeWidth={2.5} />
-            </div>
-            <span className="text-xl font-bold text-slate-900 tracking-tight">
-              Busca<span className="text-blue-600">mpa</span>
-            </span>
-          </Link>
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-blue-100 rounded-2xl mb-4">
-            <Church className="h-7 w-7 text-blue-600" />
-          </div>
           <h1 className="text-2xl font-bold text-slate-900 mb-1">
             Verificación de iglesia
           </h1>
