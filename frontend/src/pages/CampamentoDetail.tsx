@@ -34,14 +34,14 @@ export default function CampamentoDetailPage() {
     }
   }, [id, isAuthenticated, execute]);
 
-  const handleInscribirse = () => {
+  const handleInscribirse = async () => {
     if (!isAuthenticated) {
       navigate("/auth");
       return;
     }
 
     const alreadyInscribed = inscripciones.some(
-      (insc) => insc.campamentoId === parseInt(id || "0")
+      (insc) => insc.campamentoId === parseInt(id || "0"),
     );
 
     if (alreadyInscribed) {
@@ -49,14 +49,30 @@ export default function CampamentoDetailPage() {
       return;
     }
 
+    if (user?.name && user?.email && user?.phone) {
+      try {
+        await inscriptionService.create(parseInt(id!), {
+          fullName: user.name,
+          email: user.email,
+          phone: user.phone,
+        });
+        navigate(`/campamentos/${id}/inscribirse`, {
+          state: { autoSuccess: true },
+        });
+      } catch {
+        navigate(`/campamentos/${id}/inscribirse`);
+      }
+      return;
+    }
+
     navigate(`/campamentos/${id}/inscribirse`);
   };
 
-  const isOrganizer = isAuthenticated && user?.churchId && 
-    campamento?.churchId === user.churchId;
+  const isOrganizer =
+    isAuthenticated && user?.churchId && campamento?.churchId === user.churchId;
 
   const isAlreadyInscribed = inscripciones.some(
-    (insc) => insc.campamentoId === parseInt(id || "0")
+    (insc) => insc.campamentoId === parseInt(id || "0"),
   );
 
   if (isLoadingCampamento) {
@@ -90,17 +106,21 @@ export default function CampamentoDetailPage() {
 
   const startDate = parseISO(campamento.startDate);
   const endDate = parseISO(campamento.endDate);
-  const formattedDates = format(startDate, "d MMM", { locale: es }) + " - " + format(endDate, "d MMM yyyy", { locale: es });
+  const formattedDates =
+    format(startDate, "d MMM", { locale: es }) +
+    " - " +
+    format(endDate, "d MMM yyyy", { locale: es });
 
   const seoTitle = `${campamento.name} - ${campamento.location}`;
   const seoDescription = `${campamento.church.name} organiza este campamento en ${campamento.location}. ${formattedDates}. Precio: $${campamento.price.toLocaleString("es-AR")}. ¡Inscríbete ahora!`;
-  const seoImage = campamento.images && campamento.images.length > 0 
-    ? campamento.images[0] 
-    : undefined;
+  const seoImage =
+    campamento.images && campamento.images.length > 0
+      ? campamento.images[0]
+      : undefined;
 
   return (
     <>
-      <SEO 
+      <SEO
         title={seoTitle}
         description={seoDescription}
         url={`/campamentos/${campamento.id}`}

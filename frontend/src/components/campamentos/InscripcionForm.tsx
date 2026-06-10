@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, CheckCircle, Tent, Lock } from "lucide-react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { ArrowLeft, CheckCircle, Lock } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { inscriptionService } from "../../services/inscription.service";
 import type { CreateInscriptionDto } from "../../types";
@@ -10,14 +10,17 @@ import Button from "../ui/Button";
 export default function InscripcionForm() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
+  const [success, setSuccess] = useState(
+    (location.state as Record<string, unknown>)?.autoSuccess === true,
+  );
   const [formData, setFormData] = useState<CreateInscriptionDto>({
     fullName: "",
     email: "",
     phone: "",
   });
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     if (user)
@@ -102,7 +105,6 @@ export default function InscripcionForm() {
             Volver
           </button>
           <div className="flex items-center gap-2 mb-1">
-            <Tent className="h-4 w-4 text-blue-600" />
             <span className="text-xs font-semibold text-blue-600 uppercase tracking-widest">
               Inscripción
             </span>

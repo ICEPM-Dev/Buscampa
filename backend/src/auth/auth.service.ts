@@ -206,14 +206,25 @@ export class AuthService {
    * @returns Usuario actualizado
    */
   async updateProfile(dto: any, user: any) {
-    return this.prisma.user.update({
-      where: { id: user.id },
-      data: {
-        name: dto.name,
-        email: dto.email,
-        phone: dto.phone,
-      },
-    });
+    try {
+      return await this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          name: dto.name,
+          email: dto.email,
+          phone: dto.phone,
+        },
+      });
+    } catch (error: any) {
+      if (error?.code === 'P2002') {
+        const target = error?.meta?.target as string[] | undefined;
+        if (target?.includes('phone')) {
+          throw new ConflictException('Teléfono ya registrado');
+        }
+        throw new ConflictException('Email ya registrado');
+      }
+      throw error;
+    }
   }
 
   /**

@@ -77,8 +77,9 @@ export default function Profile() {
       );
       updateUser(updated);
     } catch (err: any) {
-      const msg = err.response?.data?.message || "Error al actualizar";
-      if (msg.includes("ya registrado")) setErrors({ email: msg });
+      const msg: string = err.response?.data?.message || "Error al actualizar";
+      if (msg.includes("Teléfono")) setErrors({ phone: msg });
+      else if (msg.includes("ya registrado")) setErrors({ email: msg });
     } finally {
       setLoading(false);
     }
