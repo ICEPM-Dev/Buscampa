@@ -28,7 +28,7 @@ export class CampamentoController {
   constructor(
     private readonly campamentoService: CampamentoService,
     private readonly inscriptionService: InscriptionService,
-  ) { }
+  ) {}
 
   @Get('internal/cleanup')
   async cleanup(@Headers('authorization') auth: string) {
