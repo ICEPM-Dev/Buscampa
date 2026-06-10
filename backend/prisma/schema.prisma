@@ -23,7 +23,7 @@ model User {
   email         String         @unique // Email único
   name          String // Nombre del usuario
   password      String // Contraseña hasheada
-  phone         String? // Teléfono opcional
+  phone         String? @unique // Teléfono opcional, único
   type          UserType       @default(USER) // Tipo: USER o IGLESIA
   createdAt     DateTime       @default(now()) // Fecha de creación
   churchId      Int?           @unique // ID de iglesia si es admin
