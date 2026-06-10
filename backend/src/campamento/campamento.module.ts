@@ -8,7 +8,7 @@ import { CampamentoService } from './campamento.service';
 import { CampamentoController } from './campamento.controller';
 import { PrismaModule } from '../prisma/prisma.module';
 import { InscriptionModule } from '../../src/inscription/inscription.module';
-import { EmailModule } from 'src/email/email.module';
+import { EmailModule } from '../email/email.module';
 
 @Module({
   imports: [PrismaModule, InscriptionModule, EmailModule], // Dependencias necesarias

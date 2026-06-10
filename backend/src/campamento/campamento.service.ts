@@ -6,7 +6,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCampamentoDto } from './dto/create-campamento.dto.ts';
 import { UpdateCampamentoDto } from './dto/update-campamento.dto';
-import { EmailService } from 'src/email/email.service';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class CampamentoService {
